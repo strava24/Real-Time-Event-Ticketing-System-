@@ -26,6 +26,7 @@ public class Configuration {
         this.maxTicketCapacity = maxTicketCapacity;
     }
 
+    // default constructor to satisfy Spring boot
     public Configuration() {}
 
     public int getTotalTickets() {
