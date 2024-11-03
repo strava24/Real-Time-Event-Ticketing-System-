@@ -1,17 +1,26 @@
 package com.ticketing_system.TicketingSystem.model;
 
+import jakarta.persistence.*;
 import org.springframework.stereotype.Component;
 
+@Entity
 @Component
 public class Event {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int eventID;
     private String eventName;
     private int ticketsSold; // Tickets sold for the show
 
-    public Event(int eventID, String eventName) {
-        this.eventID = eventID;
+    // Reference to foreign Key
+    @ManyToOne
+    @JoinColumn(name = "vendor_id") // This column holds the foreign key
+    private Vendor vendor;
+
+    public Event(String eventName, int ticketsSold) {
         this.eventName = eventName;
+        this.ticketsSold = ticketsSold;
     }
 
     public Event() {}
