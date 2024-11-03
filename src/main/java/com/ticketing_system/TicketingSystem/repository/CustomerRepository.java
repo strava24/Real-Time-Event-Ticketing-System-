@@ -13,7 +13,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
      * method to enable login features
      * finds the customer based on their email
      * @param customerEmail - checks if there is a record with this customerEmail
-     * @return return an Optional Customer if such customer is found if not returns an empty Optional
+     * @return an Optional Customer if such customer is found if not returns an empty Optional
      */
     Optional<Customer> findByCustomerEmail(String customerEmail);
 

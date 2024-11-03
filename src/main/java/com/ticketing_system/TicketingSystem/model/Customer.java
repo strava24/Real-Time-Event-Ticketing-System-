@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Entity
 @Component
-public class Customer {
+public class Customer implements Runnable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,8 +18,10 @@ public class Customer {
     private String customerPassword;
     private int noOfTicketsBought;
 
-    public Customer(String customerName, int noOfTicketsBought) {
+    public Customer(String customerName, String customerEmail, String customerPassword, int noOfTicketsBought) {
         this.customerName = customerName;
+        this.customerEmail = customerEmail;
+        this.customerPassword = customerPassword;
         this.noOfTicketsBought = noOfTicketsBought;
     }
 
@@ -61,5 +63,10 @@ public class Customer {
 
     public void setNoOfTicketsBought(int noOfTicketsBought) {
         this.noOfTicketsBought = noOfTicketsBought;
+    }
+
+    @Override
+    public void run() {
+        // Multi threading concepts
     }
 }

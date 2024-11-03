@@ -42,4 +42,15 @@ public class CustomerController {
         customerService.signupCustomer(customer);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateCustomerByID(@PathVariable int id, @RequestBody Customer customer) {
+        Customer customer1 =  customerService.updateCustomerByID(id, customer);
+
+        if (customer1 != null)
+            return new ResponseEntity<>("Updated customer details!", HttpStatus.OK);
+        else
+            return new ResponseEntity<>("There is no such customer!", HttpStatus.NOT_FOUND);
+
+    }
+
 }
