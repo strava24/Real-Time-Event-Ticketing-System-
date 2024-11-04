@@ -62,7 +62,6 @@ public class VendorController {
             return new ResponseEntity<>("Updated vendor details!", HttpStatus.OK);
         else
             return new ResponseEntity<>("There is no such vendor!", HttpStatus.NOT_FOUND);
-
     }
 
     @GetMapping("/events/{id}")

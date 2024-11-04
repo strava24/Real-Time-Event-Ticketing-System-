@@ -1,19 +1,31 @@
 package com.ticketing_system.TicketingSystem.model;
 
+import jakarta.persistence.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+@Entity
 @Component
 public class Ticket {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int ticketID;
 
-    @Autowired
+    @ManyToOne
+    @JoinColumn(name = "event_id")
     private Event event;
 
-    @Autowired
-    public Ticket(Event event) {
+    @ManyToOne
+    @JoinColumn(name = "customer_id") // This column holds the foreign key
+    private Customer customer;
+
+    public Ticket(Event event, Customer customer) {
         this.event = event;
+        this.customer = customer;
+    }
+
+    public Ticket() {
     }
 
     public int getTicketID() {

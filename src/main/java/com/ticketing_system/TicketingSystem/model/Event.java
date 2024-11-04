@@ -3,6 +3,8 @@ package com.ticketing_system.TicketingSystem.model;
 import jakarta.persistence.*;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Entity
 @Component
 public class Event {
@@ -11,26 +13,26 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int eventID;
     private String eventName;
-    private int ticketsSold; // Tickets sold for the show
+    private int totalTickets; // Total tickets allocated for this event
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Ticket> ticketsSold; // Tickets sold for the show
 
     // Reference to foreign Key
     @ManyToOne
     @JoinColumn(name = "vendor_id") // This column holds the foreign key
     private Vendor vendor;
 
-    public Event(String eventName, int ticketsSold) {
+    public Event(String eventName, int totalTickets, Vendor vendor) {
         this.eventName = eventName;
-        this.ticketsSold = ticketsSold;
+        this.totalTickets = totalTickets;
+        this.vendor = vendor;
     }
 
     public Event() {}
 
     public int getEventID() {
         return eventID;
-    }
-
-    public void setEventID(int eventID) {
-        this.eventID = eventID;
     }
 
     public String getEventName() {
@@ -41,8 +43,24 @@ public class Event {
         this.eventName = eventName;
     }
 
-    public int getTicketsSold() {
+    public List<Ticket> getTicketsSold() {
         return ticketsSold;
+    }
+
+    public int getTotalTickets() {
+        return totalTickets;
+    }
+
+    public void setTotalTickets(int totalTickets) {
+        this.totalTickets = totalTickets;
+    }
+
+    public Vendor getVendor() {
+        return vendor;
+    }
+
+    public void setVendor(Vendor vendor) {
+        this.vendor = vendor;
     }
 
     @Override
