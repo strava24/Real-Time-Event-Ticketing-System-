@@ -16,4 +16,12 @@ public class EventService {
     public List<Event> getAllEvents() {
         return eventRepo.findAll();
     }
+
+    public void createEvent(Event event) {
+        eventRepo.save(event);
+    }
+
+    public Event getEventByID(int eventID) {
+        return eventRepo.findById(eventID).orElse(null);
+    }
 }

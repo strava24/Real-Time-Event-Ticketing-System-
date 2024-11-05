@@ -1,7 +1,6 @@
 package com.ticketing_system.TicketingSystem.model;
 
 import jakarta.persistence.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Entity
@@ -12,16 +11,20 @@ public class Ticket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int ticketID;
 
-    @ManyToOne
-    @JoinColumn(name = "event_id")
-    private Event event;
+//    @ManyToOne
+//    @JoinColumn(name = "event_id")
+//    private Event event;
 
+    // A customer can purchase multiple tickets
     @ManyToOne
     @JoinColumn(name = "customer_id") // This column holds the foreign key
     private Customer customer;
 
-    public Ticket(Event event, Customer customer) {
-        this.event = event;
+    @ManyToOne // A ticketPool can have multiple tickets
+    @JoinColumn(name = "ticket_pool_id") // This column holds the foreign key
+    private TicketPool ticketPool;
+
+    public Ticket(Customer customer) {
         this.customer = customer;
     }
 
@@ -31,13 +34,11 @@ public class Ticket {
     public int getTicketID() {
         return ticketID;
     }
-
-    public Event getEvent() {
-        return event;
+    public Customer getCustomer() {
+        return customer;
     }
 
-    @Autowired
-    public void setEvent(Event event) {
-        this.event = event;
+    public TicketPool getTicketPool() {
+        return ticketPool;
     }
 }
