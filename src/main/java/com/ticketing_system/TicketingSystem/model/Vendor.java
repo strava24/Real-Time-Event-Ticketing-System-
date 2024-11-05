@@ -7,7 +7,7 @@ import java.util.List;
 
 @Entity
 @Component
-public class Vendor implements Runnable{
+public class Vendor{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,10 +62,5 @@ public class Vendor implements Runnable{
 
     public void setVendorPassword(String vendorPassword) {
         this.vendorPassword = vendorPassword;
-    }
-
-    @Override
-    public void run() {
-        // Multithreading logic
     }
 }
