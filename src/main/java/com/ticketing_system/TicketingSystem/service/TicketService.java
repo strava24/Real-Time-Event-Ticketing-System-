@@ -11,7 +11,7 @@ public class TicketService {
 
     @Async // Allows the method to run in a separate thread
     public void produceTickets(Event event, TicketPool ticketPool) {
-        int totalTickets = event.getTotalTickets();
+        int totalTickets = event.getMaxTicketCapacity();
         for (int i = 0; i < totalTickets; i++) {
             Ticket ticket = new Ticket(); // Create a new ticket instance
             ticketPool.addTicket(ticket); // Add the ticket to the pool

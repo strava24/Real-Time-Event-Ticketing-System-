@@ -26,18 +26,18 @@ public class TicketPool {
     private Event event;
 
     private String poolName;
-    private int maxTicketCapacity;
+    private int totalTickets;
 
-    public TicketPool(String poolName, int maxTicketCapacity) {
+    public TicketPool(String poolName, int totalTickets) {
         this.poolName = poolName;
-        this.maxTicketCapacity = maxTicketCapacity;
+        this.totalTickets = totalTickets;
     }
 
     public TicketPool() {}
 
     public void addTicket(Ticket ticket) {
         synchronized (ticketPool) {
-            while (ticketPool.size() >= maxTicketCapacity) {
+            while (ticketPool.size() >= totalTickets) {
                 try {
                     System.out.println("Ticket pool is full! Waiting to add: " + ticket);
                     ticketPool.wait(); // Wait if the pool is at max capacity
@@ -80,8 +80,12 @@ public class TicketPool {
         this.poolName = poolName;
     }
 
-    public int getMaxTicketCapacity() {
-        return maxTicketCapacity;
+    public int getTotalTickets() {
+        return totalTickets;
+    }
+
+    public void setTotalTickets(int totalTickets) {
+        this.totalTickets = totalTickets;
     }
 
     public Event getEvent() {

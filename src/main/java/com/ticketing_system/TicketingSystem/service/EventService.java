@@ -24,4 +24,8 @@ public class EventService {
     public Event getEventByID(int eventID) {
         return eventRepo.findById(eventID).orElse(null);
     }
+
+    public int getAvailableTicketsByID(int eventID) {
+        return eventRepo.findTotalTicketsByEvent(eventID);
+    }
 }
