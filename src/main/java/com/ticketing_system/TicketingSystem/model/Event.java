@@ -2,7 +2,6 @@ package com.ticketing_system.TicketingSystem.model;
 
 import com.ticketing_system.TicketingSystem.service.TicketService;
 import jakarta.persistence.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -16,7 +15,7 @@ public class Event implements Runnable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int eventID;
     private String eventName;
-    private int totalTickets; // Total tickets allocated for this event
+    private int maxTicketCapacity; // Total tickets allocated for this event
 
 //    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 //    private List<Ticket> ticketsSold; // Tickets sold for the show
@@ -30,9 +29,9 @@ public class Event implements Runnable{
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<TicketPool> ticketPools = new ArrayList<>();
 
-    public Event(String eventName, int totalTickets, Vendor vendor) {
+    public Event(String eventName, int maxTicketCapacity, Vendor vendor) {
         this.eventName = eventName;
-        this.totalTickets = totalTickets;
+        this.maxTicketCapacity = maxTicketCapacity;
         this.vendor = vendor;
     }
 
@@ -54,12 +53,12 @@ public class Event implements Runnable{
 //        return ticketsSold;
 //    }
 
-    public int getTotalTickets() {
-        return totalTickets;
+    public int getMaxTicketCapacity() {
+        return maxTicketCapacity;
     }
 
-    public void setTotalTickets(int totalTickets) {
-        this.totalTickets = totalTickets;
+    public void setMaxTicketCapacity(int maxTicketCapacity) {
+        this.maxTicketCapacity = maxTicketCapacity;
     }
 
     public Vendor getVendor() {

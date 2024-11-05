@@ -1,6 +1,5 @@
 package com.ticketing_system.TicketingSystem.controller;
 
-import com.ticketing_system.TicketingSystem.exception.VendorNotFoundExpecption;
 import com.ticketing_system.TicketingSystem.model.Event;
 import com.ticketing_system.TicketingSystem.model.Vendor;
 import com.ticketing_system.TicketingSystem.service.EventService;
@@ -38,15 +37,34 @@ public class EventController {
 
     }
 
+    /**
+     * This method is to create an event for the vendor
+     * @param event - the JSON body with the attribute values
+     */
     @PostMapping("/create")
-    public void createEvent(@RequestBody Event event) throws VendorNotFoundExpecption {
+    public ResponseEntity<String> createEvent(@RequestBody Event event) {
 
         Vendor vendor = vendorService.getVendorByID(event.getVendor().getVendorID());
 
-        if (vendor != null)
+        if (vendor != null) {
             eventService.createEvent(event);
+            return new ResponseEntity<>("Event created sucessfully!", HttpStatus.OK);
+        }
         else
-            throw new VendorNotFoundExpecption("There is no such Vendor!");
+            return new ResponseEntity<>("There is no such Vendor!", HttpStatus.NOT_FOUND);
+
+    }
+
+    @GetMapping("/{eventID}/available-tickets")
+    public ResponseEntity<Integer> getAvailableTicketsByID(@PathVariable int eventID) {
+
+        Event event = eventService.getEventByID(eventID);
+
+        if (event != null)
+            return new ResponseEntity<>(eventService.getAvailableTicketsByID(eventID), HttpStatus.OK);
+        else
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
     }
 
 

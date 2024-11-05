@@ -4,8 +4,11 @@ import com.ticketing_system.TicketingSystem.exception.EventNotFoundException;
 import com.ticketing_system.TicketingSystem.model.Event;
 import com.ticketing_system.TicketingSystem.model.TicketPool;
 import com.ticketing_system.TicketingSystem.service.EventService;
+import com.ticketing_system.TicketingSystem.service.TicketPoolService;
 import com.ticketing_system.TicketingSystem.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,28 +21,29 @@ public class TicketPoolController {
     @Autowired
     private TicketService ticketService;
 
-    @PostMapping("/create-pool")
-    public void createTicketPool(@RequestBody TicketPool ticketPool) throws EventNotFoundException {
+    @Autowired
+    private TicketPoolService ticketPoolService;
 
+    @PostMapping("/create-pool")
+    public ResponseEntity<String> createTicketPool(@RequestBody TicketPool ticketPool) {
         Event event = eventService.getEventByID(ticketPool.getEvent().getEventID());
 
-        if (event != null)
-            ticketPool.getEvent().addTicketPool(ticketPool, ticketService);
-        else
-            throw new EventNotFoundException("Event not found");
+        if (event != null) {
 
+            // Checking if the current pool can be created
+            int ticketCount =  eventService.getAvailableTicketsByID(event.getEventID());
+
+            if (event.getMaxTicketCapacity() - ticketCount >= ticketPool.getTotalTickets()) {
+                ticketPoolService.createTicketPool(ticketPool);
+                ticketPool.getEvent().addTicketPool(ticketPool, ticketService);
+                return new ResponseEntity<>("Successfully created Ticket Pool!", HttpStatus.OK);
+            } else
+                return new ResponseEntity<>("This ticket pool cannot be created, as it is exceeding the capacity of the event", HttpStatus.NOT_FOUND);
+
+        }
+        else
+            return new ResponseEntity<>("There is no such Event!", HttpStatus.NOT_FOUND) ;
     }
 
-    //    /**
-//     * To create an event we should get the ticket pool details from the user.
-//     * Since ticket pool is connected to the event, we can return the event after an event is created
-//     * @param ticketPool a ticket pool is necessary when creating an event
-//     * @return the event we created
-//     */
-//    @PostMapping("/create")
-//    public Event createEvent(@RequestBody TicketPool ticketPool) {
-//        ticketPool.getEvent().addTicketPool(ticketPool, ticketService); // Adding a ticket pool and starting production
-//        return ticketPool.getEvent(); // Return or save as needed
-//    }
 
 }
