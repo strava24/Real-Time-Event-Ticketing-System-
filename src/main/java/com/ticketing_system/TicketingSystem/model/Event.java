@@ -1,6 +1,6 @@
 package com.ticketing_system.TicketingSystem.model;
 
-import com.ticketing_system.TicketingSystem.service.TicketService;
+import com.ticketing_system.TicketingSystem.service.VendorService;
 import jakarta.persistence.*;
 import org.springframework.stereotype.Component;
 
@@ -9,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Component
-public class Event implements Runnable{
+public class Event{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -77,15 +77,15 @@ public class Event implements Runnable{
      * Method to add a new ticket pool
      * @param ticketPool - an instance of ticket pool for the current thread
      */
-    public void addTicketPool(TicketPool ticketPool, TicketService ticketService) {
+    public void addTicketPool(TicketPool ticketPool, VendorService vendorService) {
         ticketPools.add(ticketPool);
-        ticketService.produceTickets(this, ticketPool); // Start ticket production
+        vendorService.produceTickets(this, ticketPool); // Start ticket production
     }
 
-    @Override
-    public void run() {
-//        produceTickets();
-    }
+//    @Override
+//    public void run() {
+////        produceTickets();
+//    }
 //
 //    private void produceTickets() {
 ////        for (int i = 0; i < totalTickets; i++) {
