@@ -7,7 +7,7 @@ import java.util.List;
 
 @Entity
 @Component
-public class Vendor{
+public class Vendor implements Runnable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,5 +62,10 @@ public class Vendor{
 
     public void setVendorPassword(String vendorPassword) {
         this.vendorPassword = vendorPassword;
+    }
+
+    @Override
+    public void run() {
+        // Logic to produce tickets in a separate thread
     }
 }

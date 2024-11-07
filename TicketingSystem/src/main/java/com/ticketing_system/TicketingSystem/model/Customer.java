@@ -16,8 +16,8 @@ public class Customer implements Runnable {
     private String customerEmail;
     private String customerPassword;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Ticket> ticketsBought;
+//    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    private List<Ticket> ticketsBought;
 
     public Customer(String customerName, String customerEmail, String customerPassword) {
         this.customerName = customerName;
@@ -57,9 +57,9 @@ public class Customer implements Runnable {
         this.customerPassword = customerPassword;
     }
 
-    public List<Ticket> getTicketsBought() {
-        return ticketsBought;
-    }
+//    public List<Ticket> getTicketsBought() {
+//        return ticketsBought;
+//    }
 
     @Override
     public void run() {

@@ -1,11 +1,10 @@
 package com.ticketing_system.TicketingSystem.controller;
 
-import com.ticketing_system.TicketingSystem.exception.EventNotFoundException;
 import com.ticketing_system.TicketingSystem.model.Event;
 import com.ticketing_system.TicketingSystem.model.TicketPool;
 import com.ticketing_system.TicketingSystem.service.EventService;
 import com.ticketing_system.TicketingSystem.service.TicketPoolService;
-import com.ticketing_system.TicketingSystem.service.TicketService;
+import com.ticketing_system.TicketingSystem.service.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +18,7 @@ public class TicketPoolController {
     private EventService eventService;
 
     @Autowired
-    private TicketService ticketService;
+    private VendorService vendorService;
 
     @Autowired
     private TicketPoolService ticketPoolService;
@@ -35,7 +34,7 @@ public class TicketPoolController {
 
             if (event.getMaxTicketCapacity() - ticketCount >= ticketPool.getTotalTickets()) {
                 ticketPoolService.createTicketPool(ticketPool);
-                ticketPool.getEvent().addTicketPool(ticketPool, ticketService);
+                ticketPool.getEvent().addTicketPool(ticketPool, vendorService);
                 return new ResponseEntity<>("Successfully created Ticket Pool!", HttpStatus.OK);
             } else
                 return new ResponseEntity<>("This ticket pool cannot be created, as it is exceeding the capacity of the event", HttpStatus.NOT_FOUND);

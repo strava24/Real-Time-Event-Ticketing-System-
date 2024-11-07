@@ -3,7 +3,6 @@ package com.ticketing_system.TicketingSystem.controller;
 import com.ticketing_system.TicketingSystem.model.Event;
 import com.ticketing_system.TicketingSystem.model.Vendor;
 import com.ticketing_system.TicketingSystem.service.EventService;
-import com.ticketing_system.TicketingSystem.service.TicketService;
 import com.ticketing_system.TicketingSystem.service.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,9 +17,6 @@ public class EventController {
 
     @Autowired
     private EventService eventService;
-
-    @Autowired
-    private TicketService ticketService;
 
     @Autowired
     private VendorService vendorService;
