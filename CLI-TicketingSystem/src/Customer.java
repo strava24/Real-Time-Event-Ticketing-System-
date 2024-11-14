@@ -11,14 +11,14 @@ public class Customer implements Runnable {
         while (true) {
             Ticket ticket = ticketPool.take();
             if (ticket != null) {
-                System.out.println("Consumed a ticket: " + ticket);
+//                System.out.println("Consumed a ticket: " + ticket);
             }
 
             try {
-                Thread.sleep(Main.customerRetrievalRate); // Adjust sleep time as needed
+                Thread.sleep(Main.customerRetrievalRate);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                System.out.println("Consumer thread interrupted");
+//                System.err.println("Consumer thread interrupted");
                 break;
             }
         }

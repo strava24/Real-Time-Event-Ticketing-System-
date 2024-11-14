@@ -11,13 +11,13 @@ public class Vendor implements Runnable{
     public void run() {
         while (true) {
             ticketPool.put();
-            System.out.println("Produced a ticket.");
+//            System.out.println("Produced a ticket.");
 
             try {
-                Thread.sleep(Main.ticketReleaseRate); // Adjust sleep time as needed
+                Thread.sleep(Main.ticketReleaseRate);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                System.out.println("Producer thread interrupted");
+                System.err.println("Producer thread interrupted");
                 break;
             }
         }

@@ -16,7 +16,7 @@ public class Main {
 
 
     public static void main(String[] args) {
-        TicketPool ticketPool = new TicketPool(maxTicketCapacity); // Set max capacity to 10
+        TicketPool ticketPool = new TicketPool(maxTicketCapacity, totalTickets); // Set max capacity to 10
 
         Vendor producer = new Vendor(ticketPool);
         Customer consumer = new Customer(ticketPool);
