@@ -24,8 +24,8 @@ public class ConfigurationController {
     @PostMapping("/configuration")
     public ResponseEntity<String> addConfiguration(@RequestBody Configuration configuration) {
         // Making sure that maxTicketCapacity is greater than or equal to totalTickets
-        if (configuration.getMaxTicketCapacity() < configuration.getTotalTickets()) {
-            return new ResponseEntity<>("Invalid input, total number of tickets cannot exceed maximum amount allowed", HttpStatus.NOT_FOUND);
+        if (configuration.getMaxTicketCapacity() > configuration.getTotalTickets()) {
+            return new ResponseEntity<>("Invalid input, total number of tickets should be greater than the maximum amount of tickets allowed for a ticket pool", HttpStatus.BAD_REQUEST);
         } else {
             configService.addConfiguration(configuration);
             return new ResponseEntity<>("Added configuration to start simulation!", HttpStatus.OK);

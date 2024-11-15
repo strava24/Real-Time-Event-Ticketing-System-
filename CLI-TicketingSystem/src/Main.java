@@ -3,8 +3,10 @@
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -18,6 +20,8 @@ public class Main {
     static long ticketReleaseRate;
     static long customerRetrievalRate;
     static int maxTicketCapacity;
+
+    static Gson gson = new Gson(); // Gson to easily serialize and deserialize JSON objects
 
     private static boolean isRunning = false;
     static Scanner scanner = new Scanner(System.in);
@@ -60,8 +64,6 @@ public class Main {
 
         Thread producerThread = new Thread(producer);
         Thread consumerThread = new Thread(consumer);
-
-
 
         System.out.println("Type 'start' to begin the simulation, and 'stop' to end it.");
 
@@ -106,8 +108,6 @@ public class Main {
 
     public static void getExistingConfigurations() throws Exception {
 
-        Gson gson = new Gson(); // Gson to easily serialize and deserialize JSON objects
-
         // Sending a get request
         HttpRequest getRequest = HttpRequest.newBuilder()
                 .uri(new URI("http://localhost:8080/api/config")) // api endpoint
@@ -130,11 +130,37 @@ public class Main {
 
     }
 
-    public static void createNewConfiguration() {
+    public static void createNewConfiguration() throws URISyntaxException, IOException, InterruptedException {
         totalTickets = InputValidation.getValidTotalTickets();
         ticketReleaseRate = InputValidation.getValidRate("release rate");
         customerRetrievalRate = InputValidation.getValidRate("retrieval rate");
         maxTicketCapacity = InputValidation.getValidMaxTicketCapacity(totalTickets);
+
+        Configuration configuration =  new Configuration(totalTickets, ticketReleaseRate, customerRetrievalRate, maxTicketCapacity);
+        String jsonRequest = gson.toJson(configuration);
+
+        System.out.println(jsonRequest);
+
+        // Saving this configuration in the DB
+        HttpRequest postRequest = HttpRequest.newBuilder()
+                .uri(new URI("http://localhost:8080/api/config/configuration"))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonRequest))
+                .build();
+
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpResponse<String> postResponse =  httpClient.send(postRequest, HttpResponse.BodyHandlers.ofString());
+
+        if (postResponse.statusCode() == 200) {
+            System.out.println("Configuration added to the database.");
+        } else if (postResponse.statusCode() == 400) {
+            System.out.println("Configuration could not be added to the database.");
+        } else {
+            System.out.println("Unexpected response code: " + postResponse.statusCode());
+        }
+
+        System.out.println(postResponse.body());
+
     }
 
 }

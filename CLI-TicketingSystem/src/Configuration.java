@@ -6,6 +6,15 @@ public class Configuration {
     private long customerRetrievalRate;
     private int maxTicketCapacity;
 
+    public Configuration(int totalTickets, long ticketReleaseRate, long customerRetrievalRate, int maxTicketCapacity) {
+        this.totalTickets = totalTickets;
+        this.ticketReleaseRate = ticketReleaseRate;
+        this.customerRetrievalRate = customerRetrievalRate;
+        this.maxTicketCapacity = maxTicketCapacity;
+    }
+
+    public Configuration() {}
+
     public int getTotalTickets() {
         return totalTickets;
     }
