@@ -1,13 +1,15 @@
 // Temporary representation of thread pool
 
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class TicketPool {
 
-    private Queue<Ticket> tickets;
+    private List<Ticket> tickets;
 
     private int maxTicketCapacity; // the max ticket capacity of the pool
     private int totalTickets;
@@ -20,7 +22,7 @@ public class TicketPool {
     private int ticketsBought;
 
     public TicketPool(int maxTicketCapacity, int totalTickets) {
-        tickets = new LinkedList<Ticket>();
+        tickets = Collections.synchronizedList(new LinkedList<Ticket>());
         this.maxTicketCapacity = maxTicketCapacity;
         this.totalTickets = totalTickets;
     }
@@ -64,7 +66,7 @@ public class TicketPool {
 
             }
             if (ticketsBought < totalTickets) {
-                Ticket ticket = tickets.remove();
+                Ticket ticket = tickets.removeFirst();
                 ticketsBought++;
                 notFull.signalAll();
                 System.out.println("Consumed a ticket: " + ticket);

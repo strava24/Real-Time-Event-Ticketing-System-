@@ -1,6 +1,7 @@
 // This will be a utility class used just to get valid inputs from the user
 
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 public final class InputValidation {
@@ -86,5 +87,27 @@ public final class InputValidation {
     }
 
 
+    public static int getValidIndex(List<Configuration> configs) {
+        for (int i = 0; i < configs.size(); i++) {
+            System.out.println(i + " - " + configs.get(i).toString() + "\n"); // Printing all the configurations on the backend along with the index
+        }
+
+        int index = 0;
+        boolean notValid;
+
+        do {
+            notValid = true;
+            System.out.print("Enter the index of your chosen configuration: ");
+            try {
+                index = input.nextInt();
+            } catch (InputMismatchException e) {
+                notValid = false;
+                System.out.println("Please enter a valid index");
+                input.nextLine(); // cleaning the buffer
+            }
+        } while (!notValid);
+
+        return index;
+    }
 
 }
