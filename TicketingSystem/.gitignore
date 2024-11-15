@@ -33,5 +33,6 @@ build/
 .vscode/
 
 # Ignore database files
-data/*.db
+./data/*.db
 data/
+
