@@ -51,17 +51,17 @@ public class EventController {
 
     }
 
-    @GetMapping("/{eventID}/available-tickets")
-    public ResponseEntity<Integer> getAvailableTicketsByID(@PathVariable int eventID) {
-
-        Event event = eventService.getEventByID(eventID);
-
-        if (event != null)
-            return new ResponseEntity<>(eventService.getAvailableTicketsByID(eventID), HttpStatus.OK);
-        else
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
-    }
+//    @GetMapping("/{eventID}/available-tickets")
+//    public ResponseEntity<Integer> getAvailableTicketsByID(@PathVariable int eventID) {
+//
+//        Event event = eventService.getEventByID(eventID);
+//
+//        if (event != null)
+//            return new ResponseEntity<>(eventService.getAvailableTicketsByID(eventID), HttpStatus.OK);
+//        else
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//
+//    }
 
 
 

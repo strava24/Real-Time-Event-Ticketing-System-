@@ -3,10 +3,8 @@
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -108,58 +106,24 @@ public class Main {
 
     public static void getExistingConfigurations() throws Exception {
 
-        // Sending a get request
-        HttpRequest getRequest = HttpRequest.newBuilder()
-                .uri(new URI("http://localhost:8080/api/config")) // api endpoint
-                .GET() // Can get rid of this line as well, cause GET by default
-                .build();
+        Configuration configuration = ApiUtils.getExistingConfigurations();
 
-        HttpResponse<String> getResponse = HttpClient.newHttpClient().send(getRequest, HttpResponse.BodyHandlers.ofString()); // This is to accept the response as a string
-
-        /* This line captures the generic type List<Configuration> and retrieves it as a Type object,
-           which is passed to Gson to guide the deserialization process.*/
-        Type listType = new TypeToken<List<Configuration>>() {}.getType();
-        List<Configuration> configs = gson.fromJson(getResponse.body(), listType);
-
-        int index = InputValidation.getValidIndex(configs);
-
-        totalTickets = configs.get(index).getTotalTickets();
-        ticketReleaseRate = configs.get(index).getTicketReleaseRate();
-        customerRetrievalRate = configs.get(index).getCustomerRetrievalRate();
-        maxTicketCapacity = configs.get(index).getMaxTicketCapacity();
+        totalTickets = configuration.getTotalTickets();
+        ticketReleaseRate = configuration.getTicketReleaseRate();
+        customerRetrievalRate = configuration.getCustomerRetrievalRate();
+        maxTicketCapacity = configuration.getMaxTicketCapacity();
 
     }
 
-    public static void createNewConfiguration() throws URISyntaxException, IOException, InterruptedException {
+    public static void createNewConfiguration() throws Exception {
         totalTickets = InputValidation.getValidTotalTickets();
         ticketReleaseRate = InputValidation.getValidRate("release rate");
         customerRetrievalRate = InputValidation.getValidRate("retrieval rate");
         maxTicketCapacity = InputValidation.getValidMaxTicketCapacity(totalTickets);
 
         Configuration configuration =  new Configuration(totalTickets, ticketReleaseRate, customerRetrievalRate, maxTicketCapacity);
-        String jsonRequest = gson.toJson(configuration);
 
-        System.out.println(jsonRequest);
-
-        // Saving this configuration in the DB
-        HttpRequest postRequest = HttpRequest.newBuilder()
-                .uri(new URI("http://localhost:8080/api/config/configuration"))
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(jsonRequest))
-                .build();
-
-        HttpClient httpClient = HttpClient.newHttpClient();
-        HttpResponse<String> postResponse =  httpClient.send(postRequest, HttpResponse.BodyHandlers.ofString());
-
-        if (postResponse.statusCode() == 200) {
-            System.out.println("Configuration added to the database.");
-        } else if (postResponse.statusCode() == 400) {
-            System.out.println("Configuration could not be added to the database.");
-        } else {
-            System.out.println("Unexpected response code: " + postResponse.statusCode());
-        }
-
-        System.out.println(postResponse.body());
+        ApiUtils.createNewConfiguration(configuration);
 
     }
 

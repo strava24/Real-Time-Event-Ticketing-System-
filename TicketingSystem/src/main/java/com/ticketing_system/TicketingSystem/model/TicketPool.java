@@ -1,104 +1,86 @@
 package com.ticketing_system.TicketingSystem.model;
 
-import jakarta.persistence.*;
-import org.springframework.stereotype.Component;
-
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
-@Entity
-@Component
 public class TicketPool {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int TicketPoolID;
+    private List<Ticket> tickets;
 
-//    // One ticketPool can hold multiple tickets
-//    @OneToMany(mappedBy = "ticketPool", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    private List<Ticket> ticketPool = Collections.synchronizedList(new LinkedList<>());
-
-    // An event can have multiple ticket pools - Ex: early birds ticketPool, on-site ticketPool
-    @ManyToOne
-    @JoinColumn(name = "event_id")
-    private Event event;
-
-    private String poolName;
+    private int maxTicketCapacity; // the max ticket capacity of the pool
     private int totalTickets;
-    private double pricePerTicket; // The logic is that all the tickets on a pool will have the same price
 
-    public TicketPool(String poolName, int totalTickets) {
-        this.poolName = poolName;
+    private ReentrantLock lock = new ReentrantLock(true); // Creating a fair lock
+    private Condition notEmpty = lock.newCondition();
+    private Condition notFull = lock.newCondition();
+
+    private int ticketsSold; // Variable to keep count of how many tickets are sold
+    private int ticketsBought;
+
+    public TicketPool(int maxTicketCapacity, int totalTickets) {
+        tickets = Collections.synchronizedList(new LinkedList<>());
+        this.maxTicketCapacity = maxTicketCapacity;
         this.totalTickets = totalTickets;
     }
 
-    public TicketPool() {}
+    public void addTicket() {
+        lock.lock(); // lock to make the resource thread safe
+        try {
+            while (tickets.size() == maxTicketCapacity) {
+                notFull.await();
+            }
 
-    public void addTicket(int ticketID) { // Had a ticketpool parameter
-//        synchronized (ticketPool) {
-//            while (ticketPool.size() >= totalTickets) {
-//                try {
-//                    System.out.println("Ticket pool is full! Waiting to add: " + ticket);
-//                    ticketPool.wait(); // Wait if the pool is at max capacity
-//                } catch (InterruptedException e) {
-//                    Thread.currentThread().interrupt();
-//                    System.out.println("Vendor interrupted");
-//                    return;
-//                }
-//            }
-//            ticketPool.add(ticket);
-//            System.out.println("Added: " + ticket);
-//            ticketPool.notifyAll(); // Notify consumers that a ticket is available
+            if (ticketsSold < totalTickets) {
+                tickets.add(new Ticket());
+                System.out.println("Produced a ticket." + ticketsSold);
+                notEmpty.signalAll(); // Signalling the other threads that the pool is not empty anymore
+                // This wakes up the threads that waits for this condition
+                ticketsSold++;
+            }
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // Restore interrupted status
+            System.err.println("Producer thread interrupted");
+        } finally {
+            lock.unlock(); // releasing the lock
         }
-
-
-    //public void addTicket() {}
-
-//    public Ticket removeTicket() {
-//        synchronized (ticketPool) {
-//            while (ticketPool.isEmpty()) {
-//                try {
-//                    System.out.println("Ticket pool is empty, waiting for tickets...");
-//                    ticketPool.wait(); // Wait if the pool is empty
-//                } catch (InterruptedException e) {
-//                    Thread.currentThread().interrupt();
-//                    System.out.println("Consumer interrupted");
-//                    return null;
-//                }
-//            }
-//            Ticket ticket = ((LinkedList<Ticket>) ticketPool).removeFirst();
-//            System.out.println("Purchased: " + ticket);
-//            ticketPool.notifyAll(); // Notify producers that there's space for more tickets
-//            return ticket;
-//        }
-//    }
-
-    public String getPoolName() {
-        return poolName;
     }
 
-    public void setPoolName(String poolName) {
-        this.poolName = poolName;
+    public Ticket removeTicket() {
+        lock.lock();
+        try {
+            while (tickets.isEmpty()) {
+                if (ticketsSold == totalTickets) {
+                    System.out.println("Consumed all the tickets!");
+                    throw new InterruptedException();
+                }
+
+                notFull.await();
+
+            }
+
+            if (ticketsBought < totalTickets) {
+                Ticket ticket = tickets.removeFirst();
+                ticketsBought++;
+                notEmpty.signalAll();
+
+                System.out.println("Consumed a ticket." + ticket);
+                return ticket;
+            } else {
+                System.out.println("Consumed all the tickets!");
+                throw new InterruptedException();
+            }
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // Restore interrupted status
+            System.err.println("Consumer thread interrupted");
+        } finally {
+            lock.unlock();
+        }
+        return null;
     }
 
-    public int getTotalTickets() {
-        return totalTickets;
-    }
-
-    public void setTotalTickets(int totalTickets) {
-        this.totalTickets = totalTickets;
-    }
-
-    public Event getEvent() {
-        return this.event;
-    }
-
-    public double getPricePerTicket() {
-        return pricePerTicket;
-    }
-
-    public void setPricePerTicket(double pricePerTicket) {
-        this.pricePerTicket = pricePerTicket;
-    }
 }

@@ -3,11 +3,12 @@ package com.ticketing_system.TicketingSystem.model;
 import jakarta.persistence.*;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Component
-public class Vendor implements Runnable{
+public class Vendor{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +24,7 @@ public class Vendor implements Runnable{
         this.vendorName = vendorName;
         this.vendorEmail = vendorEmail;
         this.vendorPassword = vendorPassword;
+        hostedEvents = new ArrayList<Event>();
     }
 
     public Vendor() {
@@ -64,8 +66,12 @@ public class Vendor implements Runnable{
         this.vendorPassword = vendorPassword;
     }
 
-    @Override
-    public void run() {
-        // Logic to produce tickets in a separate thread
+    public int createNewEvent(Event event) {
+        hostedEvents.add(event);
+        event.createTicketPool(); // Creating a pool when an event is created
+
+        return this.vendorID;
+
     }
+
 }

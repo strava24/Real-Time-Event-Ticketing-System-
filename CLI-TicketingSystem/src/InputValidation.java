@@ -86,7 +86,11 @@ public final class InputValidation {
 
     }
 
-
+    /**
+     * This method is to get a valid index among to choose a valid index among the configurations
+     * @param configs - list of Configurations
+     * @return - returns a valid configuration
+     */
     public static int getValidIndex(List<Configuration> configs) {
         for (int i = 0; i < configs.size(); i++) {
             System.out.println(i + " - " + configs.get(i).toString() + "\n"); // Printing all the configurations on the backend along with the index
@@ -100,6 +104,12 @@ public final class InputValidation {
             System.out.print("Enter the index of your chosen configuration: ");
             try {
                 index = input.nextInt();
+
+                if (index < 0 || index > configs.size() - 1) {
+                    notValid = false;
+                    System.out.println("There is no such index!");
+                }
+
             } catch (InputMismatchException e) {
                 notValid = false;
                 System.out.println("Please enter a valid index");
@@ -108,6 +118,7 @@ public final class InputValidation {
         } while (!notValid);
 
         return index;
+
     }
 
 }

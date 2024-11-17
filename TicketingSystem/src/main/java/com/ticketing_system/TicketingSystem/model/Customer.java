@@ -7,7 +7,7 @@ import java.util.List;
 
 @Entity
 @Component
-public class Customer implements Runnable {
+public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,9 +15,6 @@ public class Customer implements Runnable {
     private String customerName;
     private String customerEmail;
     private String customerPassword;
-
-//    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    private List<Ticket> ticketsBought;
 
     public Customer(String customerName, String customerEmail, String customerPassword) {
         this.customerName = customerName;
@@ -57,12 +54,4 @@ public class Customer implements Runnable {
         this.customerPassword = customerPassword;
     }
 
-//    public List<Ticket> getTicketsBought() {
-//        return ticketsBought;
-//    }
-
-    @Override
-    public void run() {
-        // Multi threading concepts
-    }
 }
