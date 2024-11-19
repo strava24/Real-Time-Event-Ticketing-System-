@@ -3,6 +3,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -37,6 +38,8 @@ public final class ApiUtils {
 
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpResponse<String> postResponse = httpClient.send(postRequest, HttpResponse.BodyHandlers.ofString()); // Saying that we're expecting a string in return
+
+        System.out.println(postResponse.body());
 
         aiVendorID = Integer.parseInt(postResponse.body()); // Getting the vendorId od A.I. Inc for future usage
 
@@ -91,6 +94,19 @@ public final class ApiUtils {
 
         return configs.get(index);
 
+
+    }
+
+    public static void sellTicket() throws Exception {
+        // Sending a get request
+        HttpRequest getRequest = HttpRequest.newBuilder()
+                .uri(new URI("http://localhost:8080/api/ticket-pool/" + aiVendorID + "/sell-ticket")) // api endpoint
+                .GET() // Can get rid of this line as well, cause GET by default
+                .build();
+
+        HttpResponse<String> getResponse = HttpClient.newHttpClient().send(getRequest, HttpResponse.BodyHandlers.ofString()); // This is to accept the response as a string
+
+        System.out.println(getResponse.body());
 
     }
 

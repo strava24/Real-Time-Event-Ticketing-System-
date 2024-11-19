@@ -66,11 +66,10 @@ public class Vendor{
         this.vendorPassword = vendorPassword;
     }
 
-    public int createNewEvent(Event event) {
+    public TicketPool createNewEvent(Event event) {
         hostedEvents.add(event);
-        event.createTicketPool(); // Creating a pool when an event is created
-
-        return this.vendorID;
+        // Creating a pool when an event is created
+        return event.createTicketPool();
 
     }
 

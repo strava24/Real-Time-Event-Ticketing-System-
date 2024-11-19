@@ -6,6 +6,8 @@ public class Test {
 
         ApiUtils.createNewTicketPool(configuration);
 
+        ApiUtils.sellTicket();
+
     }
 
 }

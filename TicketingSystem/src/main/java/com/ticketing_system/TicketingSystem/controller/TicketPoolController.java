@@ -56,5 +56,24 @@ public class TicketPoolController {
 
     }
 
+    @GetMapping("{aiVendorId}/sell-ticket")
+    public ResponseEntity<String> addTicket(@PathVariable int aiVendorId) {
+
+        boolean boughtTicket =  ticketPoolService.addTicket(aiVendorId);
+
+        if (boughtTicket) {
+            return new ResponseEntity<>("Ticket added", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Ticket not added", HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
+
+//    @GetMapping("{}")
+//    public ResponseEntity<String> getTicketPoolByID() {
+//
+//    }
+
 
 }

@@ -1,7 +1,12 @@
 package com.ticketing_system.TicketingSystem.model;
 
+import com.ticketing_system.TicketingSystem.service.TicketPoolService;
 import jakarta.persistence.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Component
@@ -22,21 +27,28 @@ public class Event{
     @JoinColumn(name = "vendor_id") // This column holds the foreign key
     private Vendor vendor;
 
-    @Transient // To restrict ticket pool from becoming a column in the DB
-    private TicketPool ticketPool;
+
+//    @Transient // To restrict ticket pool from becoming a column in the DB
+//    private TicketPool ticketPool;
 
 //    // An event can have many ticket pools
 //    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 ////    private List<DummyTicketPool> dummyTicketPools = new ArrayList<>();
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<TicketPool> ticketPools;
 
     public Event(String eventName, int totalTickets, Vendor vendor, int maxTicketCapacity) {
         this.eventName = eventName;
         this.totalTickets = totalTickets;
         this.vendor = vendor;
         this.maxTicketCapacity = maxTicketCapacity;
+        this.ticketPools = new ArrayList<>();
     }
 
     public Event() {}
+
+
 
     public int getEventID() {
         return eventID;
@@ -74,6 +86,10 @@ public class Event{
         this.maxTicketCapacity = maxTicketCapacity;
     }
 
+    public List<TicketPool> getTicketPools() {
+        return ticketPools;
+    }
+
     @Override
     public String toString() {
         return "Event{" +
@@ -82,11 +98,14 @@ public class Event{
                 '}';
     }
 
-    public void createTicketPool() {
+    public TicketPool createTicketPool() {
 
-        this.ticketPool = new TicketPool(maxTicketCapacity, totalTickets);
+        TicketPool newTicketPool = new TicketPool(maxTicketCapacity, totalTickets, this);
 
+        this.ticketPools.add(newTicketPool);
         System.out.println("Created new ticket pool");
+
+        return newTicketPool;
 
     }
 
