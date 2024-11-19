@@ -1,7 +1,8 @@
 package com.ticketing_system.TicketingSystem.model;
 
-import com.ticketing_system.TicketingSystem.service.VendorService;
+import com.ticketing_system.TicketingSystem.service.TicketPoolService;
 import jakarta.persistence.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -15,7 +16,8 @@ public class Event{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int eventID;
     private String eventName;
-    private int maxTicketCapacity; // Total tickets allocated for this event
+    private int totalTickets; // Total tickets allocated for this event
+    private int maxTicketCapacity;
 
 //    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 //    private List<Ticket> ticketsSold; // Tickets sold for the show
@@ -25,17 +27,28 @@ public class Event{
     @JoinColumn(name = "vendor_id") // This column holds the foreign key
     private Vendor vendor;
 
-    // An event can have many ticket pools
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<TicketPool> ticketPools = new ArrayList<>();
 
-    public Event(String eventName, int maxTicketCapacity, Vendor vendor) {
+//    @Transient // To restrict ticket pool from becoming a column in the DB
+//    private TicketPool ticketPool;
+
+//    // An event can have many ticket pools
+//    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+////    private List<DummyTicketPool> dummyTicketPools = new ArrayList<>();
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<TicketPool> ticketPools;
+
+    public Event(String eventName, int totalTickets, Vendor vendor, int maxTicketCapacity) {
         this.eventName = eventName;
-        this.maxTicketCapacity = maxTicketCapacity;
+        this.totalTickets = totalTickets;
         this.vendor = vendor;
+        this.maxTicketCapacity = maxTicketCapacity;
+        this.ticketPools = new ArrayList<>();
     }
 
     public Event() {}
+
+
 
     public int getEventID() {
         return eventID;
@@ -53,6 +66,18 @@ public class Event{
 //        return ticketsSold;
 //    }
 
+    public int getTotalTickets() {
+        return totalTickets;
+    }
+
+    public void setTotalTickets(int maxTicketCapacity) {
+        this.totalTickets = maxTicketCapacity;
+    }
+
+    public Vendor getVendor() {
+        return vendor;
+    }
+
     public int getMaxTicketCapacity() {
         return maxTicketCapacity;
     }
@@ -61,8 +86,8 @@ public class Event{
         this.maxTicketCapacity = maxTicketCapacity;
     }
 
-    public Vendor getVendor() {
-        return vendor;
+    public List<TicketPool> getTicketPools() {
+        return ticketPools;
     }
 
     @Override
@@ -73,14 +98,25 @@ public class Event{
                 '}';
     }
 
-    /**
-     * Method to add a new ticket pool
-     * @param ticketPool - an instance of ticket pool for the current thread
-     */
-    public void addTicketPool(TicketPool ticketPool, VendorService vendorService) {
-        ticketPools.add(ticketPool);
-        vendorService.produceTickets(this, ticketPool); // Start ticket production
+    public TicketPool createTicketPool() {
+
+        TicketPool newTicketPool = new TicketPool(maxTicketCapacity, totalTickets, this);
+
+        this.ticketPools.add(newTicketPool);
+        System.out.println("Created new ticket pool");
+
+        return newTicketPool;
+
     }
+
+//    /**
+//     * Method to add a new ticket pool
+//     * @param dummyTicketPool - an instance of ticket pool for the current thread
+//     */
+//    public void addTicketPool(DummyTicketPool dummyTicketPool, VendorService vendorService) {
+//        dummyTicketPools.add(dummyTicketPool);
+//        vendorService.produceTickets(this, dummyTicketPool); // Start ticket production
+//    }
 
 //    @Override
 //    public void run() {

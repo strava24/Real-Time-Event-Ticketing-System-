@@ -19,6 +19,8 @@ public class Main {
     static long customerRetrievalRate;
     static int maxTicketCapacity;
 
+    static Gson gson = new Gson(); // Gson to easily serialize and deserialize JSON objects
+
     private static boolean isRunning = false;
     static Scanner scanner = new Scanner(System.in);
 
@@ -60,8 +62,6 @@ public class Main {
 
         Thread producerThread = new Thread(producer);
         Thread consumerThread = new Thread(consumer);
-
-
 
         System.out.println("Type 'start' to begin the simulation, and 'stop' to end it.");
 
@@ -106,35 +106,25 @@ public class Main {
 
     public static void getExistingConfigurations() throws Exception {
 
-        Gson gson = new Gson(); // Gson to easily serialize and deserialize JSON objects
+        Configuration configuration = ApiUtils.getExistingConfigurations();
 
-        // Sending a get request
-        HttpRequest getRequest = HttpRequest.newBuilder()
-                .uri(new URI("http://localhost:8080/api/config")) // api endpoint
-                .GET() // Can get rid of this line as well, cause GET by default
-                .build();
-
-        HttpResponse<String> getResponse = HttpClient.newHttpClient().send(getRequest, HttpResponse.BodyHandlers.ofString()); // This is to accept the response as a string
-
-        /* This line captures the generic type List<Configuration> and retrieves it as a Type object,
-           which is passed to Gson to guide the deserialization process.*/
-        Type listType = new TypeToken<List<Configuration>>() {}.getType();
-        List<Configuration> configs = gson.fromJson(getResponse.body(), listType);
-
-        int index = InputValidation.getValidIndex(configs);
-
-        totalTickets = configs.get(index).getTotalTickets();
-        ticketReleaseRate = configs.get(index).getTicketReleaseRate();
-        customerRetrievalRate = configs.get(index).getCustomerRetrievalRate();
-        maxTicketCapacity = configs.get(index).getMaxTicketCapacity();
+        totalTickets = configuration.getTotalTickets();
+        ticketReleaseRate = configuration.getTicketReleaseRate();
+        customerRetrievalRate = configuration.getCustomerRetrievalRate();
+        maxTicketCapacity = configuration.getMaxTicketCapacity();
 
     }
 
-    public static void createNewConfiguration() {
+    public static void createNewConfiguration() throws Exception {
         totalTickets = InputValidation.getValidTotalTickets();
         ticketReleaseRate = InputValidation.getValidRate("release rate");
         customerRetrievalRate = InputValidation.getValidRate("retrieval rate");
         maxTicketCapacity = InputValidation.getValidMaxTicketCapacity(totalTickets);
+
+        Configuration configuration =  new Configuration(totalTickets, ticketReleaseRate, customerRetrievalRate, maxTicketCapacity);
+
+        ApiUtils.createNewConfiguration(configuration);
+
     }
 
 }

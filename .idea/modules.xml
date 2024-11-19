@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/CW-OOP.iml" filepath="$PROJECT_DIR$/.idea/CW-OOP.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TicketingSystem/TicketingSystem.iml" filepath="$PROJECT_DIR$/TicketingSystem/TicketingSystem.iml" />
     </modules>
   </component>
 </project>
