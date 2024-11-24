@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/ticket-pool")
 public class TicketPoolController {
@@ -49,22 +51,35 @@ public class TicketPoolController {
      * @return the id of A.I vendor
      */
     @PostMapping("/create")
-    public ResponseEntity<Integer> createTicketPool(@RequestBody Configuration configuration) {
+    public ResponseEntity<Map<String, Integer>> createTicketPool(@RequestBody Configuration configuration) {
 
-        int aiVendorID = ticketPoolService.createTicketPool(configuration);
-        return new ResponseEntity<>(aiVendorID , HttpStatus.CREATED);
+        Map<String, Integer> details = ticketPoolService.createTicketPool(configuration);
+        return new ResponseEntity<>(details , HttpStatus.CREATED);
 
     }
 
     @GetMapping("{aiVendorId}/sell-ticket")
-    public ResponseEntity<String> addTicket(@PathVariable int aiVendorId) {
+    public synchronized ResponseEntity<String> addTicket(@PathVariable int aiVendorId) {
 
-        boolean boughtTicket =  ticketPoolService.addTicket(aiVendorId);
+        boolean soldTicket =  ticketPoolService.addTicket(aiVendorId);
 
-        if (boughtTicket) {
+        if (soldTicket) {
             return new ResponseEntity<>("Ticket added", HttpStatus.OK);
         } else {
             return new ResponseEntity<>("Ticket not added", HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
+    @GetMapping("{poolID}/buy-ticket/{customerID}")
+    public synchronized ResponseEntity<String> removeTicket(@PathVariable int poolID, @PathVariable int customerID) {
+
+        boolean boughtTicket = ticketPoolService.removeTicket(poolID, customerID);
+
+        if (boughtTicket) {
+            return new ResponseEntity<>("Ticket bought", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Ticket not bought", HttpStatus.BAD_REQUEST);
         }
 
     }

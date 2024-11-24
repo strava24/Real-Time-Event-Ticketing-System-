@@ -5,11 +5,11 @@ import com.ticketing_system.TicketingSystem.repository.EventRepository;
 import com.ticketing_system.TicketingSystem.repository.TicketPoolRepository;
 import com.ticketing_system.TicketingSystem.repository.VendorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -31,6 +31,8 @@ public class TicketPoolService {
     private EventRepository eventRepository;
     @Autowired
     private TicketService ticketService;
+    @Autowired
+    private CustomerService customerService;
 
     /**
      * This method is to create a ticket pool for automatic events
@@ -38,7 +40,7 @@ public class TicketPoolService {
      * @param configuration - The configuration details from the CLI to create the pool
      * @return the vendor ID of A.I.Inc is returned
      */
-    public int createTicketPool(Configuration configuration) {
+    public Map<String, Integer> createTicketPool(Configuration configuration) {
 
         Optional<Vendor> vendor = vendorRepository.findByVendorEmail("ai@gmail.com");
         Vendor ai;
@@ -58,7 +60,11 @@ public class TicketPoolService {
         TicketPool ticketPool =  ai.createNewEvent(defaultEvent);
         saveTicketPool(ticketPool);
 
-        return ai.getVendorID(); // Creating an event
+        Map<String, Integer> map = new HashMap<>();
+        map.put("aiVendorID", ai.getVendorID());
+        map.put("poolID", ticketPool.getPoolID());
+
+        return map; // Creating an event
 
     }
 
@@ -66,22 +72,42 @@ public class TicketPoolService {
         ticketPoolRepository.save(ticketPool);
     }
 
-    public boolean addTicket(int aiVendorID) {
+    public synchronized boolean addTicket(int aiVendorID) {
 
         Vendor vendor = vendorRepository.findById(aiVendorID).orElse(null);
 
         if (vendor != null) {
             List<TicketPool> ticketPools = ticketPoolRepository.findByEventId(vendor.getHostedEvents().getLast().getEventID());
             Ticket ticket =  ticketPools.getLast().addTicket();
-            ticketService.addTicket(ticket);
-            return true;
+
+            return ticketService.addTicket(ticket);
 
         } else
             return false;
 
     }
 
-    public TicketPool getTicketPoolByID(int id) {
+    public synchronized TicketPool getTicketPoolByID(int id) {
+        return ticketPoolRepository.findById(id).orElse(null);
+    }
+
+    public boolean removeTicket(int poolID, int customerID) {
+
+        Customer customer = customerService.getCustomerByID(customerID);
+        TicketPool ticketPool = findTicketPoolByID(poolID);
+
+        if (customer != null && ticketPool != null) {
+
+            Ticket ticket = ticketPool.removeTicket();
+
+            return ticketService.removeTicket(ticket);
+
+        } else
+            return false;
+
+    }
+
+    public TicketPool findTicketPoolByID(int id) {
         return ticketPoolRepository.findById(id).orElse(null);
     }
 

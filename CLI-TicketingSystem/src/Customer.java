@@ -1,26 +1,27 @@
 public class Customer implements Runnable {
 
-    private final TicketPool ticketPool;
 
-    public Customer(TicketPool ticketPool) {
-        this.ticketPool = ticketPool;
-    }
+
+//    public Customer(int poolId, int customerId) {
+//        this.poolId = poolId;
+//        this.customerId = customerId;
+//    }
 
     @Override
     public void run() {
-        while (true) {
-            Ticket ticket = ticketPool.take();
-            if (ticket != null) {
-//                System.out.println("Consumed a ticket: " + ticket);
-            }
 
+
+        while (true) {
             try {
-                Thread.sleep(Main.customerRetrievalRate);
-            } catch (InterruptedException e) {
+                ApiUtils.buyTicket();
+
+                Thread.sleep(3000);
+            } catch (Exception e) {
                 Thread.currentThread().interrupt();
 //                System.err.println("Consumer thread interrupted");
                 break;
             }
         }
+
     }
 }

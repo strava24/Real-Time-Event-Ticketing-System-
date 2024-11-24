@@ -1,25 +1,20 @@
-public class Vendor implements Runnable{
-
-    private final TicketPool ticketPool;
-
-    public Vendor(TicketPool ticketPool) {
-        this.ticketPool = ticketPool;
-    }
-
+public class Vendor implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
-            ticketPool.put();
-//            System.out.println("Produced a ticket.");
 
+        while(true) {
             try {
-                Thread.sleep(Main.ticketReleaseRate);
-            } catch (InterruptedException e) {
+                ApiUtils.sellTicket();
+
+                Thread.sleep(1000);
+            } catch (Exception e) {
                 Thread.currentThread().interrupt();
                 System.err.println("Producer thread interrupted");
                 break;
             }
         }
+
+
     }
 }

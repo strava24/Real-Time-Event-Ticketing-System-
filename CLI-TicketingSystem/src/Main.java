@@ -1,14 +1,7 @@
 // This class is responsible for the automation, which would simulate the real world scenario where multiple people are trying to book a ticket
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -57,8 +50,8 @@ public class Main {
     public static void simulationMenu() {
         TicketPool ticketPool = new TicketPool(maxTicketCapacity, totalTickets);
 
-        Vendor producer = new Vendor(ticketPool);
-        Customer consumer = new Customer(ticketPool);
+        SampleVendor producer = new SampleVendor(ticketPool);
+        SampleCustomer consumer = new SampleCustomer(ticketPool);
 
         Thread producerThread = new Thread(producer);
         Thread consumerThread = new Thread(consumer);
