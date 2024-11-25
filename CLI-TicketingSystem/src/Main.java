@@ -43,19 +43,25 @@ public class Main {
             }
         }
 
+        ApiUtils.loginAI();
+        ApiUtils.createNewTicketPool(new Configuration(totalTickets, ticketReleaseRate, customerRetrievalRate, maxTicketCapacity));
+
         simulationMenu();
 
     }
 
-    public static void simulationMenu() {
-        TicketPool ticketPool = new TicketPool(maxTicketCapacity, totalTickets);
-
-        SampleVendor producer = new SampleVendor(ticketPool);
-        SampleCustomer consumer = new SampleCustomer(ticketPool);
+    /**
+     * Method to display the main menu
+     * @throws Exception There is a  possibility fot IOException or InterruptedException
+     */
+    public static void simulationMenu() throws Exception {
+        Vendor producer = new Vendor();
+        Customer consumer = new Customer();
 
         Thread producerThread = new Thread(producer);
         Thread consumerThread = new Thread(consumer);
 
+        System.out.println(); // new line character to maintain order
         System.out.println("Type 'start' to begin the simulation, and 'stop' to end it.");
 
         while (true) {
@@ -97,17 +103,31 @@ public class Main {
         }
     }
 
+    /**
+     * Method to get the existing configurations os the database
+     * @throws Exception There is a  possibility fot IOException or InterruptedException
+     */
     public static void getExistingConfigurations() throws Exception {
 
         Configuration configuration = ApiUtils.getExistingConfigurations();
 
-        totalTickets = configuration.getTotalTickets();
-        ticketReleaseRate = configuration.getTicketReleaseRate();
-        customerRetrievalRate = configuration.getCustomerRetrievalRate();
-        maxTicketCapacity = configuration.getMaxTicketCapacity();
+        if (configuration != null) {
+            totalTickets = configuration.getTotalTickets();
+            ticketReleaseRate = configuration.getTicketReleaseRate();
+            customerRetrievalRate = configuration.getCustomerRetrievalRate();
+            maxTicketCapacity = configuration.getMaxTicketCapacity();
+        } else {
+            System.out.println("No existing configurations found.");
+            System.out.println("Redirecting to create new configuration.");
+            createNewConfiguration(); // Redirecting to create new configuration
+        }
 
     }
 
+    /**
+     * Method to create new configuration
+     * @throws Exception There is a  possibility fot IOException or InterruptedException
+     */
     public static void createNewConfiguration() throws Exception {
         totalTickets = InputValidation.getValidTotalTickets();
         ticketReleaseRate = InputValidation.getValidRate("release rate");

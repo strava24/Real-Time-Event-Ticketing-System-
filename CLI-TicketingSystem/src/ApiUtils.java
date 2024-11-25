@@ -10,6 +10,7 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
 
+
 public final class ApiUtils {
 
     static Gson gson = new Gson();
@@ -52,6 +53,11 @@ public final class ApiUtils {
         System.out.println(postResponse.body());
     }
 
+    /**
+     * Method is used to create a new configuration
+     * @param configuration the configuration object with the user data
+     * @throws Exception There is a  possibility fot IOException or InterruptedException
+     */
     public static void createNewConfiguration(Configuration configuration) throws Exception {
         String jsonRequest = gson.toJson(configuration);
 
@@ -78,6 +84,12 @@ public final class ApiUtils {
         System.out.println(postResponse.body());
     }
 
+    /**
+     * Method is used to fetch the existing configurations on the database
+     * After fetching all the configurations on the database the user will be able to choose a configuration
+     * @return the configuration user choose
+     * @throws Exception There is a  possibility fot IOException or InterruptedException
+     */
     public static Configuration getExistingConfigurations() throws Exception {
         // Sending a get request
         HttpRequest getRequest = HttpRequest.newBuilder()
@@ -92,11 +104,18 @@ public final class ApiUtils {
         Type listType = new TypeToken<List<Configuration>>() {}.getType();
         List<Configuration> configs = gson.fromJson(getResponse.body(), listType);
 
-        int index = InputValidation.getValidIndex(configs);
-
-        return configs.get(index);
+        if (configs.isEmpty()) {
+            return null;
+        } else {
+            int index = InputValidation.getValidIndex(configs);
+            return configs.get(index);
+        }
     }
 
+    /**
+     * Method used to send HTTP request to the back end to place an order and book a ticket
+     * @throws Exception There is a  possibility fot IOException or InterruptedException
+     */
     public static void sellTicket() throws Exception {
         // Sending a get request
         HttpRequest getRequest = HttpRequest.newBuilder()
@@ -109,6 +128,10 @@ public final class ApiUtils {
         System.out.println(getResponse.body());
     }
 
+    /**
+     *  Method used to send HTTP request to buy/remove a ticket from the ticket pool
+     * @throws Exception There is a  possibility fot IOException or InterruptedException
+     */
     public static void buyTicket() throws Exception {
 
         HttpRequest getRequest = HttpRequest.newBuilder()
@@ -123,6 +146,11 @@ public final class ApiUtils {
     }
 
 
+    /**
+     * Method used to log in the default customer
+     * If the default customer is not logged in, it will redirect to sign up the default customer
+     * @throws Exception There is a  possibility fot IOException or InterruptedException
+     */
     public static void loginAI() throws Exception {
 
         String requestBody = "email=ai@gmail.com&password=ai";
@@ -152,6 +180,10 @@ public final class ApiUtils {
 
     }
 
+    /**
+     * Method to sign up the default customer
+     * @throws Exception There is a  possibility fot IOException or InterruptedException
+     */
     public static void signupAI() throws Exception {
 
         JsonObject requestBody = new JsonObject();

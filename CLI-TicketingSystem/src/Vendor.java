@@ -7,7 +7,7 @@ public class Vendor implements Runnable {
             try {
                 ApiUtils.sellTicket();
 
-                Thread.sleep(1000);
+                Thread.sleep(Main.ticketReleaseRate);
             } catch (Exception e) {
                 Thread.currentThread().interrupt();
                 System.err.println("Producer thread interrupted");
