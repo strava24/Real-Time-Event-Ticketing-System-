@@ -35,4 +35,7 @@ build/
 # Ignore database files
 ./data/*.db
 data/
+data/..
+
+/data/mydb.mv.db
 

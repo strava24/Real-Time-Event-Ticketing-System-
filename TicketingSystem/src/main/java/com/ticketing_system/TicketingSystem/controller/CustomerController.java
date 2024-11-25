@@ -28,18 +28,18 @@ public class CustomerController {
 
     // @RequestParam to get form inputs and not JSON, if needed change to @RequestBody later
     @PostMapping("/login")
-    public ResponseEntity<Boolean> loginCustomer(@RequestParam String email, @RequestParam String password) {
-        boolean isAuthenticated = customerService.loginCustomer(email, password);
+    public ResponseEntity<Customer> loginCustomer(@RequestParam String email, @RequestParam String password) {
+        Customer customer = customerService.loginCustomer(email, password);
 
-        if (isAuthenticated)
-            return new ResponseEntity<>(true, HttpStatus.OK);
+        if (customer != null)
+            return new ResponseEntity<>(customer, HttpStatus.OK);
         else
-            return new ResponseEntity<>(false, HttpStatus.NOT_ACCEPTABLE);
+            return new ResponseEntity<>(null, HttpStatus.NOT_ACCEPTABLE);
     }
 
     @PostMapping("/signup")
-    public void signupCustomer(@RequestBody Customer customer) {
-        customerService.signupCustomer(customer);
+    public Customer signupCustomer(@RequestBody Customer customer) {
+        return customerService.signupCustomer(customer);
     }
 
     @PutMapping("/{id}")

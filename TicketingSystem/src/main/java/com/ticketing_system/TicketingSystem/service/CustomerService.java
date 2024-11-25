@@ -17,18 +17,18 @@ public class CustomerService {
         return customerRepo.findById(id).orElse(null);
     }
 
-    public boolean loginCustomer(String email, String password) {
+    public Customer loginCustomer(String email, String password) {
         Optional<Customer> customer = customerRepo.findByCustomerEmail(email);
 
         // Checking if a customer of this email exists and if so checking if the credentials are matching
-        if (customer.isPresent()) {
-            return customer.get().getCustomerPassword().equals(password);
+        if (customer.isPresent() && customer.get().getCustomerPassword().equals(password)) {
+                return customer.get();
         }
-        return false;
+        return null;
     }
 
-    public void signupCustomer(Customer customer) {
-        customerRepo.save(customer);
+    public Customer signupCustomer(Customer customer) {
+        return customerRepo.save(customer);
     }
 
     public Customer updateCustomerByID(int id, Customer customer) {

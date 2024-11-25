@@ -11,6 +11,10 @@ public final class InputValidation {
     // To prevent object initialization cause this is a utility class
     private InputValidation() {}
 
+    /**
+     * Method to get valid input from the user as total tickets
+     * @return the totalTickets
+     */
     public static int getValidTotalTickets() {
         int totalTickets = 0;
 
@@ -34,6 +38,11 @@ public final class InputValidation {
 
     }
 
+    /**
+     * Method to get valid ticketReleaseRate and valid customerRetrievalRate
+     * @param rateType to differentiate ticketReleaseRate and customerRetrievalRate
+     * @return either the ticketReleaseRate or customerRetrievalRate
+     */
     public static long getValidRate(String rateType) {
         long rate = 0;
 
@@ -60,6 +69,11 @@ public final class InputValidation {
     }
 
 
+    /**
+     * Method to get valid maxTicketCapacity for the system
+     * @param totalTickets - to compare and make sure maxTicketCapacity doesn't exceed totalTickets
+     * @return maxTicketCapacity
+     */
     public static int getValidMaxTicketCapacity(int totalTickets) {
         int maxTicketCapacity = 0;
 
@@ -89,7 +103,7 @@ public final class InputValidation {
     /**
      * This method is to get a valid index among to choose a valid index among the configurations
      * @param configs - list of Configurations
-     * @return - returns a valid configuration
+     * @return - returns a valid configuration if there is no configurations saved on the DB returns null
      */
     public static int getValidIndex(List<Configuration> configs) {
         for (int i = 0; i < configs.size(); i++) {

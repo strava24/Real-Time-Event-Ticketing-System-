@@ -26,10 +26,6 @@ public class TicketPool {
 
     @Transient
     private ReentrantLock lock = new ReentrantLock(true); // Creating a fair lock
-    @Transient
-    private Condition notEmpty = lock.newCondition();
-    @Transient
-    private Condition notFull = lock.newCondition();
 
     private int ticketsSold; // Variable to keep count of how many tickets are sold
     private int ticketsBought;
@@ -38,6 +34,9 @@ public class TicketPool {
     @ManyToOne
     @JoinColumn(name = "event_id") // This column holds the foreign key
     private Event event;
+
+    @Version
+    private int version; // Version field for optimistic locking
 
     public TicketPool(int maxTicketCapacity, int totalTickets, Event event) {
         tickets = Collections.synchronizedList(new LinkedList<>());
@@ -83,24 +82,26 @@ public class TicketPool {
         Ticket ticket = new Ticket(this);
 
         try {
-            while (tickets.size() == maxTicketCapacity) {
-                notFull.await();
+            if (tickets.size() == maxTicketCapacity) {
+                return null;
             }
 
             if (ticketsSold < totalTickets) {
 
                 tickets.add(ticket);
 
-
                 System.out.println("Produced a ticket." + ticketsSold);
-                notEmpty.signalAll(); // Signalling the other threads that the pool is not empty anymore
                 // This wakes up the threads that waits for this condition
                 ticketsSold++;
+            } else {
+                System.out.println("Ticket already sold.");
+                throw new InterruptedException("Ticket already sold.");
             }
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // Restore interrupted status
             System.err.println("Producer thread interrupted");
+            return null;
         } finally {
             lock.unlock(); // releasing the lock
 
@@ -111,20 +112,18 @@ public class TicketPool {
     public Ticket removeTicket() {
         lock.lock();
         try {
-            while (tickets.isEmpty()) {
+            if (tickets.isEmpty()) {
                 if (ticketsSold == totalTickets) {
                     System.out.println("Consumed all the tickets!");
-                    throw new InterruptedException();
+                    throw new InterruptedException("Consumed all the tickets!");
                 }
-
-                notFull.await();
+                return null;
 
             }
 
             if (ticketsBought < totalTickets) {
                 Ticket ticket = tickets.removeFirst();
                 ticketsBought++;
-                notEmpty.signalAll();
 
                 System.out.println("Consumed a ticket." + ticket);
                 return ticket;
@@ -136,10 +135,14 @@ public class TicketPool {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // Restore interrupted status
             System.err.println("Consumer thread interrupted");
+
         } finally {
             lock.unlock();
         }
         return null;
     }
 
+    public int getVersion() {
+        return version;
+    }
 }
