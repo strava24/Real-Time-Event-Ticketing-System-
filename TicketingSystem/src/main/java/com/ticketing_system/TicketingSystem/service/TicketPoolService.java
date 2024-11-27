@@ -72,6 +72,12 @@ public class TicketPoolService {
         ticketPoolRepository.save(ticketPool);
     }
 
+
+    /**
+     * Method handling the business logic to add a ticket to a pool
+     * @param aiVendorID
+     * @return
+     */
     public synchronized boolean addTicket(int aiVendorID) {
 
         Vendor vendor = vendorRepository.findById(aiVendorID).orElse(null);
@@ -91,6 +97,12 @@ public class TicketPoolService {
         return ticketPoolRepository.findById(id).orElse(null);
     }
 
+    /**
+     * Method to remove a ticket from a pool
+     * @param poolID - The pool from which the user is trying to remove the ticket
+     * @param customerID - The id of the customer trying to buy the ticket
+     * @return returns true if the ticket is removed successfully else returns false
+     */
     public boolean removeTicket(int poolID, int customerID) {
 
         Customer customer = customerService.getCustomerByID(customerID);
@@ -99,7 +111,7 @@ public class TicketPoolService {
         if (customer != null && ticketPool != null) {
 
             Ticket ticket = ticketPool.removeTicket();
-
+            System.out.println(customer.incrementBoughtTickets());
             return ticketService.removeTicket(ticket);
 
         } else

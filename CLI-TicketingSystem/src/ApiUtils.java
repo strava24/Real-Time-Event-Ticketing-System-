@@ -145,7 +145,6 @@ public final class ApiUtils {
 
     }
 
-
     /**
      * Method used to log in the default customer
      * If the default customer is not logged in, it will redirect to sign up the default customer

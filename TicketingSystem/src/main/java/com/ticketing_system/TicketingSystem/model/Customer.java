@@ -15,11 +15,13 @@ public class Customer {
     private String customerName;
     private String customerEmail;
     private String customerPassword;
+    private int boughtTickets = 0;
 
-    public Customer(String customerName, String customerEmail, String customerPassword) {
+    public Customer(String customerName, String customerEmail, String customerPassword, int boughtTickets) {
         this.customerName = customerName;
         this.customerEmail = customerEmail;
         this.customerPassword = customerPassword;
+        this.boughtTickets = boughtTickets;
     }
 
     // Default constructor to satisfy spring boot
@@ -54,4 +56,7 @@ public class Customer {
         this.customerPassword = customerPassword;
     }
 
+    public int incrementBoughtTickets() {
+       return this.boughtTickets++;
+    }
 }
