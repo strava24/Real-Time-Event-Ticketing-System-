@@ -16,8 +16,8 @@ public class Event{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int eventID;
     private String eventName;
-    private int totalTickets; // Total tickets allocated for this event
-    private int maxTicketCapacity;
+//    private int totalTickets; // Total tickets allocated for this event
+//    private int maxTicketCapacity;
 
 //    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 //    private List<Ticket> ticketsSold; // Tickets sold for the show
@@ -38,11 +38,9 @@ public class Event{
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<TicketPool> ticketPools;
 
-    public Event(String eventName, int totalTickets, Vendor vendor, int maxTicketCapacity) {
+    public Event(String eventName, Vendor vendor) {
         this.eventName = eventName;
-        this.totalTickets = totalTickets;
         this.vendor = vendor;
-        this.maxTicketCapacity = maxTicketCapacity;
         this.ticketPools = new ArrayList<>();
     }
 
@@ -66,24 +64,8 @@ public class Event{
 //        return ticketsSold;
 //    }
 
-    public int getTotalTickets() {
-        return totalTickets;
-    }
-
-    public void setTotalTickets(int maxTicketCapacity) {
-        this.totalTickets = maxTicketCapacity;
-    }
-
     public Vendor getVendor() {
         return vendor;
-    }
-
-    public int getMaxTicketCapacity() {
-        return maxTicketCapacity;
-    }
-
-    public void setMaxTicketCapacity(int maxTicketCapacity) {
-        this.maxTicketCapacity = maxTicketCapacity;
     }
 
     public List<TicketPool> getTicketPools() {
@@ -98,7 +80,7 @@ public class Event{
                 '}';
     }
 
-    public TicketPool createTicketPool() {
+    public TicketPool createTicketPool(int maxTicketCapacity, int totalTickets) {
 
         TicketPool newTicketPool = new TicketPool(maxTicketCapacity, totalTickets, this);
 

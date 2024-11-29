@@ -1,36 +1,28 @@
 package com.ticketing_system.TicketingSystem.service;
 
 import com.ticketing_system.TicketingSystem.model.*;
-import com.ticketing_system.TicketingSystem.repository.EventRepository;
 import com.ticketing_system.TicketingSystem.repository.TicketPoolRepository;
-import com.ticketing_system.TicketingSystem.repository.VendorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class TicketPoolService {
-
-    @Autowired
-    VendorRepository vendorRepository;
 
     @Autowired
     VendorService vendorService;
 
     @Autowired
     TicketPoolRepository ticketPoolRepository;
+
     @Autowired
     private EventService eventService;
-    @Autowired
-    private Event event;
-    @Autowired
-    private EventRepository eventRepository;
+
     @Autowired
     private TicketService ticketService;
+
     @Autowired
     private CustomerService customerService;
 
@@ -40,46 +32,50 @@ public class TicketPoolService {
      * @param configuration - The configuration details from the CLI to create the pool
      * @return the vendor ID of A.I.Inc is returned
      */
-    public Map<String, Integer> createTicketPool(Configuration configuration) {
+    public Map<String, Integer> createTicketPool(Configuration configuration, int eventID) {
+        Event event = eventService.getEventByID(eventID);
 
-        Optional<Vendor> vendor = vendorRepository.findByVendorEmail("ai@gmail.com");
-        Vendor ai;
+        if (event != null) {
 
-        if (vendor.isPresent()) {
-            ai = vendor.get();
+            Vendor vendor = eventService.getEventByID(eventID).getVendor();
 
-            // If the vendor is present have to check if default event is already there, if so adding a pool to the event
+            if (vendor != null) {
+                TicketPool ticketPool =  vendor.createNewEvent(event, configuration.getMaxTicketCapacity(), configuration.getTotalTickets());
+                saveTicketPool(ticketPool);
+
+                Map<String, Integer> map = new HashMap<>();
+                map.put("aiVendorID", vendor.getVendorID());
+                map.put("poolID", ticketPool.getPoolID());
+
+                return map; // Creating an event
+            } else return null;
 
         } else {
-            ai = vendorService.signupVendor(new Vendor("A.I. Inc.", "ai@gmail.com", "ai"));
+            return null;
         }
-
-        Event defaultEvent = new Event("A.I. Meetup", configuration.getTotalTickets(), ai, configuration.getMaxTicketCapacity());
-        eventService.createEvent(defaultEvent);
-
-        TicketPool ticketPool =  ai.createNewEvent(defaultEvent);
-        saveTicketPool(ticketPool);
-
-        Map<String, Integer> map = new HashMap<>();
-        map.put("aiVendorID", ai.getVendorID());
-        map.put("poolID", ticketPool.getPoolID());
-
-        return map; // Creating an event
-
     }
 
     public void saveTicketPool(TicketPool ticketPool) {
         ticketPoolRepository.save(ticketPool);
     }
 
-    public synchronized boolean addTicket(int aiVendorID) {
 
-        Vendor vendor = vendorRepository.findById(aiVendorID).orElse(null);
+    /**
+     * Method handling the business logic to add a ticket to a pool
+     * @param aiVendorID
+     * @return
+     */
+    public synchronized boolean addTicket(int aiVendorID, int poolId) {
 
-        if (vendor != null) {
-            List<TicketPool> ticketPools = ticketPoolRepository.findByEventId(vendor.getHostedEvents().getLast().getEventID());
-            Ticket ticket =  ticketPools.getLast().addTicket();
+        Vendor vendor = vendorService.getVendorByID(aiVendorID);
+        TicketPool ticketPool = findTicketPoolByID(poolId);
 
+        if (vendor != null && ticketPool != null) {
+            Ticket ticket =  ticketPool.addTicket();
+
+            if (ticketService.addTicket(ticket))  {
+                System.out.println(vendor.getVendorName() + " sold " + vendor.incrementTicketsSold() + " tickets");
+            }
             return ticketService.addTicket(ticket);
 
         } else
@@ -91,6 +87,12 @@ public class TicketPoolService {
         return ticketPoolRepository.findById(id).orElse(null);
     }
 
+    /**
+     * Method to remove a ticket from a pool
+     * @param poolID - The pool from which the user is trying to remove the ticket
+     * @param customerID - The id of the customer trying to buy the ticket
+     * @return returns true if the ticket is removed successfully else returns false
+     */
     public boolean removeTicket(int poolID, int customerID) {
 
         Customer customer = customerService.getCustomerByID(customerID);
@@ -99,20 +101,17 @@ public class TicketPoolService {
         if (customer != null && ticketPool != null) {
 
             Ticket ticket = ticketPool.removeTicket();
-
+            if (ticketService.removeTicket(ticket)) {
+                System.out.println(customer.getCustomerName() + " bought " + customer.incrementBoughtTickets() + " tickets");
+            }
             return ticketService.removeTicket(ticket);
 
         } else
             return false;
-
     }
 
     public TicketPool findTicketPoolByID(int id) {
         return ticketPoolRepository.findById(id).orElse(null);
     }
-
-//    public void createTicketPool(DummyTicketPool dummyTicketPool) {
-//        ticketPoolRepository.save(dummyTicketPool);
-//    }
 
 }

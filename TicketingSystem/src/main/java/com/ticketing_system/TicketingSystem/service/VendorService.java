@@ -1,7 +1,5 @@
 package com.ticketing_system.TicketingSystem.service;
 
-import com.ticketing_system.TicketingSystem.model.Event;
-//import com.ticketing_system.TicketingSystem.model.DummyTicketPool;
 import com.ticketing_system.TicketingSystem.model.Vendor;
 import com.ticketing_system.TicketingSystem.repository.EventRepository;
 import com.ticketing_system.TicketingSystem.repository.VendorRepository;
@@ -28,14 +26,20 @@ public class VendorService {
         return vendorRepo.findAll();
     }
 
-    public boolean loginVendor(String email, String password) {
+    /**
+     * Method to handle the logic to login a registered vendor
+     * @param email - email of the registered vendor
+     * @param password - password of the registered vendor
+     * @return - if the credentials match successfully the method will return true
+     */
+    public Vendor loginVendor(String email, String password) {
         Optional<Vendor> vendor = vendorRepo.findByVendorEmail(email);
 
         // Checking if a vendor with this email exists if so checking if the credentials are matching
-        if (vendor.isPresent()) {
-            return vendor.get().getVendorPassword().equals(password);
+        if (vendor.isPresent() && vendor.get().getVendorPassword().equals(password)) {
+            return vendor.get();
         }
-        return false;
+        return null;
     }
 
     public Vendor signupVendor(Vendor vendor) {
@@ -49,21 +53,5 @@ public class VendorService {
     public int getNoOfEventsHostedByVendorID(int id) {
         return eventRepo.countByVendorId(id);
     }
-
-////    @Async // Allows the method to run in a separate thread
-//    public void produceTickets(Event event, DummyTicketPool dummyTicketPool) {
-//        int totalTickets = event.getTotalTickets();
-//        for (int i = 0; i < totalTickets; i++) {
-////            Ticket ticket = new Ticket(); // Create a new ticket instance
-//            dummyTicketPool.addTicket(1); // Add the ticket to the pool - pass a ticket ID when doing do to have ticket no
-//            System.out.println("Produced ticket for event: " + event.getEventName() + " - Ticket ID: " );
-//            try {
-//                Thread.sleep(1000); // Sleep for 1 second after producing a ticket
-//            } catch (InterruptedException e) {
-//                Thread.currentThread().interrupt(); // Restore interrupted status
-//                System.out.println("Ticket production interrupted for event: " + event.getEventName());
-//            }
-//        }
-//    }
 
 }

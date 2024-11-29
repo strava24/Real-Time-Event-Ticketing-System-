@@ -43,7 +43,9 @@ public class Main {
             }
         }
 
-        ApiUtils.loginAI();
+        ApiUtils.loginAICustomer();
+        ApiUtils.loginAIVendor();
+        ApiUtils.createNewEvent();
         ApiUtils.createNewTicketPool(new Configuration(totalTickets, ticketReleaseRate, customerRetrievalRate, maxTicketCapacity));
 
         simulationMenu();
@@ -61,6 +63,19 @@ public class Main {
         Thread producerThread = new Thread(producer);
         Thread consumerThread = new Thread(consumer);
 
+        Thread producerThread2 = new Thread(producer);
+        Thread consumerThread2 = new Thread(consumer);
+
+        Thread producerThread3 = new Thread(producer);
+        Thread consumerThread3 = new Thread(consumer);
+
+        Thread producerThread4 = new Thread(producer);
+        Thread consumerThread4 = new Thread(consumer);
+
+        Thread producerThread5 = new Thread(producer);
+        Thread consumerThread5 = new Thread(consumer);
+
+
         System.out.println(); // new line character to maintain order
         System.out.println("Type 'start' to begin the simulation, and 'stop' to end it.");
 
@@ -75,6 +90,18 @@ public class Main {
                         consumerThread = new Thread(consumer);
                         producerThread.start();
                         consumerThread.start();
+
+                        producerThread2.start();
+                        consumerThread2.start();
+
+                        producerThread3.start();
+                        consumerThread3.start();
+
+                        consumerThread4.start();
+                        producerThread4.start();
+
+                        consumerThread5.start();
+                        producerThread5.start();
                         System.out.println("Simulation started.");
                     } else {
                         System.out.println("Simulation is already running.");
@@ -86,6 +113,19 @@ public class Main {
                         isRunning = false;
                         producerThread.interrupt();
                         consumerThread.interrupt();
+
+                        producerThread2.interrupt();
+                        consumerThread2.interrupt();
+
+                        producerThread3.interrupt();
+                        consumerThread3.interrupt();
+
+                        consumerThread4.interrupt();
+                        producerThread4.interrupt();
+
+                        consumerThread5.interrupt();
+                        producerThread5.interrupt();
+
                         System.out.println("Stopping simulation...");
                     } else {
                         System.out.println("Simulation is not running.");

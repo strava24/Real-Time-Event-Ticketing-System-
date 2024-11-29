@@ -38,16 +38,30 @@ public class EventController {
      * @param event - the JSON body with the attribute values
      */
     @PostMapping("/create")
-    public ResponseEntity<String> createEvent(@RequestBody Event event) {
+    public ResponseEntity<Integer> createEvent(@RequestParam String eventName, @RequestParam int vendorID) {
 
-        Vendor vendor = vendorService.getVendorByID(event.getVendor().getVendorID());
+        Vendor vendor = vendorService.getVendorByID(vendorID);
 
         if (vendor != null) {
-            eventService.createEvent(event);
-            return new ResponseEntity<>("Event created sucessfully!", HttpStatus.OK);
+            int eventID = eventService.createEvent(eventName, vendor);
+
+            return new ResponseEntity<>(eventID, HttpStatus.OK);
         }
         else
-            return new ResponseEntity<>("There is no such Vendor!", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<Event> getEventById(@PathVariable int id) {
+
+        Event event = eventService.getEventByID(id);
+
+        if (event == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(event, HttpStatus.OK);
+        }
 
     }
 

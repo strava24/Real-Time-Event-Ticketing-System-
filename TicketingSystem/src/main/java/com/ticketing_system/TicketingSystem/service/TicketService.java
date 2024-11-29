@@ -12,6 +12,11 @@ public class TicketService {
     @Autowired
     TicketRepository ticketRepository;
 
+    /**
+     * Method to add a ticket on the Ticket table of DB
+     * @param ticket - The ticket object to add on the DB
+     * @return - if the ticket is added returns true
+     */
     public boolean addTicket(Ticket ticket) {
         if (ticket == null) {
             System.out.println("Ticket is null");
@@ -20,10 +25,13 @@ public class TicketService {
             ticketRepository.save(ticket);
             return true;
         }
-
-
     }
 
+    /**
+     * Method to delete a ticket on the ticket DB
+     * @param ticket - ticket object which should be deleted from the DB
+     * @return - returns true if the ticket is deleted successfully
+     */
     public boolean removeTicket(Ticket ticket) {
         if (ticket == null) {
             System.out.println("Ticket is null");

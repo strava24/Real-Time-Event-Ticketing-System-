@@ -16,6 +16,7 @@ public class Vendor{
     private String vendorName;
     private String vendorEmail;
     private String vendorPassword;
+    private int ticketsSold; // variable to keep count of the tickets sold
 
     @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Event> hostedEvents;
@@ -24,7 +25,7 @@ public class Vendor{
         this.vendorName = vendorName;
         this.vendorEmail = vendorEmail;
         this.vendorPassword = vendorPassword;
-        hostedEvents = new ArrayList<Event>();
+        hostedEvents = new ArrayList<>();
     }
 
     public Vendor() {
@@ -66,11 +67,16 @@ public class Vendor{
         this.vendorPassword = vendorPassword;
     }
 
-    public TicketPool createNewEvent(Event event) {
+    public TicketPool createNewEvent(Event event, int maxTicketCapacity, int totalTickets) {
         hostedEvents.add(event);
         // Creating a pool when an event is created
-        return event.createTicketPool();
+        return event.createTicketPool(maxTicketCapacity, totalTickets);
 
+    }
+
+    public int incrementTicketsSold() {
+        this.ticketsSold++;
+        return this.ticketsSold;
     }
 
 }
