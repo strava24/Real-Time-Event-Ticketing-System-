@@ -16,12 +16,6 @@ import java.util.Map;
 public class TicketPoolController {
 
     @Autowired
-    private EventService eventService;
-
-    @Autowired
-    private VendorService vendorService;
-
-    @Autowired
     private TicketPoolService ticketPoolService;
 
 //    @PostMapping("/create-pool")
@@ -46,15 +40,19 @@ public class TicketPoolController {
 //    }
 
     /**
-     * This endpoint is called to create a ticket pool under A.I. Inc. vendor
      * @param configuration - the automatic configuration from the user
-     * @return the id of A.I vendor
+     * @param eventID
+     * @return
      */
-    @PostMapping("/create")
-    public ResponseEntity<Map<String, Integer>> createTicketPool(@RequestBody Configuration configuration) {
+    @PostMapping("/create/{eventID}")
+    public ResponseEntity<Map<String, Integer>> createTicketPool(@RequestBody Configuration configuration, @PathVariable int eventID) {
 
-        Map<String, Integer> details = ticketPoolService.createTicketPool(configuration);
-        return new ResponseEntity<>(details , HttpStatus.CREATED);
+        Map<String, Integer> details = ticketPoolService.createTicketPool(configuration, eventID);
+
+        if (details != null) {
+            return new ResponseEntity<>(details , HttpStatus.CREATED);
+        } else
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 
     }
 
@@ -84,11 +82,6 @@ public class TicketPoolController {
 
     }
 
-
-//    @GetMapping("{}")
-//    public ResponseEntity<String> getTicketPoolByID() {
-//
-//    }
 
 
 }

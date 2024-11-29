@@ -17,7 +17,7 @@ public final class ApiUtils {
     static int poolID;
     static int aiCustomerID;
     static int aiVendorID;
-
+    static int eventID;
 
     static String url = "http://localhost:8080/api";
 
@@ -35,7 +35,7 @@ public final class ApiUtils {
         String jsonRequest = gson.toJson(configuration);
 
         HttpRequest postRequest = HttpRequest.newBuilder()
-                .uri(new URI(url + "/ticket-pool/create"))
+                .uri(new URI(url + "/ticket-pool/create/" + eventID))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(jsonRequest))
                 .build();
@@ -47,9 +47,31 @@ public final class ApiUtils {
         Map<String, Integer> details = gson.fromJson(postResponse.body(), new TypeToken<Map<String, Integer>>() {}.getType());
 
         poolID = details.get("poolID");
-        aiVendorID = details.get("aiVendorID"); // Getting the vendorId od A.I. Inc for future usage
+//        aiVendorID = details.get("aiVendorID"); // Getting the vendorId od A.I. Inc for future usage
 
         System.out.println(postResponse.body());
+    }
+
+    public static void createNewEvent() throws Exception {
+        String requestBody = "eventName=A.I.Meetup&vendorID=" + aiVendorID;
+
+        // Create the POST request
+        HttpRequest postRequest = HttpRequest.newBuilder()
+                .uri(new URI(url + "/events/create"))
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                .build();
+
+        HttpResponse<String> postResponse = HttpClient.newHttpClient()
+                .send(postRequest, HttpResponse.BodyHandlers.ofString());
+
+        if (postResponse.statusCode() == 200) {
+            eventID = Integer.parseInt(postResponse.body());
+            System.out.println("Event created successfully with Event ID: " + eventID);
+        } else {
+            System.out.println("Error occurred: " + postResponse.statusCode());
+            System.out.println("Response body: " + postResponse.body());
+        }
     }
 
     /**
@@ -149,7 +171,7 @@ public final class ApiUtils {
      * If the default customer is not logged in, it will redirect to sign up the default customer
      * @throws Exception There is a  possibility fot IOException or InterruptedException
      */
-    public static void loginAI() throws Exception {
+    public static void loginAICustomer() throws Exception {
 
         String requestBody = "email=ai@gmail.com&password=ai";
 
@@ -171,9 +193,9 @@ public final class ApiUtils {
 
             aiCustomerID = Integer.parseInt(aiCustomerDetails.get("customerID"));
 
-        } else if (postResponse.statusCode() == 406) {
+        } else {
             System.out.println("Creating a new account");
-            signupAI();
+            signupAICustomer();
         }
 
     }
@@ -182,7 +204,7 @@ public final class ApiUtils {
      * Method to sign up the default customer
      * @throws Exception There is a  possibility fot IOException or InterruptedException
      */
-    public static void signupAI() throws Exception {
+    public static void signupAICustomer() throws Exception {
 
         JsonObject requestBody = new JsonObject();
         requestBody.addProperty("customerName", "A.I.");
@@ -209,8 +231,61 @@ public final class ApiUtils {
 
         aiCustomerID = Integer.parseInt(aiCustomerDetails.get("customerID"));
 
-        System.out.println("Successfully created the account");
+        System.out.println("Successfully created customer account");
 
     }
+
+    public static void loginAIVendor() throws Exception {
+        String requestBody = "email=ai@gmail.com&password=ai";
+
+        // Create the POST request
+        HttpRequest postRequest = HttpRequest.newBuilder()
+                .uri(new URI(url + "/vendors/login"))
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                .build();
+
+        // Send the request and get the response
+        HttpResponse<String> postResponse = HttpClient.newHttpClient()
+                .send(postRequest, HttpResponse.BodyHandlers.ofString());
+
+        if (postResponse.statusCode() == 200) {
+            System.out.println("Login successful.");
+            aiVendorID = Integer.parseInt(postResponse.body());
+
+        } else {
+            System.out.println("Creating a new account");
+            signupAIVendor();
+        }
+    }
+
+    public static void signupAIVendor() throws Exception {
+        JsonObject requestBody = new JsonObject();
+        requestBody.addProperty("vendorName", "A.I.");
+        requestBody.addProperty("vendorEmail", "ai@gmail.com");
+        requestBody.addProperty("vendorPassword", "ai");
+
+        // Convert the JSON object to a string
+        String jsonRequestBody = requestBody.toString();
+
+        // Create the POST request
+        HttpRequest postRequest = HttpRequest.newBuilder()
+                .uri(new URI(url + "/vendors/signup"))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonRequestBody))
+                .build();
+
+        // Send the request and get the response
+        HttpResponse<String> postResponse = HttpClient.newHttpClient()
+                .send(postRequest, HttpResponse.BodyHandlers.ofString());
+
+
+
+        aiVendorID = Integer.parseInt(postResponse.body());
+
+        System.out.println("Successfully created vendor account");
+    }
+
+
 
 }

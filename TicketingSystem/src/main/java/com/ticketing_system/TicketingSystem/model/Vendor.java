@@ -25,7 +25,7 @@ public class Vendor{
         this.vendorName = vendorName;
         this.vendorEmail = vendorEmail;
         this.vendorPassword = vendorPassword;
-        hostedEvents = new ArrayList<Event>();
+        hostedEvents = new ArrayList<>();
     }
 
     public Vendor() {
@@ -67,10 +67,10 @@ public class Vendor{
         this.vendorPassword = vendorPassword;
     }
 
-    public TicketPool createNewEvent(Event event) {
+    public TicketPool createNewEvent(Event event, int maxTicketCapacity, int totalTickets) {
         hostedEvents.add(event);
         // Creating a pool when an event is created
-        return event.createTicketPool();
+        return event.createTicketPool(maxTicketCapacity, totalTickets);
 
     }
 

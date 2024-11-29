@@ -1,13 +1,11 @@
 package com.ticketing_system.TicketingSystem.model;
 
-import com.ticketing_system.TicketingSystem.service.TicketService;
 import jakarta.persistence.*;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Entity

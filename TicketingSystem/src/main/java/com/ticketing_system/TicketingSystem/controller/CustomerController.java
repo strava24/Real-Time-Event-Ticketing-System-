@@ -34,7 +34,7 @@ public class CustomerController {
         if (customer != null)
             return new ResponseEntity<>(customer, HttpStatus.OK);
         else
-            return new ResponseEntity<>(null, HttpStatus.NOT_ACCEPTABLE);
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
     }
 
     @PostMapping("/signup")

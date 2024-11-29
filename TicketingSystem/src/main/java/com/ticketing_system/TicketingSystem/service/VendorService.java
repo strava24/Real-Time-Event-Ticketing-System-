@@ -1,7 +1,5 @@
 package com.ticketing_system.TicketingSystem.service;
 
-import com.ticketing_system.TicketingSystem.model.Event;
-//import com.ticketing_system.TicketingSystem.model.DummyTicketPool;
 import com.ticketing_system.TicketingSystem.model.Vendor;
 import com.ticketing_system.TicketingSystem.repository.EventRepository;
 import com.ticketing_system.TicketingSystem.repository.VendorRepository;
@@ -34,14 +32,14 @@ public class VendorService {
      * @param password - password of the registered vendor
      * @return - if the credentials match successfully the method will return true
      */
-    public boolean loginVendor(String email, String password) {
+    public Vendor loginVendor(String email, String password) {
         Optional<Vendor> vendor = vendorRepo.findByVendorEmail(email);
 
         // Checking if a vendor with this email exists if so checking if the credentials are matching
-        if (vendor.isPresent()) {
-            return vendor.get().getVendorPassword().equals(password);
+        if (vendor.isPresent() && vendor.get().getVendorPassword().equals(password)) {
+            return vendor.get();
         }
-        return false;
+        return null;
     }
 
     public Vendor signupVendor(Vendor vendor) {

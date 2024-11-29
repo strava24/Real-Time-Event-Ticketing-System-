@@ -1,7 +1,7 @@
-//public class Test {
-//
-//    public static void main(String[] args) throws Exception {
-//
+public class Test {
+
+    public static void main(String[] args) throws Exception {
+
 //        Configuration configuration = new Configuration(10, 1000, 3000, 5);
 //
 //        ApiUtils.loginAI();
@@ -17,7 +17,9 @@
 //        vendorThread.start();
 //        customerThread.start();
 //        customerThread2.start();
-//
-//    }
-//
-//}
+
+        ApiUtils.createNewEvent();
+
+    }
+
+}

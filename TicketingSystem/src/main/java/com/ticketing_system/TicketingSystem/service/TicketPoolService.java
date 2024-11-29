@@ -1,35 +1,28 @@
 package com.ticketing_system.TicketingSystem.service;
 
 import com.ticketing_system.TicketingSystem.model.*;
-import com.ticketing_system.TicketingSystem.repository.EventRepository;
 import com.ticketing_system.TicketingSystem.repository.TicketPoolRepository;
-import com.ticketing_system.TicketingSystem.repository.VendorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class TicketPoolService {
-
-    @Autowired
-    VendorRepository vendorRepository;
 
     @Autowired
     VendorService vendorService;
 
     @Autowired
     TicketPoolRepository ticketPoolRepository;
+
     @Autowired
     private EventService eventService;
-    @Autowired
-    private Event event;
-    @Autowired
-    private EventRepository eventRepository;
+
     @Autowired
     private TicketService ticketService;
+
     @Autowired
     private CustomerService customerService;
 
@@ -39,31 +32,27 @@ public class TicketPoolService {
      * @param configuration - The configuration details from the CLI to create the pool
      * @return the vendor ID of A.I.Inc is returned
      */
-    public Map<String, Integer> createTicketPool(Configuration configuration) {
+    public Map<String, Integer> createTicketPool(Configuration configuration, int eventID) {
+        Event event = eventService.getEventByID(eventID);
 
-        Optional<Vendor> vendor = vendorRepository.findByVendorEmail("ai@gmail.com");
-        Vendor ai;
+        if (event != null) {
 
-        if (vendor.isPresent()) {
-            ai = vendor.get();
+            Vendor vendor = eventService.getEventByID(eventID).getVendor();
 
-            // If the vendor is present have to check if default event is already there, if so adding a pool to the event
+            if (vendor != null) {
+                TicketPool ticketPool =  vendor.createNewEvent(event, configuration.getMaxTicketCapacity(), configuration.getTotalTickets());
+                saveTicketPool(ticketPool);
+
+                Map<String, Integer> map = new HashMap<>();
+                map.put("aiVendorID", vendor.getVendorID());
+                map.put("poolID", ticketPool.getPoolID());
+
+                return map; // Creating an event
+            } else return null;
 
         } else {
-            ai = vendorService.signupVendor(new Vendor("A.I. Inc.", "ai@gmail.com", "ai"));
+            return null;
         }
-
-        Event defaultEvent = new Event("A.I. Meetup", configuration.getTotalTickets(), ai, configuration.getMaxTicketCapacity());
-        eventService.createEvent(defaultEvent);
-
-        TicketPool ticketPool =  ai.createNewEvent(defaultEvent);
-        saveTicketPool(ticketPool);
-
-        Map<String, Integer> map = new HashMap<>();
-        map.put("aiVendorID", ai.getVendorID());
-        map.put("poolID", ticketPool.getPoolID());
-
-        return map; // Creating an event
     }
 
     public void saveTicketPool(TicketPool ticketPool) {
@@ -119,7 +108,6 @@ public class TicketPoolService {
 
         } else
             return false;
-
     }
 
     public TicketPool findTicketPoolByID(int id) {

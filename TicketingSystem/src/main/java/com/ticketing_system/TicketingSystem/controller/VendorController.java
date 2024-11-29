@@ -3,6 +3,7 @@ package com.ticketing_system.TicketingSystem.controller;
 import com.ticketing_system.TicketingSystem.model.Vendor;
 import com.ticketing_system.TicketingSystem.service.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,8 @@ public class VendorController {
 
     @Autowired
     private VendorService vendorService;
+    @Autowired
+    private RestTemplateAutoConfiguration restTemplateAutoConfiguration;
 
     /**
      * This method is to return all the vendors on the database
@@ -38,18 +41,21 @@ public class VendorController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Boolean> loginVendor(@RequestParam String email, @RequestParam String password) {
-        boolean isAuthenticated = vendorService.loginVendor(email, password);
+    public ResponseEntity<Integer> loginVendor(@RequestParam String email, @RequestParam String password) {
+        Vendor vendor = vendorService.loginVendor(email, password);
 
-        if (isAuthenticated)
-            return new ResponseEntity<>(true, HttpStatus.OK);
+        if (vendor != null)
+            return new ResponseEntity<>(vendor.getVendorID(), HttpStatus.OK);
         else
-            return new ResponseEntity<>(false, HttpStatus.NOT_ACCEPTABLE);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PostMapping("/signup")
-    public void signupVendor(@RequestBody Vendor vendor) {
-        vendorService.signupVendor(vendor);
+    public ResponseEntity<Integer> signupVendor(@RequestBody Vendor vendor) {
+        Vendor newVendor = vendorService.signupVendor(vendor);
+
+        return new ResponseEntity<>(newVendor.getVendorID(), HttpStatus.OK);
+
     }
 
 

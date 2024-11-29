@@ -15,6 +15,9 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     @Query("SELECT COUNT(e) FROM Event e WHERE e.vendor.vendorID = :vendorId")
     int countByVendorId(@Param("vendorId") int vendorId);
 
+    @Query("SELECT e.eventID FROM Event e WHERE e.eventName = :eventName")
+    int findEventIDByEventName(String eventName);
+
 //    /**
 //     * A custom query to get the number of tickets sold for the event
 //     * Logic : For an event there can be multiple pools to simulate situations like early bird tickets, on-site and etc.
