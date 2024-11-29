@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -65,7 +64,6 @@ public class TicketPoolService {
         map.put("poolID", ticketPool.getPoolID());
 
         return map; // Creating an event
-
     }
 
     public void saveTicketPool(TicketPool ticketPool) {
@@ -78,14 +76,17 @@ public class TicketPoolService {
      * @param aiVendorID
      * @return
      */
-    public synchronized boolean addTicket(int aiVendorID) {
+    public synchronized boolean addTicket(int aiVendorID, int poolId) {
 
-        Vendor vendor = vendorRepository.findById(aiVendorID).orElse(null);
+        Vendor vendor = vendorService.getVendorByID(aiVendorID);
+        TicketPool ticketPool = findTicketPoolByID(poolId);
 
-        if (vendor != null) {
-            List<TicketPool> ticketPools = ticketPoolRepository.findByEventId(vendor.getHostedEvents().getLast().getEventID());
-            Ticket ticket =  ticketPools.getLast().addTicket();
+        if (vendor != null && ticketPool != null) {
+            Ticket ticket =  ticketPool.addTicket();
 
+            if (ticketService.addTicket(ticket))  {
+                System.out.println(vendor.getVendorName() + " sold " + vendor.incrementTicketsSold() + " tickets");
+            }
             return ticketService.addTicket(ticket);
 
         } else
@@ -111,7 +112,9 @@ public class TicketPoolService {
         if (customer != null && ticketPool != null) {
 
             Ticket ticket = ticketPool.removeTicket();
-            System.out.println(customer.incrementBoughtTickets());
+            if (ticketService.removeTicket(ticket)) {
+                System.out.println(customer.getCustomerName() + " bought " + customer.incrementBoughtTickets() + " tickets");
+            }
             return ticketService.removeTicket(ticket);
 
         } else
@@ -122,9 +125,5 @@ public class TicketPoolService {
     public TicketPool findTicketPoolByID(int id) {
         return ticketPoolRepository.findById(id).orElse(null);
     }
-
-//    public void createTicketPool(DummyTicketPool dummyTicketPool) {
-//        ticketPoolRepository.save(dummyTicketPool);
-//    }
 
 }

@@ -29,3 +29,5 @@ bin/
 .DS_Store
 
 /data/mydb.mv.db
+
+node_module/

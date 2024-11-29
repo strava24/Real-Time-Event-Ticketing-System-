@@ -10,7 +10,6 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
 
-
 public final class ApiUtils {
 
     static Gson gson = new Gson();
@@ -119,7 +118,7 @@ public final class ApiUtils {
     public static void sellTicket() throws Exception {
         // Sending a get request
         HttpRequest getRequest = HttpRequest.newBuilder()
-                .uri(new URI( url +"/ticket-pool/" + aiVendorID + "/sell-ticket")) // api endpoint
+                .uri(new URI( url +"/ticket-pool/" + poolID + "/sell-ticket/" + aiVendorID)) // api endpoint
                 .GET() // Can get rid of this line as well, cause GET by default
                 .build();
 

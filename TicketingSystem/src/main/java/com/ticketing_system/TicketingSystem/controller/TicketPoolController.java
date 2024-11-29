@@ -58,10 +58,10 @@ public class TicketPoolController {
 
     }
 
-    @GetMapping("{aiVendorId}/sell-ticket")
-    public synchronized ResponseEntity<String> addTicket(@PathVariable int aiVendorId) {
+    @GetMapping("{poolID}/sell-ticket/{aiVendorId}")
+    public synchronized ResponseEntity<String> addTicket(@PathVariable int aiVendorId, @PathVariable int poolID) {
 
-        boolean soldTicket =  ticketPoolService.addTicket(aiVendorId);
+        boolean soldTicket =  ticketPoolService.addTicket(aiVendorId, poolID);
 
         if (soldTicket) {
             return new ResponseEntity<>("Ticket added", HttpStatus.OK);
