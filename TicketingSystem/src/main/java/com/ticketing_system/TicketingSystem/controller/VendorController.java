@@ -1,6 +1,5 @@
 package com.ticketing_system.TicketingSystem.controller;
 
-import com.ticketing_system.TicketingSystem.DTO.EventDTO;
 import com.ticketing_system.TicketingSystem.DTO.VendorDTO;
 import com.ticketing_system.TicketingSystem.model.Vendor;
 import com.ticketing_system.TicketingSystem.service.VendorService;
@@ -14,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/vendors")
+@CrossOrigin(origins = "http://localhost:4209")
 public class VendorController {
 
     @Autowired
@@ -39,8 +39,8 @@ public class VendorController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Vendor> getVendorByID(@PathVariable int id) {
-        Vendor vendor = vendorService.getVendorByID(id);
+    public ResponseEntity<VendorDTO> getVendorByID(@PathVariable int id) {
+        VendorDTO vendor = vendorService.getVendorDTOByID(id);
 
         if (vendor != null)
             return new ResponseEntity<>(vendor, HttpStatus.OK);

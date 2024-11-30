@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface EventRepository extends JpaRepository<Event, Integer> {
 
     /**
@@ -17,6 +19,9 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
 
     @Query("SELECT e.eventID FROM Event e WHERE e.eventName = :eventName")
     int findEventIDByEventName(String eventName);
+
+    @Query("SELECT e FROM Event e WHERE e.vendor.vendorID = :vendorID")
+    List<Event> findByVendorId(@Param("vendorID") int vendorID);
 
 //    /**
 //     * A custom query to get the number of tickets sold for the event

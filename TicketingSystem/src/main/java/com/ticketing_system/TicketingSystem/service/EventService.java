@@ -15,24 +15,32 @@ public class EventService {
 
     @Autowired
     private EventRepository eventRepo;
+    @Autowired
+    private VendorService vendorService;
 
     public List<EventDTO> getAllEvents() {
         return eventRepo.findAll().stream()
                 .map(event -> new EventDTO(
                         event.getEventID(),
                         event.getEventName(),
-                        event.getVendor().getVendorID()
+                        event.getVendor().getVendorID(),
+                        event.getEventDate().toString(),
+                        event.getLocation()
                 ))
                 .collect(Collectors.toList());
     }
 
-    public void createEvent(Event event) {
+    public int createEvent(Event event) {
         eventRepo.save(event);
+        event.getVendor().addNewEvent(event);
+
+        return event.getEventID();
     }
 
-    public int createEvent(String eventName, Vendor vendor, String date) {
-        Event event = new Event(eventName, date, vendor);
+    public int createEvent(String eventName, Vendor vendor, String date, String location) {
+        Event event = new Event(eventName, date, vendor, location);
         eventRepo.save(event);
+        vendor.addNewEvent(event);
 
         return event.getEventID();
     }
@@ -47,13 +55,51 @@ public class EventService {
         if (event == null) {
             return null;
         } else {
-            return new EventDTO(event.getEventID(), event.getEventName(), event.getVendor().getVendorID());
+            return new EventDTO(
+                    event.getEventID(),
+                    event.getEventName(),
+                    event.getVendor().getVendorID(),
+                    event.getEventDate().toString(),
+                    event.getLocation());
         }
 
     }
 
     public int getEventIDByName(String eventName) {
         return eventRepo.findEventIDByEventName(eventName);
+    }
+
+    public Event convertToEventFromDTO(EventDTO eventDTO) {
+        Vendor vendor = vendorService.getVendorByID(eventDTO.getVendorID());
+
+        if (vendor == null) {
+            return null;
+        } else {
+            return new Event(eventDTO.getEventName(), eventDTO.getDate().toString(), vendor, eventDTO.getLocation());
+        }
+
+    }
+
+    public List<EventDTO> getAllEventsByVendorID(int vendorID) {
+
+        return eventRepo.findByVendorId(vendorID).stream()
+                .map(event -> new EventDTO(
+                        event.getEventID(),
+                        event.getEventName(),
+                        event.getVendor().getVendorID(),
+                        event.getEventDate().toString(),
+                        event.getLocation()
+                ))
+                .collect(Collectors.toList());
+
+    }
+
+    public void updateEvent(Event event) {
+        eventRepo.save(event);
+    }
+
+    public void deleteEvent(Event event) {
+        eventRepo.delete(event);
     }
 
 //    public int getAvailableTicketsByID(int eventID) {

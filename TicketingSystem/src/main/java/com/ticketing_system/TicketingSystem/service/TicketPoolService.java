@@ -1,12 +1,15 @@
 package com.ticketing_system.TicketingSystem.service;
 
+import com.ticketing_system.TicketingSystem.DTO.TicketPoolDTO;
 import com.ticketing_system.TicketingSystem.model.*;
 import com.ticketing_system.TicketingSystem.repository.TicketPoolRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class TicketPoolService {
@@ -32,16 +35,19 @@ public class TicketPoolService {
      * @param configuration - The configuration details from the CLI to create the pool
      * @return the vendor ID of A.I.Inc is returned
      */
-    public Map<String, Integer> createTicketPool(Configuration configuration, int eventID) {
+    public Map<String, Integer> createTicketPool(Configuration configuration, int eventID, String poolName, int ticketPrice) {
         Event event = eventService.getEventByID(eventID);
 
         if (event != null) {
 
             Vendor vendor = eventService.getEventByID(eventID).getVendor();
+            System.out.println("hello");
 
             if (vendor != null) {
-                TicketPool ticketPool =  vendor.createNewEvent(event, configuration.getMaxTicketCapacity(), configuration.getTotalTickets());
+                TicketPool ticketPool =  vendor.createNewTicketPool(event, configuration.getMaxTicketCapacity(), configuration.getTotalTickets(), poolName, ticketPrice);
                 saveTicketPool(ticketPool);
+
+                System.out.println(ticketPool.getPoolID());
 
                 Map<String, Integer> map = new HashMap<>();
                 map.put("aiVendorID", vendor.getVendorID());
@@ -114,4 +120,24 @@ public class TicketPoolService {
         return ticketPoolRepository.findById(id).orElse(null);
     }
 
+    public List<TicketPoolDTO> getAllTicketPools(int eventID) {
+
+        List<TicketPool> ticketPools = ticketPoolRepository.findByEventId(eventID);
+
+        if (ticketPools.isEmpty()) {
+            return null;
+        } else {
+            return ticketPools.stream()
+                    .map(ticketPool -> new TicketPoolDTO(
+                            ticketPool.getPoolID(),
+                            ticketPool.getPoolName(),
+                            ticketPool.getMaxTicketCapacity(),
+                            ticketPool.getTotalTickets(),
+                            ticketPool.getTicketsSold(),
+                            ticketPool.getTicketsBought()
+                    ))
+                    .collect(Collectors.toList());
+        }
+
+    }
 }
