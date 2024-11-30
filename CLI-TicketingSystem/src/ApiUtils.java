@@ -53,7 +53,7 @@ public final class ApiUtils {
     }
 
     public static void createNewEvent() throws Exception {
-        String requestBody = "eventName=A.I.Meetup&vendorID=" + aiVendorID;
+        String requestBody = "eventName=A.I.Meetup&vendorID=" + aiVendorID + "&date=2025-12-15";
 
         // Create the POST request
         HttpRequest postRequest = HttpRequest.newBuilder()

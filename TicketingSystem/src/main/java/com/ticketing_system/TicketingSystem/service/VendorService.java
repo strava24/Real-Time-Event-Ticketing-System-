@@ -1,5 +1,7 @@
 package com.ticketing_system.TicketingSystem.service;
 
+import com.ticketing_system.TicketingSystem.DTO.EventDTO;
+import com.ticketing_system.TicketingSystem.DTO.VendorDTO;
 import com.ticketing_system.TicketingSystem.model.Vendor;
 import com.ticketing_system.TicketingSystem.repository.EventRepository;
 import com.ticketing_system.TicketingSystem.repository.VendorRepository;
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class VendorService {
@@ -22,8 +25,16 @@ public class VendorService {
         return vendorRepo.findById(id).orElse(null);
     }
 
-    public List<Vendor> getAllVendors() {
-        return vendorRepo.findAll();
+    public List<VendorDTO> getAllVendors() {
+        return vendorRepo.findAll().stream()
+                .map(vendor -> new VendorDTO(
+                        vendor.getVendorID(),
+                        vendor.getVendorName(),
+                        vendor.getVendorEmail(),
+                        vendor.getVendorPassword(),
+                        vendor.getTicketsSold()
+                ))
+                .collect(Collectors.toList());
     }
 
     /**

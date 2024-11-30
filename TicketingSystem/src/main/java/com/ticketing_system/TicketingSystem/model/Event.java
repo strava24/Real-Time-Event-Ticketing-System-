@@ -1,45 +1,36 @@
 package com.ticketing_system.TicketingSystem.model;
 
-import com.ticketing_system.TicketingSystem.service.TicketPoolService;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Component
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "eventID")
 public class Event{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int eventID;
     private String eventName;
-//    private int totalTickets; // Total tickets allocated for this event
-//    private int maxTicketCapacity;
-
-//    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    private List<Ticket> ticketsSold; // Tickets sold for the show
+    private LocalDate eventDate;
 
     // Reference to foreign Key
     @ManyToOne
     @JoinColumn(name = "vendor_id") // This column holds the foreign key
     private Vendor vendor;
 
-
-//    @Transient // To restrict ticket pool from becoming a column in the DB
-//    private TicketPool ticketPool;
-
-//    // An event can have many ticket pools
-//    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-////    private List<DummyTicketPool> dummyTicketPools = new ArrayList<>();
-
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<TicketPool> ticketPools;
 
-    public Event(String eventName, Vendor vendor) {
+    public Event(String eventName, String eventDate, Vendor vendor) {
         this.eventName = eventName;
+        this.eventDate = LocalDate.parse(eventDate);
         this.vendor = vendor;
         this.ticketPools = new ArrayList<>();
     }
@@ -59,10 +50,6 @@ public class Event{
     public void setEventName(String eventName) {
         this.eventName = eventName;
     }
-
-//    public List<Ticket> getTicketsSold() {
-//        return ticketsSold;
-//    }
 
     public Vendor getVendor() {
         return vendor;
@@ -90,35 +77,5 @@ public class Event{
         return newTicketPool;
 
     }
-
-//    /**
-//     * Method to add a new ticket pool
-//     * @param dummyTicketPool - an instance of ticket pool for the current thread
-//     */
-//    public void addTicketPool(DummyTicketPool dummyTicketPool, VendorService vendorService) {
-//        dummyTicketPools.add(dummyTicketPool);
-//        vendorService.produceTickets(this, dummyTicketPool); // Start ticket production
-//    }
-
-//    @Override
-//    public void run() {
-////        produceTickets();
-//    }
-//
-//    private void produceTickets() {
-////        for (int i = 0; i < totalTickets; i++) {
-////
-////            @Autowired
-////            Ticket ticket; // Create a new ticket
-////            try {
-////                ticketPool.addTicket(ticket); // Add the ticket to the pool
-////                System.out.println("Produced ticket for event: " + name + " - Ticket ID: " + ticket.getId());
-////                Thread.sleep(1000); // Sleep for 1 second after producing a ticket
-////            } catch (InterruptedException e) {
-////                Thread.currentThread().interrupt(); // Restore interrupted status
-////                System.out.println("Ticket production interrupted for event: " + name);
-////            }
-////        }
-//    }
 
 }

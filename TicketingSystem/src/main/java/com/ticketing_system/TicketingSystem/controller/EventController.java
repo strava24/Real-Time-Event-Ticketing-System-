@@ -1,6 +1,6 @@
 package com.ticketing_system.TicketingSystem.controller;
 
-import com.ticketing_system.TicketingSystem.model.Event;
+import com.ticketing_system.TicketingSystem.DTO.EventDTO;
 import com.ticketing_system.TicketingSystem.model.Vendor;
 import com.ticketing_system.TicketingSystem.service.EventService;
 import com.ticketing_system.TicketingSystem.service.VendorService;
@@ -22,9 +22,9 @@ public class EventController {
     private VendorService vendorService;
 
     @GetMapping
-    public ResponseEntity<List<Event>> getAllEvents() {
+    public ResponseEntity<List<EventDTO>> getAllEvents() {
 
-        List<Event> events = eventService.getAllEvents();
+        List<EventDTO> events = eventService.getAllEvents();
 
         if (events.isEmpty())
             return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -38,12 +38,12 @@ public class EventController {
      * @param event - the JSON body with the attribute values
      */
     @PostMapping("/create")
-    public ResponseEntity<Integer> createEvent(@RequestParam String eventName, @RequestParam int vendorID) {
+    public ResponseEntity<Integer> createEvent(@RequestParam String eventName, @RequestParam int vendorID, @RequestParam String date) {
 
         Vendor vendor = vendorService.getVendorByID(vendorID);
 
         if (vendor != null) {
-            int eventID = eventService.createEvent(eventName, vendor);
+            int eventID = eventService.createEvent(eventName, vendor, date);
 
             return new ResponseEntity<>(eventID, HttpStatus.OK);
         }
@@ -53,9 +53,9 @@ public class EventController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Event> getEventById(@PathVariable int id) {
+    public ResponseEntity<EventDTO> getEventDTOById(@PathVariable int id) {
 
-        Event event = eventService.getEventByID(id);
+        EventDTO event = eventService.getEvenDTOByID(id);
 
         if (event == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -64,19 +64,6 @@ public class EventController {
         }
 
     }
-
-//    @GetMapping("/{eventID}/available-tickets")
-//    public ResponseEntity<Integer> getAvailableTicketsByID(@PathVariable int eventID) {
-//
-//        Event event = eventService.getEventByID(eventID);
-//
-//        if (event != null)
-//            return new ResponseEntity<>(eventService.getAvailableTicketsByID(eventID), HttpStatus.OK);
-//        else
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//
-//    }
-
 
 
 }
