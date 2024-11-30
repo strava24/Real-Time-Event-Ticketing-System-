@@ -16,6 +16,7 @@ public class Event{
     private int eventID;
     private String eventName;
     private LocalDate eventDate;
+    private String location;
 
     // Reference to foreign Key
     @ManyToOne
@@ -25,9 +26,10 @@ public class Event{
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<TicketPool> ticketPools;
 
-    public Event(String eventName, String eventDate, Vendor vendor) {
+    public Event(String eventName, String eventDate, Vendor vendor, String location) {
         this.eventName = eventName;
         this.eventDate = LocalDate.parse(eventDate);
+        this.location = location;
         this.vendor = vendor;
         this.ticketPools = new ArrayList<>();
     }
@@ -75,4 +77,19 @@ public class Event{
 
     }
 
+    public LocalDate getEventDate() {
+        return eventDate;
+    }
+
+    public void setEventDate(LocalDate eventDate) {
+        this.eventDate = eventDate;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
 }

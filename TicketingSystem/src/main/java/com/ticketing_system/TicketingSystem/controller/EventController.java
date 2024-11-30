@@ -1,6 +1,7 @@
 package com.ticketing_system.TicketingSystem.controller;
 
 import com.ticketing_system.TicketingSystem.DTO.EventDTO;
+import com.ticketing_system.TicketingSystem.model.Event;
 import com.ticketing_system.TicketingSystem.model.Vendor;
 import com.ticketing_system.TicketingSystem.service.EventService;
 import com.ticketing_system.TicketingSystem.service.VendorService;
@@ -38,12 +39,12 @@ public class EventController {
      * @param event - the JSON body with the attribute values
      */
     @PostMapping("/create")
-    public ResponseEntity<Integer> createEvent(@RequestParam String eventName, @RequestParam int vendorID, @RequestParam String date) {
+    public ResponseEntity<Integer> createEvent(@RequestBody EventDTO eventDTO) {
 
-        Vendor vendor = vendorService.getVendorByID(vendorID);
+        Event event = eventService.convertToEventFromDTO(eventDTO);
 
-        if (vendor != null) {
-            int eventID = eventService.createEvent(eventName, vendor, date);
+        if (event != null) {
+            int eventID = eventService.createEvent(event);
 
             return new ResponseEntity<>(eventID, HttpStatus.OK);
         }

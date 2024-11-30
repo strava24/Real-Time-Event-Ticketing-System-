@@ -41,10 +41,13 @@ public class TicketPoolService {
         if (event != null) {
 
             Vendor vendor = eventService.getEventByID(eventID).getVendor();
+            System.out.println("hello");
 
             if (vendor != null) {
                 TicketPool ticketPool =  vendor.createNewTicketPool(event, configuration.getMaxTicketCapacity(), configuration.getTotalTickets(), poolName, ticketPrice);
                 saveTicketPool(ticketPool);
+
+                System.out.println(ticketPool.getPoolID());
 
                 Map<String, Integer> map = new HashMap<>();
                 map.put("aiVendorID", vendor.getVendorID());

@@ -60,18 +60,26 @@ public final class ApiUtils {
         System.out.println(postResponse.body());
         Map<String, Integer> details = gson.fromJson(postResponse.body(), new TypeToken<Map<String, Integer>>() {}.getType());
 
+        System.out.println(postResponse.body());
+
         poolID = details.get("poolID");
 
         System.out.println(postResponse.body());
     }
 
     public static void createNewEvent() throws Exception {
-        String requestBody = "eventName=A.I.Meetup&vendorID=" + aiVendorID + "&date=2025-12-15";
+        // Manually constructing the JSON payload as a String
+        String requestBody = "{"
+                + "\"eventName\":\"A.I. Meetup\","
+                + "\"vendorID\":" + aiVendorID + ","
+                + "\"date\":\"2025-12-15\"" + ","
+                + "\"location\":\"Colombo\""
+                + "}";
 
-        // Create the POST request
+        // Creating the POST request
         HttpRequest postRequest = HttpRequest.newBuilder()
                 .uri(new URI(url + "/events/create"))
-                .header("Content-Type", "application/x-www-form-urlencoded")
+                .header("Content-Type", "application/json") // Use application/json for JSON payload
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                 .build();
 
@@ -85,6 +93,7 @@ public final class ApiUtils {
             System.out.println("Error occurred: " + postResponse.statusCode());
             System.out.println("Response body: " + postResponse.body());
         }
+
     }
 
     /**
