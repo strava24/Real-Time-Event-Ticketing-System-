@@ -1,6 +1,5 @@
 package com.ticketing_system.TicketingSystem.service;
 
-import com.ticketing_system.TicketingSystem.DTO.EventDTO;
 import com.ticketing_system.TicketingSystem.DTO.VendorDTO;
 import com.ticketing_system.TicketingSystem.model.Vendor;
 import com.ticketing_system.TicketingSystem.repository.EventRepository;
@@ -23,6 +22,17 @@ public class VendorService {
 
     public Vendor getVendorByID(int id) {
         return vendorRepo.findById(id).orElse(null);
+    }
+
+    public VendorDTO getVendorDTOByID(int vendorID) {
+        Vendor vendor = vendorRepo.findById(vendorID).orElse(null);
+
+        if (vendor == null) {
+            return null;
+        } else {
+            return new VendorDTO(vendor.getVendorID(), vendor.getVendorName(), vendor.getVendorEmail(), vendor.getVendorPassword(), vendor.getTicketsSold());
+        }
+
     }
 
     public List<VendorDTO> getAllVendors() {

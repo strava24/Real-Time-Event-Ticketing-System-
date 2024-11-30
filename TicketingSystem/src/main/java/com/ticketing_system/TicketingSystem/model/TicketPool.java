@@ -16,6 +16,9 @@ public class TicketPool {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int poolID;
 
+    private String poolName;
+    private int ticketPrice;
+
     @OneToMany(mappedBy = "ticketPool", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Ticket> tickets;
 
@@ -36,7 +39,9 @@ public class TicketPool {
     @Version
     private int version; // Version field for optimistic locking
 
-    public TicketPool(int maxTicketCapacity, int totalTickets, Event event) {
+    public TicketPool(String poolName, int ticketPrice, int maxTicketCapacity, int totalTickets, Event event) {
+        this.poolName = poolName;
+        this.ticketPrice = ticketPrice;
         tickets = Collections.synchronizedList(new LinkedList<>());
         this.maxTicketCapacity = maxTicketCapacity;
         this.totalTickets = totalTickets;
@@ -142,5 +147,21 @@ public class TicketPool {
 
     public int getVersion() {
         return version;
+    }
+
+    public String getPoolName() {
+        return poolName;
+    }
+
+    public void setPoolName(String poolName) {
+        this.poolName = poolName;
+    }
+
+    public int getTicketPrice() {
+        return ticketPrice;
+    }
+
+    public void setTicketPrice(int ticketPrice) {
+        this.ticketPrice = ticketPrice;
     }
 }

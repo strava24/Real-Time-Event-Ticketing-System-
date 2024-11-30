@@ -4,9 +4,11 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -34,20 +36,31 @@ public final class ApiUtils {
     public static void createNewTicketPool(Configuration configuration) throws Exception{
         String jsonRequest = gson.toJson(configuration);
 
+        // Hardcoded values for poolName and ticketPrice
+        String poolName = "VIP Pool";
+        int ticketPrice = 100;
+
+        // Construct the URL with query parameters
+        String requestUrl = String.format("%s/ticket-pool/create/%d?poolName=%s&ticketPrice=%d",
+                url,
+                eventID,
+                URLEncoder.encode(poolName, StandardCharsets.UTF_8),
+                ticketPrice);
+
         HttpRequest postRequest = HttpRequest.newBuilder()
-                .uri(new URI(url + "/ticket-pool/create/" + eventID))
+                .uri(new URI(requestUrl))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(jsonRequest))
                 .build();
 
         HttpClient httpClient = HttpClient.newHttpClient();
-        HttpResponse<String> postResponse = httpClient.send(postRequest, HttpResponse.BodyHandlers.ofString()); // Saying that we're expecting a string in return
+        HttpResponse<String> postResponse = httpClient.send(postRequest, HttpResponse.BodyHandlers.ofString());
 
+        // Parse the response body
         System.out.println(postResponse.body());
         Map<String, Integer> details = gson.fromJson(postResponse.body(), new TypeToken<Map<String, Integer>>() {}.getType());
 
         poolID = details.get("poolID");
-//        aiVendorID = details.get("aiVendorID"); // Getting the vendorId od A.I. Inc for future usage
 
         System.out.println(postResponse.body());
     }

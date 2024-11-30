@@ -1,7 +1,5 @@
 package com.ticketing_system.TicketingSystem.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +8,6 @@ import java.util.List;
 
 @Entity
 @Component
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "vendorID")
 public class Vendor{
 
     @Id
@@ -74,11 +71,15 @@ public class Vendor{
         return ticketsSold;
     }
 
-    public TicketPool createNewEvent(Event event, int maxTicketCapacity, int totalTickets) {
-        hostedEvents.add(event);
-        // Creating a pool when an event is created
-        return event.createTicketPool(maxTicketCapacity, totalTickets);
+    public TicketPool createNewTicketPool(Event event, int maxTicketCapacity, int totalTickets, String poolName, int ticketPrice) {
+//        hostedEvents.add(event);
+        // Creating a pool to an event
+        return event.createTicketPool(poolName, ticketPrice, maxTicketCapacity, totalTickets);
 
+    }
+
+    public void addNewEvent(Event event) {
+        hostedEvents.add(event);
     }
 
     public int incrementTicketsSold() {

@@ -33,6 +33,7 @@ public class EventService {
     public int createEvent(String eventName, Vendor vendor, String date) {
         Event event = new Event(eventName, date, vendor);
         eventRepo.save(event);
+        vendor.addNewEvent(event);
 
         return event.getEventID();
     }
