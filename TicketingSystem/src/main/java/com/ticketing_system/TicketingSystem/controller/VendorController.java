@@ -1,5 +1,7 @@
 package com.ticketing_system.TicketingSystem.controller;
 
+import com.ticketing_system.TicketingSystem.DTO.EventDTO;
+import com.ticketing_system.TicketingSystem.DTO.VendorDTO;
 import com.ticketing_system.TicketingSystem.model.Vendor;
 import com.ticketing_system.TicketingSystem.service.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +27,15 @@ public class VendorController {
      * @return all vendors on the database
      */
     @GetMapping
-    public ResponseEntity<List<Vendor>> getAllVendors() {
-        return new ResponseEntity<>(vendorService.getAllVendors(), HttpStatus.OK);
+    public ResponseEntity<List<VendorDTO>> getAllVendors() {
+
+        List<VendorDTO> vendors = vendorService.getAllVendors();
+
+        if (vendors.isEmpty())
+            return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+        else
+            return new ResponseEntity<>(vendors, HttpStatus.OK);
+
     }
 
     @GetMapping("/{id}")
