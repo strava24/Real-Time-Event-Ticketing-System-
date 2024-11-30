@@ -1,10 +1,36 @@
-<div class="row ms-5 me-5">
+<div class="row ms-5 me-5 pt-3">
     <div class="col-8">
         <div class="card">
             <div class="card-header bg-primary">Event List</div>
 
             <div class="card-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Event ID</th>
+                            <th>Event Name</th>
+                            <th>Event Venue</th>
+                            <th>Event Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
 
+                    <tbody>
+                        @for (event of eventList; track $index) {
+                        <tr>
+                            <td>{{event.eventID}}</td>
+                            <td>{{event.eventName}}</td>
+                            <td>{{event.location}}</td>
+                            <td>{{ event.date | date: 'longDate' }}</td>
+                            <td class="text-center">
+                                <button class="btn btn-info me-2" (click)="onEdit(event)">Edit</button>
+                                <button class="btn btn-danger" (click)="onDelete(event.eventID)">Delete</button>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+
+                </table>
             </div>
 
         </div>
@@ -14,10 +40,78 @@
             <div class="card-header bg-primary">New Event</div>
 
             <div class="card-body">
+                <form #form="ngForm">
+                    <div class="row">
+                        <div class="col-12">
+                            <label for="eventName">Event Name</label>
+                            <input type="text" #eventName="ngModel" required class="form-control" name="eventName"
+                                id="eventName" minlength="5" [(ngModel)]="eventObj.eventName">
+                            <div class="text-danger">
+                                @if (eventName.touched) {
+                                @if (eventName?.errors?.['required']) {
+                                <span>This is required</span>
+                                }
+                                @if (eventName?.errors?.['minlength']) {
+                                <span>Min 5 characters needed</span>
+                                }
+                                }
+                            </div>
+                        </div>
 
+                        <div class="col-12">
+                            <label for="location">Event Venue</label>
+                            <textarea name="location" id="location" class="form-control" name="location" minlength="7"
+                                required #location="ngModel" [(ngModel)]="eventObj.location"></textarea>
+
+                            <div class="text-danger">
+                                @if (location.touched) {
+                                @if (location?.errors?.['required']) {
+                                <span>This is required</span>
+                                }
+                                @if (location?.errors?.['minlength']) {
+                                <span>Min 7 characters needed</span>
+                                }
+                                }
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="">Event Date</label>
+                            <input type="date" #date="ngModel" class="form-control" name="date"
+                                [(ngModel)]="eventObj.date" [min]="minimumDate" required>
+                            @if (date?.errors?.['required']) {
+                            <span>This is required</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row text-center pt-3">
+                        <div class="col-6">
+                            <button class="btn btn-danger" type="reset">Reset</button>
+                        </div>
+
+                        <div class="col-6">
+                            <button class="btn btn-success" [disabled]="!form.valid"
+                                (click)="eventObj.eventID !== 0 ? onUpdate() : onSave()">
+                                {{eventObj.eventID !== 0 ? 'Update': 'Save'}}
+                            </button>
+                        </div>
+
+                    </div>
+                </form>
             </div>
 
         </div>
 
+    </div>
+</div>
+
+<div class="row ms-5 me-5  pt-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary">Ticket Pool</div>
+
+            <div class="card-body"></div>
+        </div>
     </div>
 </div>

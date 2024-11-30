@@ -80,6 +80,28 @@ public class EventService {
 
     }
 
+    public List<EventDTO> getAllEventsByVendorID(int vendorID) {
+
+        return eventRepo.findByVendorId(vendorID).stream()
+                .map(event -> new EventDTO(
+                        event.getEventID(),
+                        event.getEventName(),
+                        event.getVendor().getVendorID(),
+                        event.getEventDate().toString(),
+                        event.getLocation()
+                ))
+                .collect(Collectors.toList());
+
+    }
+
+    public void updateEvent(Event event) {
+        eventRepo.save(event);
+    }
+
+    public void deleteEvent(Event event) {
+        eventRepo.delete(event);
+    }
+
 //    public int getAvailableTicketsByID(int eventID) {
 //        return eventRepo.findTotalTicketsByEvent(eventID);
 //    }

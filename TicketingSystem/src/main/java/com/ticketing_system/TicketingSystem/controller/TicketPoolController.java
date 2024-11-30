@@ -13,6 +13,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/ticket-pool")
+@CrossOrigin(origins = "http://localhost:4209")
 public class TicketPoolController {
 
     @Autowired

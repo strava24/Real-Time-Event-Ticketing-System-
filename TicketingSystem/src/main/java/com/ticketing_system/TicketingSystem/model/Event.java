@@ -50,6 +50,10 @@ public class Event{
         this.eventName = eventName;
     }
 
+    public void setEventID(int eventID) {
+        this.eventID = eventID;
+    }
+
     public Vendor getVendor() {
         return vendor;
     }
