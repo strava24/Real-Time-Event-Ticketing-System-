@@ -1,9 +1,9 @@
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment.development';
-import { Constant } from '../constant/Constant';
+import { environment } from '../../../environments/environment.development';
+import { Constant } from '../../constant/Constant';
 import { Observable } from 'rxjs';
-import { Events } from '../model/class/Event';
+import { Events } from '../../model/class/Event';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +17,7 @@ export class EventService {
   }
 
   getAllEventsByVendor() {
-    return this.http.get(environment.API_URL + Constant.EVENT_METHOD.GET_EVENTS_BY_VENDOR + 1);
+    return this.http.get(environment.API_URL + Constant.EVENT_METHOD.GET_EVENTS_BY_VENDOR(1));
   }
 
   updateEvent(event: Events) {
@@ -27,7 +27,7 @@ export class EventService {
 
   deleteEvent(id: number) {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    return this.http.delete(environment.API_URL + Constant.EVENT_METHOD.DELETE_EVENT + id, { headers, responseType: 'text' });
+    return this.http.delete(environment.API_URL + Constant.EVENT_METHOD.DELETE_EVENT(id), { headers, responseType: 'text' });
   }
 
   saveEvent(event: Events) {

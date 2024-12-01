@@ -19,7 +19,7 @@ public class TicketPoolController {
     @Autowired
     private TicketPoolService ticketPoolService;
 
-    @GetMapping("{eventID}")
+    @GetMapping("/{eventID}")
     public ResponseEntity<List<TicketPoolDTO>> getAllTicketPools(@PathVariable int eventID) {
 
         List<TicketPoolDTO> pools = ticketPoolService.getAllTicketPools(eventID);
@@ -49,10 +49,10 @@ public class TicketPoolController {
 
     }
 
-    @GetMapping("{poolID}/sell-ticket/{aiVendorId}")
-    public synchronized ResponseEntity<String> addTicket(@PathVariable int aiVendorId, @PathVariable int poolID) {
+    @GetMapping("{poolID}/sell-ticket/{vendorId}")
+    public synchronized ResponseEntity<String> addTicket(@PathVariable int vendorId, @PathVariable int poolID) {
 
-        boolean soldTicket =  ticketPoolService.addTicket(aiVendorId, poolID);
+        boolean soldTicket =  ticketPoolService.addTicket(vendorId, poolID);
 
         if (soldTicket) {
             return new ResponseEntity<>("Ticket added", HttpStatus.OK);

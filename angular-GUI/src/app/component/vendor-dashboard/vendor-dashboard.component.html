@@ -1,7 +1,7 @@
 <div class="row ms-5 me-5 pt-3">
     <div class="col-8">
         <div class="card">
-            <div class="card-header bg-primary">Event List</div>
+            <div class="card-header bg-primary text-white">Event List</div>
 
             <div class="card-body">
                 <table class="table table-bordered">
@@ -18,11 +18,12 @@
                     <tbody>
                         @for (event of eventList; track $index) {
                         <tr>
-                            <td>{{event.eventID}}</td>
+                            <td>E{{event.eventID}}</td>
                             <td>{{event.eventName}}</td>
                             <td>{{event.location}}</td>
                             <td>{{ event.date | date: 'longDate' }}</td>
                             <td class="text-center">
+                                <button class="btn btn-primary me-2" (click)="accessPool(event.eventID)">Pool</button>
                                 <button class="btn btn-info me-2" (click)="onEdit(event)">Edit</button>
                                 <button class="btn btn-danger" (click)="onDelete(event.eventID)">Delete</button>
                             </td>
@@ -37,7 +38,8 @@
     </div>
     <div class="col-4">
         <div class="card">
-            <div class="card-header bg-primary">New Event</div>
+            <div class="card-header bg-primary text-white">{{eventObj.eventID !== 0 ? 'Update Event': 'New Event'}}
+            </div>
 
             <div class="card-body">
                 <form #form="ngForm">
@@ -109,9 +111,51 @@
 <div class="row ms-5 me-5  pt-3">
     <div class="col-12">
         <div class="card">
-            <div class="card-header bg-primary">Ticket Pool</div>
+            <div class="card-header bg-primary text-white"> TicketPool {{(hasPools) ? ' - E' + currentEvent : ''}}</div>
 
-            <div class="card-body"></div>
+            <div class="card-body">
+                @if (hasPools) {
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Pool ID</th>
+                            <th>Pool Name</th>
+                            <th>Max Ticket Capacity</th>
+                            <th>Total Tickets</th>
+                            <th>Tickets Sold</th>
+                            <th>Tickets Bought</th>
+                            <th>Ticket Production</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @for (pool of ticketPoolList; track $index) {
+                        <tr>
+                            <td>P{{ pool.poolID}}</td>
+                            <td>{{ pool.poolName}}</td>
+                            <td>{{ pool.maxTicketCapacity}}</td>
+                            <td>{{ pool.totalTickets }}</td>
+                            <td>{{ pool.ticketsSold }}</td>
+                            <td>{{ pool.ticketsBought }}</td>
+                            <td class="text-center">
+                                <button class="btn btn-success me-2"
+                                    (click)="startTicketSelling(pool.poolID)">Start</button>
+                                <button class="btn btn-danger" (click)="stopTicketSelling()">Stop</button>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+
+                </table>
+                }
+                @else {
+                <div class="container p-5 my-5 bg-primary text-white">
+                    <h3>There are no pools under this event</h3>
+                    <img src="assets/complete-logo.png" alt="logo">
+                </div>
+                }
+
+            </div>
         </div>
     </div>
 </div>
