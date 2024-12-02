@@ -23,9 +23,11 @@
                             <td>{{event.location}}</td>
                             <td>{{ event.date | date: 'longDate' }}</td>
                             <td class="text-center">
-                                <button class="btn btn-primary me-2" (click)="accessPool(event.eventID)">Pool</button>
-                                <button class="btn btn-info me-2" (click)="onEdit(event)">Edit</button>
-                                <button class="btn btn-danger" (click)="onDelete(event.eventID)">Delete</button>
+                                <button class="btn btn-primary me-2" (click)="accessPool(event.eventID)"
+                                    name="pool">Access Pool</button>
+                                <button class="btn btn-info me-2" (click)="onEdit(event)" name="Edit">Edit</button>
+                                <button class="btn btn-danger" (click)="onDelete(event.eventID)"
+                                    name="delete">Delete</button>
                             </td>
                         </tr>
                         }
@@ -93,7 +95,7 @@
                         </div>
 
                         <div class="col-6">
-                            <button class="btn btn-success" [disabled]="!form.valid"
+                            <button class="btn btn-success" [disabled]="!form.valid" name="save"
                                 (click)="eventObj.eventID !== 0 ? onUpdate() : onSave()">
                                 {{eventObj.eventID !== 0 ? 'Update': 'Save'}}
                             </button>
@@ -108,13 +110,89 @@
     </div>
 </div>
 
+
 <div class="row ms-5 me-5  pt-3">
-    <div class="col-12">
+
+
+    @if (this.currentEvent!= 0) {
+    <div class="col-4">
         <div class="card">
-            <div class="card-header bg-primary text-white"> TicketPool {{(hasPools) ? ' - E' + currentEvent : ''}}</div>
+            <div class="card-header bg-primary text-white">Create New Ticket Pool - E{{currentEvent}}</div>
 
             <div class="card-body">
-                @if (hasPools) {
+                <form #form="ngForm">
+                    <div class="row">
+
+                        <div class="col-12">
+                            <div class="alert alert-danger">
+                                Total Tickets should be greater than Max Ticket Capacity
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="">Ticket Pool Name</label>
+                            <input type="text" #personName="ngModel" required class="form-control" name="poolName"
+                                minlength="5" [(ngModel)]="ticketPoolObj.poolName" required>
+                        </div>
+
+                        <div class="col-6">
+                            <label for="">Max Ticket Capacity</label>
+                            <input type="number" min="0" step="1" [(ngModel)]="ticketPoolObj.maxTicketCapacity"
+                                name="maxTicketCapacity" required>
+                        </div>
+
+                        <div class="col-6">
+                            <label for="">Total Tickets</label>
+                            <input type="number" [min]="ticketPoolObj.maxTicketCapacity + 1" step="1"
+                                [(ngModel)]="ticketPoolObj.totalTickets" name="totalTickets" required
+                                #maxTicketCapacity="ngModel">
+
+                            <div class="text-danger">
+                                @if (location.touched) {
+                                @if (location?.errors?.['required']) {
+                                <span>This is required</span>
+                                }
+                                @if (maxTicketCapacity?.errors?.['min']) {
+                                <span>Total Tickets should be greater than Max Ticket Capacity</span>
+                                }
+                                }
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <label for="">Ticket Price </label>
+                            <input type="number" min="0" step="1" [(ngModel)]="ticketPoolObj.ticketPrice"
+                                name="ticketPrice" required>
+                        </div>
+
+                    </div>
+
+                    <div class="row text-center pt-3">
+                        <div class="col-6">
+                            <button class="btn btn-danger" type="reset" name="reset">Reset</button>
+                        </div>
+
+                        <div class="col-6">
+                            <button class="btn btn-success" [disabled]="!form.valid" name="save" (click)="savePool()">
+                                Save
+                            </button>
+                        </div>
+
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="col-8">
+        <div class="card">
+
+            <div class="card-header bg-primary text-white"> TicketPool List - E{{ currentEvent}}</div>
+
+            @if (hasPools) {
+            <div class="card-body">
                 <table class="table table-bordered">
                     <thead>
                         <tr>
@@ -147,15 +225,21 @@
                     </tbody>
 
                 </table>
-                }
-                @else {
-                <div class="container p-5 my-5 bg-primary text-white">
-                    <h3>There are no pools under this event</h3>
-                    <img src="assets/complete-logo.png" alt="logo">
-                </div>
-                }
 
             </div>
+            }
+
+            @else {
+            <div class="card-body">
+                <img src="images/emptyPool.jpg" alt="EmptyPool" id="empty-pool-image">
+            </div>
+            }
+
+
         </div>
     </div>
+    }
+
+
+
 </div>

@@ -33,24 +33,22 @@ public class TicketPoolService {
      * This method is to create a ticket pool for automatic events
      *
      * @param configuration - The configuration details from the CLI to create the pool
-     * @return the vendor ID of A.I.Inc is returned
+     * @return
      */
-    public Map<String, Integer> createTicketPool(Configuration configuration, int eventID, String poolName, int ticketPrice) {
+    public Map<String, Integer> createTicketPool(int maxTicketCapacity, int totalTickets, int eventID, String poolName, int ticketPrice) {
         Event event = eventService.getEventByID(eventID);
 
         if (event != null) {
 
             Vendor vendor = eventService.getEventByID(eventID).getVendor();
-            System.out.println("hello");
 
             if (vendor != null) {
-                TicketPool ticketPool =  vendor.createNewTicketPool(event, configuration.getMaxTicketCapacity(), configuration.getTotalTickets(), poolName, ticketPrice);
+                TicketPool ticketPool =  vendor.createNewTicketPool(event, maxTicketCapacity, totalTickets, poolName, ticketPrice);
                 saveTicketPool(ticketPool);
 
                 System.out.println(ticketPool.getPoolID());
 
                 Map<String, Integer> map = new HashMap<>();
-                map.put("aiVendorID", vendor.getVendorID());
                 map.put("poolID", ticketPool.getPoolID());
 
                 return map; // Creating an event
@@ -134,7 +132,8 @@ public class TicketPoolService {
                             ticketPool.getMaxTicketCapacity(),
                             ticketPool.getTotalTickets(),
                             ticketPool.getTicketsSold(),
-                            ticketPool.getTicketsBought()
+                            ticketPool.getTicketsBought(),
+                            ticketPool.getTicketPrice()
                     ))
                     .collect(Collectors.toList());
         }

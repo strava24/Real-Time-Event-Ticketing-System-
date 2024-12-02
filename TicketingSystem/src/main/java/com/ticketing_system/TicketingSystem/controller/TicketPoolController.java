@@ -38,9 +38,9 @@ public class TicketPoolController {
      * @return
      */
     @PostMapping("/create/{eventID}")
-    public ResponseEntity<Map<String, Integer>> createTicketPool(@RequestBody Configuration configuration, @PathVariable int eventID, @RequestParam String poolName, @RequestParam int ticketPrice) {
+    public ResponseEntity<Map<String, Integer>> createTicketPool(@PathVariable int eventID, @RequestParam String poolName, @RequestParam int ticketPrice, @RequestParam int maxTicketCapacity, @RequestParam int totalTickets) {
 
-        Map<String, Integer> details = ticketPoolService.createTicketPool(configuration, eventID, poolName, ticketPrice);
+        Map<String, Integer> details = ticketPoolService.createTicketPool(maxTicketCapacity, totalTickets, eventID, poolName, ticketPrice);
 
         if (details != null) {
             return new ResponseEntity<>(details , HttpStatus.CREATED);
