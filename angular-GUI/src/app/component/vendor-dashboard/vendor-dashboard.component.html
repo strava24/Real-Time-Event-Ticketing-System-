@@ -1,7 +1,7 @@
 <div class="row ms-5 me-5 pt-3">
     <div class="col-8">
         <div class="card">
-            <div class="card-header bg-primary">Event List</div>
+            <div class="card-header bg-primary text-white">Event List</div>
 
             <div class="card-body">
                 <table class="table table-bordered">
@@ -18,13 +18,16 @@
                     <tbody>
                         @for (event of eventList; track $index) {
                         <tr>
-                            <td>{{event.eventID}}</td>
+                            <td>E{{event.eventID}}</td>
                             <td>{{event.eventName}}</td>
                             <td>{{event.location}}</td>
                             <td>{{ event.date | date: 'longDate' }}</td>
                             <td class="text-center">
-                                <button class="btn btn-info me-2" (click)="onEdit(event)">Edit</button>
-                                <button class="btn btn-danger" (click)="onDelete(event.eventID)">Delete</button>
+                                <button class="btn btn-primary me-2" (click)="accessPool(event.eventID)"
+                                    name="pool">Access Pool</button>
+                                <button class="btn btn-info me-2" (click)="onEdit(event)" name="Edit">Edit</button>
+                                <button class="btn btn-danger" (click)="onDelete(event.eventID)"
+                                    name="delete">Delete</button>
                             </td>
                         </tr>
                         }
@@ -37,7 +40,8 @@
     </div>
     <div class="col-4">
         <div class="card">
-            <div class="card-header bg-primary">New Event</div>
+            <div class="card-header bg-primary text-white">{{eventObj.eventID !== 0 ? 'Update Event': 'New Event'}}
+            </div>
 
             <div class="card-body">
                 <form #form="ngForm">
@@ -91,7 +95,7 @@
                         </div>
 
                         <div class="col-6">
-                            <button class="btn btn-success" [disabled]="!form.valid"
+                            <button class="btn btn-success" [disabled]="!form.valid" name="save"
                                 (click)="eventObj.eventID !== 0 ? onUpdate() : onSave()">
                                 {{eventObj.eventID !== 0 ? 'Update': 'Save'}}
                             </button>
@@ -106,12 +110,136 @@
     </div>
 </div>
 
-<div class="row ms-5 me-5  pt-3">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header bg-primary">Ticket Pool</div>
 
-            <div class="card-body"></div>
+<div class="row ms-5 me-5  pt-3">
+
+
+    @if (this.currentEvent!= 0) {
+    <div class="col-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">Create New Ticket Pool - E{{currentEvent}}</div>
+
+            <div class="card-body">
+                <form #form="ngForm">
+                    <div class="row">
+
+                        <div class="col-12">
+                            <div class="alert alert-danger">
+                                Total Tickets should be greater than Max Ticket Capacity
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="">Ticket Pool Name</label>
+                            <input type="text" #personName="ngModel" required class="form-control" name="poolName"
+                                minlength="5" [(ngModel)]="ticketPoolObj.poolName" required>
+                        </div>
+
+                        <div class="col-6">
+                            <label for="">Max Ticket Capacity</label>
+                            <input type="number" min="0" step="1" [(ngModel)]="ticketPoolObj.maxTicketCapacity"
+                                name="maxTicketCapacity" required>
+                        </div>
+
+                        <div class="col-6">
+                            <label for="">Total Tickets</label>
+                            <input type="number" [min]="ticketPoolObj.maxTicketCapacity + 1" step="1"
+                                [(ngModel)]="ticketPoolObj.totalTickets" name="totalTickets" required
+                                #maxTicketCapacity="ngModel">
+
+                            <div class="text-danger">
+                                @if (location.touched) {
+                                @if (location?.errors?.['required']) {
+                                <span>This is required</span>
+                                }
+                                @if (maxTicketCapacity?.errors?.['min']) {
+                                <span>Total Tickets should be greater than Max Ticket Capacity</span>
+                                }
+                                }
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <label for="">Ticket Price </label>
+                            <input type="number" min="0" step="1" [(ngModel)]="ticketPoolObj.ticketPrice"
+                                name="ticketPrice" required>
+                        </div>
+
+                    </div>
+
+                    <div class="row text-center pt-3">
+                        <div class="col-6">
+                            <button class="btn btn-danger" type="reset" name="reset">Reset</button>
+                        </div>
+
+                        <div class="col-6">
+                            <button class="btn btn-success" [disabled]="!form.valid" name="save" (click)="savePool()">
+                                Save
+                            </button>
+                        </div>
+
+                    </div>
+
+                </form>
+            </div>
+
         </div>
     </div>
+
+    <div class="col-8">
+        <div class="card">
+
+            <div class="card-header bg-primary text-white"> TicketPool List - E{{ currentEvent}}</div>
+
+            @if (hasPools) {
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Pool ID</th>
+                            <th>Pool Name</th>
+                            <th>Max Ticket Capacity</th>
+                            <th>Total Tickets</th>
+                            <th>Tickets Sold</th>
+                            <th>Tickets Bought</th>
+                            <th>Ticket Production</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @for (pool of ticketPoolList; track $index) {
+                        <tr>
+                            <td>P{{ pool.poolID}}</td>
+                            <td>{{ pool.poolName}}</td>
+                            <td>{{ pool.maxTicketCapacity}}</td>
+                            <td>{{ pool.totalTickets }}</td>
+                            <td>{{ pool.ticketsSold }}</td>
+                            <td>{{ pool.ticketsBought }}</td>
+                            <td class="text-center">
+                                <button class="btn btn-success me-2"
+                                    (click)="startTicketSelling(pool.poolID)">Start</button>
+                                <button class="btn btn-danger" (click)="stopTicketSelling()">Stop</button>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+
+                </table>
+
+            </div>
+            }
+
+            @else {
+            <div class="card-body">
+                <img src="images/emptyPool.jpg" alt="EmptyPool" id="empty-pool-image">
+            </div>
+            }
+
+
+        </div>
+    </div>
+    }
+
+
+
 </div>

@@ -40,6 +40,8 @@ public class Main {
                     break;
                 default:
                     System.out.println("Invalid choice. Try again.");
+                    System.out.print("Enter your choice: ");
+                    choice = scanner.next();
             }
         }
 
@@ -60,22 +62,6 @@ public class Main {
         Vendor producer = new Vendor();
         Customer consumer = new Customer();
 
-        Thread producerThread = new Thread(producer);
-        Thread consumerThread = new Thread(consumer);
-
-        Thread producerThread2 = new Thread(producer);
-        Thread consumerThread2 = new Thread(consumer);
-
-        Thread producerThread3 = new Thread(producer);
-        Thread consumerThread3 = new Thread(consumer);
-
-        Thread producerThread4 = new Thread(producer);
-        Thread consumerThread4 = new Thread(consumer);
-
-        Thread producerThread5 = new Thread(producer);
-        Thread consumerThread5 = new Thread(consumer);
-
-
         System.out.println(); // new line character to maintain order
         System.out.println("Type 'start' to begin the simulation, and 'stop' to end it.");
 
@@ -86,10 +72,24 @@ public class Main {
                 case "start":
                     if (!isRunning) {
                         isRunning = true;
-                        producerThread = new Thread(producer);
-                        consumerThread = new Thread(consumer);
-                        producerThread.start();
-                        consumerThread.start();
+                        // Create new threads for each run
+                        Thread producerThread1 = new Thread(producer);
+                        Thread consumerThread1 = new Thread(consumer);
+
+                        Thread producerThread2 = new Thread(producer);
+                        Thread consumerThread2 = new Thread(consumer);
+
+                        Thread producerThread3 = new Thread(producer);
+                        Thread consumerThread3 = new Thread(consumer);
+
+                        Thread producerThread4 = new Thread(producer);
+                        Thread consumerThread4 = new Thread(consumer);
+
+                        Thread producerThread5 = new Thread(producer);
+                        Thread consumerThread5 = new Thread(consumer);
+
+                        producerThread1.start();
+                        consumerThread1.start();
 
                         producerThread2.start();
                         consumerThread2.start();
@@ -97,11 +97,12 @@ public class Main {
                         producerThread3.start();
                         consumerThread3.start();
 
-                        consumerThread4.start();
                         producerThread4.start();
+                        consumerThread4.start();
 
-                        consumerThread5.start();
                         producerThread5.start();
+                        consumerThread5.start();
+
                         System.out.println("Simulation started.");
                     } else {
                         System.out.println("Simulation is already running.");
@@ -111,20 +112,6 @@ public class Main {
                 case "stop":
                     if (isRunning) {
                         isRunning = false;
-                        producerThread.interrupt();
-                        consumerThread.interrupt();
-
-                        producerThread2.interrupt();
-                        consumerThread2.interrupt();
-
-                        producerThread3.interrupt();
-                        consumerThread3.interrupt();
-
-                        consumerThread4.interrupt();
-                        producerThread4.interrupt();
-
-                        consumerThread5.interrupt();
-                        producerThread5.interrupt();
 
                         System.out.println("Stopping simulation...");
                     } else {

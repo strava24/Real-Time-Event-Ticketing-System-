@@ -23,8 +23,6 @@ public final class ApiUtils {
 
     static String url = "http://localhost:8080/api";
 
-    private ApiUtils() {}
-
     /**
      * this method is to create a ticket pool on the backend
      * There should be an event that holds the ticket pool
@@ -41,16 +39,18 @@ public final class ApiUtils {
         int ticketPrice = 100;
 
         // Construct the URL with query parameters
-        String requestUrl = String.format("%s/ticket-pool/create/%d?poolName=%s&ticketPrice=%d",
+        String requestUrl = String.format("%s/ticket-pool/create/%d?poolName=%s&ticketPrice=%d&maxTicketCapacity=%d&totalTickets=%d",
                 url,
                 eventID,
                 URLEncoder.encode(poolName, StandardCharsets.UTF_8),
-                ticketPrice);
+                ticketPrice,
+                configuration.getMaxTicketCapacity(),
+                configuration.getTotalTickets());
 
         HttpRequest postRequest = HttpRequest.newBuilder()
                 .uri(new URI(requestUrl))
                 .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(jsonRequest))
+                .POST(HttpRequest.BodyPublishers.noBody())
                 .build();
 
         HttpClient httpClient = HttpClient.newHttpClient();
@@ -63,9 +63,9 @@ public final class ApiUtils {
         System.out.println(postResponse.body());
 
         poolID = details.get("poolID");
-
-        System.out.println(postResponse.body());
     }
+
+    private ApiUtils() {}
 
     public static void createNewEvent() throws Exception {
         // Manually constructing the JSON payload as a String
