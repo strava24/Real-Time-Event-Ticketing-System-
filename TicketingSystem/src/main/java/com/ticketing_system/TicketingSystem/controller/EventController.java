@@ -3,6 +3,7 @@ package com.ticketing_system.TicketingSystem.controller;
 import com.ticketing_system.TicketingSystem.DTO.EventDTO;
 import com.ticketing_system.TicketingSystem.model.Event;
 import com.ticketing_system.TicketingSystem.service.EventService;
+import com.ticketing_system.TicketingSystem.service.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,8 @@ public class EventController {
 
     @Autowired
     private EventService eventService;
+    @Autowired
+    private VendorService vendorService;
 
     @GetMapping
     public ResponseEntity<List<EventDTO>> getAllEvents() {
@@ -62,12 +65,17 @@ public class EventController {
 
     @GetMapping("vendor/{vendorID}")
     public ResponseEntity<List<EventDTO>> getAllEventsByVendorID(@PathVariable int vendorID) {
-        List<EventDTO> events = eventService.getAllEventsByVendorID(vendorID);
 
-        if (events.isEmpty()) {
+        if (vendorService.getVendorByID(vendorID) == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
-            return new ResponseEntity<>(events, HttpStatus.OK);
+            List<EventDTO> events = eventService.getAllEventsByVendorID(vendorID);
+
+            if (events.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+            } else {
+                return new ResponseEntity<>(events, HttpStatus.OK);
+            }
         }
     }
 

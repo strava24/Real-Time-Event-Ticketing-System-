@@ -6,6 +6,8 @@ import { FormsModule } from '@angular/forms';
 import { TicketPoolService } from '../../service/ticketPoolService/ticket-pool.service';
 import { TicketPool } from '../../model/class/TicketPool';
 import { ToastrService } from 'ngx-toastr';
+import { LoginService } from '../../service/loginService/login.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-vendor-dashboard',
@@ -28,12 +30,16 @@ export class VendorDashboardComponent implements OnInit {
   private intervalId: any;
   isSelling: boolean = false;
 
+  ticketRetrievalRate: number = 0;
+
   minimumDate: string; // Format: YYYY-MM-DD
   // vendorID: number = 1; // For now hard coded value
 
   eventService = inject(EventService);
   ticketPoolService = inject(TicketPoolService);
   toastrService = inject(ToastrService);
+  loginService = inject(LoginService);
+  router = inject(Router);
 
   constructor() {
     this.minimumDate = new Date().toISOString().split('T')[0];
@@ -48,14 +54,30 @@ export class VendorDashboardComponent implements OnInit {
    * Method to get all of the events by the current vendor
    */
   getAllEvents() {
-    this.eventService.getAllEventsByVendor().subscribe((getResponse: any) => {
-      this.eventList = getResponse;
-      console.log(this.eventList);
-      this.toastrService.success('Loaded sucessfully!')
-    }, error => {
-      alert('Network Down!')
-      this.toastrService.error('Network Down!')
-    })
+
+    const vendorID = this.loginService.getVendorID();
+
+    if (vendorID != -1) {
+      this.eventService.getAllEventsByVendor(vendorID).subscribe((getResponse: any) => {
+        this.toastrService.info('Logged in with ID : V' + vendorID);
+        this.eventList = getResponse;
+        console.log(this.eventList);
+        this.toastrService.success('Loaded sucessfully!')
+      }, error => {
+        if (error.status === 501) {
+          this.toastrService.error('There are no Events yet!');
+        } else {
+          this.router.navigateByUrl('/login');
+          this.toastrService.error('Login to the system!', 'Invalid Credentials');
+        }
+
+      })
+
+    } else {
+      this.toastrService.error('Login to the system!');
+      this.router.navigateByUrl('/login');
+    }
+
   }
 
   /**
@@ -85,6 +107,9 @@ export class VendorDashboardComponent implements OnInit {
    * Method to create a new event on the system
    */
   onSave() {
+
+    this.eventObj.vendorID = this.loginService.getVendorID();
+
     this.eventService.saveEvent(this.eventObj).subscribe((response: any) => {
       this.toastrService.success('Event saved successfully!', 'Success!');
       this.eventObj = new Events();
@@ -196,6 +221,7 @@ export class VendorDashboardComponent implements OnInit {
       (response) => {
         this.toastrService.success('Created Ticket Pool!');
         this.ticketPoolObj = new TicketPool();
+        this.accessPool(this.currentEvent);
       },
       error => {
         console.log('There was an issue')

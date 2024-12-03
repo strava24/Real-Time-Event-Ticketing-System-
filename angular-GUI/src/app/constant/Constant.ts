@@ -12,6 +12,6 @@ export const Constant = {
         CREATE_POOL: (eventID: number) => `ticket-pool/create/${eventID}`
     },
     VENDOR_METHOD: {
-
+        LOGIN_VENDOR: 'vendors/login'
     }
 }

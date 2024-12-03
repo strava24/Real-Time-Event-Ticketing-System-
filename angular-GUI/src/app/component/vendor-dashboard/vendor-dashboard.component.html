@@ -145,14 +145,12 @@
                             <label for="">Total Tickets</label>
                             <input type="number" [min]="ticketPoolObj.maxTicketCapacity + 1" step="1"
                                 [(ngModel)]="ticketPoolObj.totalTickets" name="totalTickets" required
-                                #maxTicketCapacity="ngModel">
+                                #totalTickets="ngModel">
 
                             <div class="text-danger">
-                                @if (location.touched) {
-                                @if (location?.errors?.['required']) {
-                                <span>This is required</span>
-                                }
-                                @if (maxTicketCapacity?.errors?.['min']) {
+                                @if (totalTickets.touched) {
+
+                                @if (totalTickets?.errors?.['min']) {
                                 <span>Total Tickets should be greater than Max Ticket Capacity</span>
                                 }
                                 }

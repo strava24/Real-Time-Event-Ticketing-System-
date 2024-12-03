@@ -5,7 +5,7 @@ export class Events {
     date: Date;
     location: string;
 
-    constructor(eventID: number = 0, eventName: string = '', vendorID: number = 1, date: string = '', location: string = '') {
+    constructor(eventID: number = 0, eventName: string = '', vendorID: number = 0, date: string = '', location: string = '') {
         this.eventID = eventID;
         this.eventName = eventName;
         this.vendorID = vendorID;

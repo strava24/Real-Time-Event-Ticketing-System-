@@ -4,20 +4,23 @@ import { environment } from '../../../environments/environment.development';
 import { Constant } from '../../constant/Constant';
 import { Observable } from 'rxjs';
 import { Events } from '../../model/class/Event';
+import { LoginService } from '../loginService/login.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EventService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private loginService: LoginService) { }
 
   getAllEvents() {
     return this.http.get(environment.API_URL + Constant.EVENT_METHOD.GET_ALL_EVENTS);
   }
 
-  getAllEventsByVendor() {
-    return this.http.get(environment.API_URL + Constant.EVENT_METHOD.GET_EVENTS_BY_VENDOR(1));
+  getAllEventsByVendor(vendorID: number) {
+
+    return this.http.get(environment.API_URL + Constant.EVENT_METHOD.GET_EVENTS_BY_VENDOR(vendorID));
+
   }
 
   updateEvent(event: Events) {

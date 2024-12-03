@@ -1,19 +1,33 @@
-<nav class="navbar navbar-expand-sm navbar-dark bg-primary">
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark sticky-top">
     <div class="container-fluid">
-        <a class="navbar-brand" href="javascript:void(0)">Logo</a>
+        <!-- <a class="navbar-brand" href="javascript:void(0)">Logo</a> -->
+
+        <img src="logo\icon.png" alt="TicketPulse-Logo" width="50" height="50">
+        <img src="logo\logo-text.png" alt="TicketPulse-Logo" width="100" height="20">
+
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="mynavbar">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link" routerLink="/master" routerLinkActive="active">Master</a>
+                    <a class="nav-link" routerLink="/vendor/vendor-dashboard" routerLinkActive="active">Vendor
+                        Dashboard</a>
                 </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/vendor/vendor-profile" routerLinkActive="active">Profile</a>
+                </li>
+
             </ul>
 
         </div>
 
-        <div class="nav-item next-right text-white">Vendor DashBoard</div>
+        <!-- <div class="nav-item next-right text-white">Vendor DashBoard</div> -->
+
+        <div class="d-flex">
+            <button class="btn btn-primary" type="button" (click)="onLogOff()">Log Off</button>
+        </div>
 
 
     </div>
