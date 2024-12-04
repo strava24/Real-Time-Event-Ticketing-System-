@@ -16,8 +16,8 @@ export class TicketPoolService {
     return this.http.get(environment.API_URL + Constant.TICKETPOOL_METHOD.GET_ALL_TICKETPOOLS(id));
   }
 
-  sellTicket(poolID: number) { // should get the vendorID as parameter as well
-    return this.http.get(environment.API_URL + Constant.TICKETPOOL_METHOD.SELL_TICKET(poolID, 1), { responseType: 'text' }); // hadrcoding vendor ID for now
+  sellTicket(poolID: number, vendorID: number) { // should get the vendorID as parameter as well
+    return this.http.get(environment.API_URL + Constant.TICKETPOOL_METHOD.SELL_TICKET(poolID, vendorID), { responseType: 'text' }); // hadrcoding vendor ID for now
   }
 
   createTicketPool(

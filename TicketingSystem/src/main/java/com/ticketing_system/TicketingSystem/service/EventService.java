@@ -6,7 +6,9 @@ import com.ticketing_system.TicketingSystem.model.Vendor;
 import com.ticketing_system.TicketingSystem.repository.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,7 +62,10 @@ public class EventService {
                     event.getEventName(),
                     event.getVendor().getVendorID(),
                     event.getEventDate().toString(),
-                    event.getLocation());
+                    event.getLocation(),
+                    event.getImageName(),
+                    event.getImageType(),
+                    event.getImageData());
         }
 
     }
@@ -75,7 +80,7 @@ public class EventService {
         if (vendor == null) {
             return null;
         } else {
-            return new Event(eventDTO.getEventName(), eventDTO.getDate().toString(), vendor, eventDTO.getLocation());
+            return new Event(eventDTO.getEventName(), eventDTO.getDate().toString(), vendor, eventDTO.getLocation(), eventDTO.getImageName(), eventDTO.getImageData(), eventDTO.getImageType());
         }
 
     }
@@ -100,6 +105,19 @@ public class EventService {
 
     public void deleteEvent(Event event) {
         eventRepo.delete(event);
+    }
+
+    public Event createEvent(EventDTO eventDTO, MultipartFile imageFile) throws IOException {
+        eventDTO.setImageName(imageFile.getOriginalFilename());
+        eventDTO.setImageType(imageFile.getContentType());
+        eventDTO.setImageData(imageFile.getBytes());
+
+        System.out.println(eventDTO);
+
+        Event event = convertToEventFromDTO(eventDTO);
+        System.out.println(event);
+        return eventRepo.save(event);
+
     }
 
 //    public int getAvailableTicketsByID(int eventID) {

@@ -18,7 +18,8 @@ export const appConfig: ApplicationConfig = {
       newestOnTop: true,
       closeButton: true,
       tapToDismiss: true,
-      progressBar: true
+      progressBar: true,
+      preventDuplicates: true
     }), // Toastr providers
   ],
 

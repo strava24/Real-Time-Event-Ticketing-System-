@@ -3,6 +3,13 @@
         <div class="card">
             <div class="card-header bg-primary text-white">Event List</div>
 
+            @if (eventList.length === 0) {
+            <div class="card-body">
+                <p class="text-center"><strong>There are no events yet</strong></p>
+                <img src="images/emptyEvents.jpg" alt="EmptyPool" id="empty-pool-image">
+            </div>
+            }
+            @else {
             <div class="card-body">
                 <table class="table table-bordered">
                     <thead>
@@ -35,12 +42,14 @@
 
                 </table>
             </div>
+            }
 
         </div>
     </div>
     <div class="col-4">
         <div class="card">
-            <div class="card-header bg-primary text-white">{{eventObj.eventID !== 0 ? 'Update Event': 'New Event'}}
+            <div class="card-header bg-primary text-white">{{eventObj.eventID !== 0 ? 'Update Event': 'Ceate New
+                Event'}}
             </div>
 
             <div class="card-body">
@@ -79,7 +88,7 @@
                             </div>
                         </div>
 
-                        <div class="col-12">
+                        <div class="col-6">
                             <label for="">Event Date</label>
                             <input type="date" #date="ngModel" class="form-control" name="date"
                                 [(ngModel)]="eventObj.date" [min]="minimumDate" required>
@@ -87,6 +96,14 @@
                             <span>This is required</span>
                             }
                         </div>
+
+
+                        <div class="col-6">
+                            <label for="imageFile">Event Image:</label>
+                            <input type="file" id="imageFile" (change)="onFileSelected($event)" accept="image/*"
+                                class="form-control" required>
+                        </div>
+
                     </div>
 
                     <div class="row text-center pt-3">
@@ -145,14 +162,12 @@
                             <label for="">Total Tickets</label>
                             <input type="number" [min]="ticketPoolObj.maxTicketCapacity + 1" step="1"
                                 [(ngModel)]="ticketPoolObj.totalTickets" name="totalTickets" required
-                                #maxTicketCapacity="ngModel">
+                                #totalTickets="ngModel">
 
                             <div class="text-danger">
-                                @if (location.touched) {
-                                @if (location?.errors?.['required']) {
-                                <span>This is required</span>
-                                }
-                                @if (maxTicketCapacity?.errors?.['min']) {
+                                @if (totalTickets.touched) {
+
+                                @if (totalTickets?.errors?.['min']) {
                                 <span>Total Tickets should be greater than Max Ticket Capacity</span>
                                 }
                                 }
@@ -231,6 +246,7 @@
 
             @else {
             <div class="card-body">
+                <p class="text-center"><strong>There are no pools yet</strong></p>
                 <img src="images/emptyPool.jpg" alt="EmptyPool" id="empty-pool-image">
             </div>
             }

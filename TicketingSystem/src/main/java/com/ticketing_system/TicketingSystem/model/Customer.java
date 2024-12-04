@@ -3,8 +3,6 @@ package com.ticketing_system.TicketingSystem.model;
 import jakarta.persistence.*;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Entity
 @Component
 public class Customer {
