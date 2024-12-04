@@ -2,19 +2,18 @@ import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { Constant } from '../../constant/Constant';
-import { Observable } from 'rxjs';
 import { Events } from '../../model/class/Event';
-import { LoginService } from '../loginService/login.service';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EventService {
 
-  constructor(private http: HttpClient, private loginService: LoginService) { }
+  constructor(private http: HttpClient) { }
 
-  getAllEvents() {
-    return this.http.get(environment.API_URL + Constant.EVENT_METHOD.GET_ALL_EVENTS);
+  getAllEvents(): Observable<Events[]> {
+    return this.http.get<Events[]>(environment.API_URL + Constant.EVENT_METHOD.GET_ALL_EVENTS);
   }
 
   getAllEventsByVendor(vendorID: number) {
@@ -35,6 +34,16 @@ export class EventService {
 
   saveEvent(event: Events) {
     return this.http.post(environment.API_URL + Constant.EVENT_METHOD.ADD_EVENT, event);
+  }
+
+  saveEventWithImage(formData: FormData) {
+    return this.http.post(environment.API_URL + Constant.EVENT_METHOD.ADD_EVENT_IMAGE, formData);
+  }
+
+  getImageByEventID(eventID: number): Observable<Blob> {
+    return this.http.get(environment.API_URL + Constant.EVENT_METHOD.GET_EVENT_IMAGE(eventID), {
+      responseType: 'blob',
+    });
   }
 
 }

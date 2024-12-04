@@ -35,6 +35,8 @@ export class VendorDashboardComponent implements OnInit {
   minimumDate: string; // Format: YYYY-MM-DD
   // vendorID: number = 1; // For now hard coded value
 
+  selectedFile: File | null = null;
+
   eventService = inject(EventService);
   ticketPoolService = inject(TicketPoolService);
   toastrService = inject(ToastrService);
@@ -106,17 +108,40 @@ export class VendorDashboardComponent implements OnInit {
   /**
    * Method to create a new event on the system
    */
+  // onSave() {
+
+  //   this.eventObj.vendorID = this.loginService.getVendorID();
+
+  //   this.eventService.saveEvent(this.eventObj).subscribe((response: any) => {
+  //     this.toastrService.success('Event saved successfully!', 'Success!');
+  //     this.eventObj = new Events();
+  //     this.getAllEvents();
+  //   }, error => {
+  //     this.toastrService.error('There was an issue');
+  //   })
+  // }
+
   onSave() {
 
     this.eventObj.vendorID = this.loginService.getVendorID();
 
-    this.eventService.saveEvent(this.eventObj).subscribe((response: any) => {
-      this.toastrService.success('Event saved successfully!', 'Success!');
-      this.eventObj = new Events();
-      this.getAllEvents();
-    }, error => {
-      this.toastrService.error('There was an issue');
-    })
+    if (this.selectedFile) {
+      const formData = new FormData();
+      formData.append('eventDTO', new Blob([JSON.stringify(this.eventObj)], { type: 'application/json' }));
+      formData.append('imageFile', this.selectedFile);
+
+      this.eventService.saveEventWithImage(formData)
+        .subscribe(
+          response => {
+            console.log('Event created successfully:', response);
+            this.toastrService.success('Created event successfully!');
+            this.getAllEvents();
+          },
+          error => {
+            console.error('Error creating event:', error);
+          }
+        );
+    }
   }
 
   onDelete(id: number) {
@@ -183,13 +208,15 @@ export class VendorDashboardComponent implements OnInit {
     }
   }
 
-  startTicketSelling(id: number,): void {
+  startTicketSelling(poolIDd: number): void {
 
-    if (!this.isSelling) {
+    const vendorID: number = this.loginService.getVendorID();
+
+    if (!this.isSelling && vendorID !== -1) {
 
       this.isSelling = true;
       this.intervalId = setInterval(() => {
-        this.ticketPoolService.sellTicket(id).subscribe({
+        this.ticketPoolService.sellTicket(poolIDd, vendorID).subscribe({
           next: (response) => {
             this.toastrService.info('Ticket Sold!');
             console.log('Ticket sold:', response);
@@ -206,6 +233,8 @@ export class VendorDashboardComponent implements OnInit {
           }
         });
       }, 1000);
+    } else {
+      this.toastrService.error('Login to the system!')
     }
   }
 
@@ -228,6 +257,13 @@ export class VendorDashboardComponent implements OnInit {
       }
     )
 
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+    }
   }
 
 }

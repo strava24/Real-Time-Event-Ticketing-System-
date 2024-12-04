@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Entity
@@ -17,6 +18,11 @@ public class Event{
     private String eventName;
     private LocalDate eventDate;
     private String location;
+
+    private String imageName;
+    private String imageType;
+    @Lob
+    private byte[] imageData;
 
     // Reference to foreign Key
     @ManyToOne
@@ -36,6 +42,18 @@ public class Event{
 
     public Event() {}
 
+    public Event(String eventName, String date, Vendor vendor, String location, String imageName, byte[] imageData, String imageType) {
+
+        this.eventName = eventName;
+        this.eventDate = LocalDate.parse(date);
+        this.location = location;
+        this.imageName = imageName;
+        this.imageData = imageData;
+        this.imageType = imageType;
+        this.vendor = vendor;
+        this.ticketPools = new ArrayList<>();
+
+    }
 
 
     public int getEventID() {
@@ -60,14 +78,6 @@ public class Event{
 
     public List<TicketPool> getTicketPools() {
         return ticketPools;
-    }
-
-    @Override
-    public String toString() {
-        return "Event{" +
-                "eventID=" + eventID +
-                ", eventName='" + eventName + '\'' +
-                '}';
     }
 
     public TicketPool createTicketPool(String poolName, int ticketPrice, int maxTicketCapacity, int totalTickets) {
@@ -95,5 +105,43 @@ public class Event{
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getImageName() {
+        return imageName;
+    }
+
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
+    }
+
+    public String getImageType() {
+        return imageType;
+    }
+
+    public void setImageType(String imageType) {
+        this.imageType = imageType;
+    }
+
+    public byte[] getImageData() {
+        return imageData;
+    }
+
+    public void setImageData(byte[] imageData) {
+        this.imageData = imageData;
+    }
+
+    @Override
+    public String toString() {
+        return "Event{" +
+                "eventID=" + eventID +
+                ", eventName='" + eventName + '\'' +
+                ", eventDate=" + eventDate +
+                ", location='" + location + '\'' +
+                ", imageName='" + imageName + '\'' +
+                ", imageType='" + imageType + '\'' +
+                ", vendor=" + vendor +
+                ", ticketPools=" + ticketPools +
+                '}';
     }
 }

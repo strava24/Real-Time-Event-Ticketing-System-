@@ -66,12 +66,12 @@ public class TicketPoolService {
 
     /**
      * Method handling the business logic to add a ticket to a pool
-     * @param aiVendorID
+     * @param vendorID
      * @return
      */
-    public synchronized boolean addTicket(int aiVendorID, int poolId) {
+    public synchronized boolean addTicket(int vendorID, int poolId) {
 
-        Vendor vendor = vendorService.getVendorByID(aiVendorID);
+        Vendor vendor = vendorService.getVendorByID(vendorID);
         TicketPool ticketPool = findTicketPoolByID(poolId);
 
         if (vendor != null && ticketPool != null) {
@@ -79,6 +79,7 @@ public class TicketPoolService {
 
             if (ticketService.addTicket(ticket))  {
                 System.out.println(vendor.getVendorName() + " sold " + vendor.incrementTicketsSold() + " tickets");
+                vendor.incrementTicketsSold();
             }
             return ticketService.addTicket(ticket);
 

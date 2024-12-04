@@ -4,6 +4,7 @@ import { environment } from '../../../environments/environment.development';
 import { Constant } from '../../constant/Constant';
 import { Login } from '../../model/interface/Credentials';
 import { Router } from '@angular/router';
+import { Customer } from '../../model/class/Customer';
 
 @Injectable({
   providedIn: 'root'
@@ -42,6 +43,14 @@ export class LoginService {
       .set('password', loginObj.password)
 
     return this.http.post<number>(environment.API_URL + Constant.VENDOR_METHOD.LOGIN_VENDOR, {}, { params });
+  }
+
+  loginCustomer(loginObj: Login) {
+    let params = new HttpParams()
+      .set('email', loginObj.email)
+      .set('password', loginObj.password)
+
+    return this.http.post<Customer>(environment.API_URL + Constant.CUSTOMER_METHOD.LOGIN_CUSTOMER, {}, { params });
   }
 
 

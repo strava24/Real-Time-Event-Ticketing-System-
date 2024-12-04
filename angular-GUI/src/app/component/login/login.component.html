@@ -44,10 +44,15 @@
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    <div class="d-grid">
-                                        <button class="btn bsb-btn-xl btn-primary" type="submit" (click)="onLogin()"
-                                            [disabled]="!form.valid">Log
-                                            in now</button>
+
+                                    <div class="d-flex justify-content-center">
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-primary"
+                                                (click)="onLoginVendor()">Login as
+                                                Vendor</button>
+                                            <button type="button" class="btn btn-primary"
+                                                (click)="onLoginCustomer()">Login as Customer</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -56,7 +61,7 @@
                             <div class="col-12">
                                 <hr class="mt-5 mb-4 border-secondary-subtle">
                                 <div class="text-center">
-                                    <a href="#!" class="link-secondary text-decoration-none "
+                                    <a href="signup" class="link-secondary text-decoration-none "
                                         (click)="onSingup()">Create new
                                         account</a>
                                 </div>
@@ -67,3 +72,9 @@
             </div>
         </div>
     </div>
+
+</section>
+
+<div class="contiainer pt-1">
+    <router-outlet></router-outlet>
+</div>
