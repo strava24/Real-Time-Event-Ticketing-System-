@@ -1,10 +1,12 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { Constant } from '../../constant/Constant';
-import { Login } from '../../model/interface/Credentials';
+import { CustomerCredentials, Login, VendorCredentials } from '../../model/interface/Credentials';
 import { Router } from '@angular/router';
 import { Customer } from '../../model/class/Customer';
+import { Vendor } from '../../model/class/Vendor';
+import { retryWhen } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -36,6 +38,18 @@ export class LoginService {
     }
   }
 
+  getCustomerID() {
+    const data: string | null = localStorage.getItem('customer');
+
+    if (data === null) {
+      this.router.navigateByUrl('/login');
+      return -1;
+    } else {
+      const customer: Customer = JSON.parse(data);
+      return customer.customerID;
+    }
+  }
+
   loginVendor(loginObj: Login) {
 
     let params = new HttpParams()
@@ -53,6 +67,36 @@ export class LoginService {
     return this.http.post<Customer>(environment.API_URL + Constant.CUSTOMER_METHOD.LOGIN_CUSTOMER, {}, { params });
   }
 
+  signupVendor(vendor: VendorCredentials) {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
+    return this.http.post<number>(environment.API_URL + Constant.VENDOR_METHOD.SIGNUP_VENDOR, vendor, { headers });
+  }
+
+  signupCustomer(customer: CustomerCredentials) {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    return this.http.post<Customer>(environment.API_URL + Constant.CUSTOMER_METHOD.SIGNUP_CUSTOMER, customer, { headers });
+  }
+
+  getVendorDetails(vendorID: number) {
+    return this.http.get<Vendor>(environment.API_URL + Constant.VENDOR_METHOD.GET_VENDOR(vendorID));
+  }
+
+  updateVendor(vendor: Vendor) {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    return this.http.put<boolean>(environment.API_URL + Constant.VENDOR_METHOD.UPDATE_VENDOR(vendor.vendorID), vendor, { headers });
+  }
+
+  getCustomerDetails(customerID: number) {
+    return this.http.get<Customer>(environment.API_URL + Constant.CUSTOMER_METHOD.GET_CUSTOMER(customerID));
+  }
+
+  updateCustomer(customer: Customer) {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    return this.http.put<boolean>(environment.API_URL + Constant.CUSTOMER_METHOD.UPDATE_CUSTOMER(customer.customerID), customer, { headers });
+  }
 
 }

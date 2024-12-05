@@ -68,15 +68,14 @@ public class VendorController {
     }
 
 
-    // Update functionality not working
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateVendorByID(@PathVariable int id, @RequestBody Vendor vendor) {
+    public ResponseEntity<Boolean> updateVendorByID(@PathVariable int id, @RequestBody Vendor vendor) {
         Vendor vendor1 =  vendorService.updateVendorByID(id, vendor);
 
         if (vendor1 != null)
-            return new ResponseEntity<>("Updated vendor details!", HttpStatus.OK);
+            return new ResponseEntity<>(true, HttpStatus.OK);
         else
-            return new ResponseEntity<>("There is no such vendor!", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/events/{id}")

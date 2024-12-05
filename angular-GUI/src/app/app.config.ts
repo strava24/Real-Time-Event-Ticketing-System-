@@ -13,14 +13,13 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimations(), // required animations providers
     provideToastr({
-      timeOut: 5000,
+      timeOut: 3000,
       positionClass: 'toast-bottom-right',
       newestOnTop: true,
       closeButton: true,
       tapToDismiss: true,
       progressBar: true,
-      preventDuplicates: true
-    }), // Toastr providers
+    }),
   ],
 
 };

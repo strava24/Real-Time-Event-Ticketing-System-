@@ -14,9 +14,16 @@ export const Constant = {
         CREATE_POOL: (eventID: number) => `ticket-pool/create/${eventID}`
     },
     VENDOR_METHOD: {
-        LOGIN_VENDOR: 'vendors/login'
+        LOGIN_VENDOR: 'vendors/login',
+        SIGNUP_VENDOR: 'vendors/signup',
+        GET_VENDOR: (vendorID: number) => `vendors/${vendorID}`,
+        UPDATE_VENDOR: (vendorID: number) => `vendors/${vendorID}`, // put request
+        GET_EVENT_COUNT: (vendorID: number) => `vendors/events/${vendorID}`
     },
     CUSTOMER_METHOD: {
-        LOGIN_CUSTOMER: 'customers/login'
+        LOGIN_CUSTOMER: 'customers/login',
+        SIGNUP_CUSTOMER: 'customers/signup',
+        GET_CUSTOMER: (customerID: number) => `customers/${customerID}`,
+        UPDATE_CUSTOMER: (customerID: number) => `customers/${customerID}` // put request
     }
 }

@@ -57,4 +57,12 @@ public class Customer {
     public int incrementBoughtTickets() {
        return this.boughtTickets++;
     }
+
+    public int getBoughtTickets() {
+        return boughtTickets;
+    }
+
+    public void setBoughtTickets(int boughtTickets) {
+        this.boughtTickets = boughtTickets;
+    }
 }

@@ -46,4 +46,8 @@ export class EventService {
     });
   }
 
+  getEventCoustByEvndorID(vendorID: number) {
+    return this.http.get<number>(environment.API_URL + Constant.VENDOR_METHOD.GET_EVENT_COUNT(vendorID));
+  }
+
 }

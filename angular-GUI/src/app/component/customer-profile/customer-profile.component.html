@@ -1,4 +1,92 @@
 <div class="row ms-5 me-5 pt-3">
-    <p>customer-profile works!</p>
+    <div class="col-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                Customer Profile
+                <button class="btn custom-btn" (click)="onEdit()">
+                    <i class="bi bi-pencil-square"></i>
+                </button>
+            </div>
+            <div class="card-body text-center" style="height: 250px;">
+                <div>
+                    <img src="images/profile.jpg" alt="EmptyPool" id="empty-pool-image" style="height: 180px;">
+                </div>
+                <strong>{{customerDetails.customerName}}</strong>
+                <div>
+                    <span class="badge bg-success">{{customerDetails.boughtTickets}} Tickets Bought</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                customer Details
+            </div>
+
+            <div class="card-body" style="height: 250px;">
+                <table class=" table table-bordered">
+                    <tbody>
+                        <tr>
+                            <th>Customer ID</th>
+                            <td>C{{customerDetails.customerID}}</td>
+                        </tr>
+                        <tr>
+                            <th>Customer Name</th>
+                            <td>{{customerDetails.customerName}}</td>
+                        </tr>
+                        <tr>
+                            <th>Customer Email</th>
+                            <td>{{customerDetails.customerEmail}}</td>
+                        </tr>
+                        <tr>
+                            <th>Customer Password</th>
+                            <td>{{customerDetails.customerPassword}}</td>
+                        </tr>
+                        <tr>
+                            <th>Tickets Bought</th>
+                            <td>{{customerDetails.boughtTickets}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
 
 </div>
+
+@if (inEditMode) {
+<div class="row ms-5 me-5 pt-3">
+    <div class="card">
+        <div class="card-body">
+            <form #form="ngForm">
+                <div class="col-12">
+                    <label for="customerName">Customer Name</label>
+                    <input type="text" #customerName="ngModel" required class="form-control" name="customerName"
+                        id="customerName" minlength="5" [(ngModel)]="customerDetails.customerName">
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <label for="customerEmail">Customer Email</label>
+                        <input type="text" #customerEmail="ngModel" required class="form-control" name="customerEmail"
+                            id="customerEmail" minlength="5" [(ngModel)]="customerDetails.customerEmail">
+                    </div>
+                    <div class="col-6">
+                        <label for="customerPassword">Customer Password</label>
+                        <input type="text" #customerPassword="ngModel" required class="form-control"
+                            name="customerPassword" id="customerPassword" minlength="5"
+                            [(ngModel)]="customerDetails.customerPassword">
+                    </div>
+                </div>
+
+                <div class="col-12 pt-3 text-center">
+                    <button class="btn btn-success" (click)="onUpdate()">Update</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+}
