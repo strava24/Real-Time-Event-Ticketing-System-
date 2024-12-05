@@ -4,6 +4,9 @@ import com.ticketing_system.TicketingSystem.DTO.VendorDTO;
 import com.ticketing_system.TicketingSystem.model.Vendor;
 import com.ticketing_system.TicketingSystem.repository.EventRepository;
 import com.ticketing_system.TicketingSystem.repository.VendorRepository;
+import org.apache.logging.log4j.LogManager;
+
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +16,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class VendorService {
+
+    private static final Logger logger = LogManager.getLogger(VendorService.class);;
 
     @Autowired
     private VendorRepository vendorRepo;
@@ -30,12 +35,14 @@ public class VendorService {
         if (vendor == null) {
             return null;
         } else {
+            logger.info("Retrieving data about vendor with ID : V{}", vendor.getVendorID());
             return new VendorDTO(vendor.getVendorID(), vendor.getVendorName(), vendor.getVendorEmail(), vendor.getVendorPassword(), vendor.getTicketsSold());
         }
 
     }
 
     public List<VendorDTO> getAllVendors() {
+        logger.info("Retrieving all vendors");
         return vendorRepo.findAll().stream()
                 .map(vendor -> new VendorDTO(
                         vendor.getVendorID(),
@@ -58,6 +65,7 @@ public class VendorService {
 
         // Checking if a vendor with this email exists if so checking if the credentials are matching
         if (vendor.isPresent() && vendor.get().getVendorPassword().equals(password)) {
+            logger.info("Vendor with ID V{} has logged successfully.", vendor.get().getVendorID());
             return vendor.get();
         }
         return null;
@@ -68,10 +76,12 @@ public class VendorService {
     }
 
     public Vendor updateVendorByID(int id, Vendor vendor) {
+        logger.info("Updating vendor with ID : V{}", vendor.getVendorID());
         return vendorRepo.save(vendor);
     }
 
     public int getNoOfEventsHostedByVendorID(int id) {
+        logger.info("Retrieving no of events hosted by vendor ID : V{}", id);
         return eventRepo.countByVendorId(id);
     }
 

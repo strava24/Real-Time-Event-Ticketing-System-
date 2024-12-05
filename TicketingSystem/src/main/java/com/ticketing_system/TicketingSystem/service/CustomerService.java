@@ -2,6 +2,8 @@ package com.ticketing_system.TicketingSystem.service;
 
 import com.ticketing_system.TicketingSystem.model.Customer;
 import com.ticketing_system.TicketingSystem.repository.CustomerRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +11,8 @@ import java.util.Optional;
 
 @Service
 public class CustomerService {
+
+    private static final Logger logger = LogManager.getLogger(CustomerService.class);
 
     @Autowired
     CustomerRepository customerRepo;
@@ -29,12 +33,14 @@ public class CustomerService {
 
         // Checking if a customer of this email exists and if so checking if the credentials are matching
         if (customer.isPresent() && customer.get().getCustomerPassword().equals(password)) {
+            logger.info("Customer logged in C{}", customer.get().getCustomerID());
             return customer.get();
         }
         return null;
     }
 
     public Customer signupCustomer(Customer customer) {
+        logger.info("New customer named {} signed in", customer.getCustomerName());
         return customerRepo.save(customer);
     }
 

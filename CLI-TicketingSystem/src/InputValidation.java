@@ -102,12 +102,12 @@ public final class InputValidation {
 
     /**
      * This method is to get a valid index among to choose a valid index among the configurations
-     * @param configs - list of Configurations
+     * @param list - list of Configurations
      * @return - returns a valid configuration if there is no configurations saved on the DB returns null
      */
-    public static int getValidIndex(List<Configuration> configs) {
-        for (int i = 0; i < configs.size(); i++) {
-            System.out.println(i + " - " + configs.get(i).toString() + "\n"); // Printing all the configurations on the backend along with the index
+    public static int getValidIndex(List<?> list) {
+        for (int i = 0; i < list.size(); i++) {
+            System.out.println(i + " - " + list.get(i).toString() + "\n"); // Printing all the configurations on the backend along with the index
         }
 
         int index = 0;
@@ -115,11 +115,11 @@ public final class InputValidation {
 
         do {
             notValid = true;
-            System.out.print("Enter the index of your chosen configuration: ");
+            System.out.print("Enter the index of your choice: ");
             try {
                 index = input.nextInt();
 
-                if (index < 0 || index > configs.size() - 1) {
+                if (index < 0 || index > list.size() - 1) {
                     notValid = false;
                     System.out.println("There is no such index!");
                 }
@@ -134,5 +134,7 @@ public final class InputValidation {
         return index;
 
     }
+
+
 
 }

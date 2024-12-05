@@ -3,6 +3,8 @@ package com.ticketing_system.TicketingSystem.controller;
 import com.ticketing_system.TicketingSystem.DTO.VendorDTO;
 import com.ticketing_system.TicketingSystem.model.Vendor;
 import com.ticketing_system.TicketingSystem.service.VendorService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,8 @@ import java.util.List;
 @RequestMapping("/api/vendors")
 @CrossOrigin(origins = "http://localhost:4209")
 public class VendorController {
+
+    private static final Logger logger = LogManager.getLogger(VendorController.class);
 
     @Autowired
     private VendorService vendorService;
@@ -62,9 +66,8 @@ public class VendorController {
     @PostMapping("/signup")
     public ResponseEntity<Integer> signupVendor(@RequestBody Vendor vendor) {
         Vendor newVendor = vendorService.signupVendor(vendor);
-
+        logger.info("Vendor with ID V{} has logged successfully.", newVendor.getVendorID());
         return new ResponseEntity<>(newVendor.getVendorID(), HttpStatus.OK);
-
     }
 
 

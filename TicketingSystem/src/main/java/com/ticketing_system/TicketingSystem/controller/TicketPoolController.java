@@ -1,7 +1,6 @@
 package com.ticketing_system.TicketingSystem.controller;
 
 import com.ticketing_system.TicketingSystem.DTO.TicketPoolDTO;
-import com.ticketing_system.TicketingSystem.model.Configuration;
 import com.ticketing_system.TicketingSystem.service.TicketPoolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,11 +31,6 @@ public class TicketPoolController {
 
     }
 
-    /**
-     * @param configuration - the automatic configuration from the user
-     * @param eventID
-     * @return
-     */
     @PostMapping("/create/{eventID}")
     public ResponseEntity<Map<String, Integer>> createTicketPool(@PathVariable int eventID, @RequestParam String poolName, @RequestParam int ticketPrice, @RequestParam int maxTicketCapacity, @RequestParam int totalTickets) {
 

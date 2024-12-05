@@ -3,6 +3,8 @@ package com.ticketing_system.TicketingSystem.service;
 import com.ticketing_system.TicketingSystem.DTO.TicketPoolDTO;
 import com.ticketing_system.TicketingSystem.model.*;
 import com.ticketing_system.TicketingSystem.repository.TicketPoolRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class TicketPoolService {
+
+    private static final Logger logger = LogManager.getLogger(TicketPoolService.class);
 
     @Autowired
     VendorService vendorService;
@@ -46,7 +50,7 @@ public class TicketPoolService {
                 TicketPool ticketPool =  vendor.createNewTicketPool(event, maxTicketCapacity, totalTickets, poolName, ticketPrice);
                 saveTicketPool(ticketPool);
 
-                System.out.println(ticketPool.getPoolID());
+                logger.info("Created Ticket Pool with ID : P{}", ticketPool.getPoolID());
 
                 Map<String, Integer> map = new HashMap<>();
                 map.put("poolID", ticketPool.getPoolID());
@@ -78,8 +82,8 @@ public class TicketPoolService {
             Ticket ticket =  ticketPool.addTicket();
 
             if (ticketService.addTicket(ticket))  {
-                System.out.println(vendor.getVendorName() + " sold " + vendor.incrementTicketsSold() + " tickets");
-                vendor.incrementTicketsSold();
+                int count =  vendor.incrementTicketsSold();
+                logger.info("{} has sold {} tickets", vendor.getVendorName(), count);
             }
             return ticketService.addTicket(ticket);
 
@@ -106,10 +110,13 @@ public class TicketPoolService {
         if (customer != null && ticketPool != null) {
 
             Ticket ticket = ticketPool.removeTicket();
-            if (ticketService.removeTicket(ticket)) {
-                System.out.println(customer.getCustomerName() + " bought " + customer.incrementBoughtTickets() + " tickets");
+
+            boolean removed = ticketService.removeTicket(ticket);
+
+            if (removed) {
+                logger.info("{} has bought {} tickets", customer.getCustomerName(), customer.incrementBoughtTickets());
             }
-            return ticketService.removeTicket(ticket);
+            return removed;
 
         } else
             return false;
@@ -126,6 +133,9 @@ public class TicketPoolService {
         if (ticketPools.isEmpty()) {
             return null;
         } else {
+
+            logger.info("Retrieving all the ticket pools from E{}", eventID);
+
             return ticketPools.stream()
                     .map(ticketPool -> new TicketPoolDTO(
                             ticketPool.getPoolID(),

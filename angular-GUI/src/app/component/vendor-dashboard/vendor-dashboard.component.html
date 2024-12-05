@@ -4,9 +4,9 @@
             <div class="card-header bg-primary text-white">Event List</div>
 
             @if (eventList.length === 0) {
-            <div class="card-body">
+            <div class="card-body" style="height: 295px;">
                 <p class="text-center"><strong>There are no events yet</strong></p>
-                <img src="images/emptyEvents.jpg" alt="EmptyPool" id="empty-pool-image">
+                <img src="images/emptyEvents.jpg" alt="EmptyPool" id="empty-pool-image" style="height: 220px;">
             </div>
             }
             @else {
@@ -52,7 +52,7 @@
                 Event'}}
             </div>
 
-            <div class="card-body">
+            <div class="card-body ">
                 <form #form="ngForm">
                     <div class="row">
                         <div class="col-12">

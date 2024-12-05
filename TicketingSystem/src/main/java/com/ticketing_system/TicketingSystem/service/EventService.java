@@ -4,6 +4,8 @@ import com.ticketing_system.TicketingSystem.DTO.EventDTO;
 import com.ticketing_system.TicketingSystem.model.Event;
 import com.ticketing_system.TicketingSystem.model.Vendor;
 import com.ticketing_system.TicketingSystem.repository.EventRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,12 +17,15 @@ import java.util.stream.Collectors;
 @Service
 public class EventService {
 
+    private static final Logger logger = LogManager.getLogger(EventService.class);
+
     @Autowired
     private EventRepository eventRepo;
     @Autowired
     private VendorService vendorService;
 
     public List<EventDTO> getAllEvents() {
+        logger.info("Retrieving all events");
         return eventRepo.findAll().stream()
                 .map(event -> new EventDTO(
                         event.getEventID(),
@@ -35,7 +40,7 @@ public class EventService {
     public int createEvent(Event event) {
         eventRepo.save(event);
         event.getVendor().addNewEvent(event);
-
+        logger.info("Created an event with ID: E{}", event.getEventID());
         return event.getEventID();
     }
 
@@ -57,6 +62,7 @@ public class EventService {
         if (event == null) {
             return null;
         } else {
+
             return new EventDTO(
                     event.getEventID(),
                     event.getEventName(),
@@ -87,6 +93,8 @@ public class EventService {
 
     public List<EventDTO> getAllEventsByVendorID(int vendorID) {
 
+        logger.info("Retrieving all events by Vendor ID V{}", vendorID);
+
         return eventRepo.findByVendorId(vendorID).stream()
                 .map(event -> new EventDTO(
                         event.getEventID(),
@@ -112,10 +120,9 @@ public class EventService {
         eventDTO.setImageType(imageFile.getContentType());
         eventDTO.setImageData(imageFile.getBytes());
 
-        System.out.println(eventDTO);
-
         Event event = convertToEventFromDTO(eventDTO);
         System.out.println(event);
+        logger.info("Created an event with image data");
         return eventRepo.save(event);
 
     }

@@ -4,6 +4,8 @@ import com.ticketing_system.TicketingSystem.DTO.EventDTO;
 import com.ticketing_system.TicketingSystem.model.Event;
 import com.ticketing_system.TicketingSystem.service.EventService;
 import com.ticketing_system.TicketingSystem.service.VendorService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,10 +21,14 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:4209")
 public class EventController {
 
+    private static final Logger logger = LogManager.getLogger(EventController.class);
+
     @Autowired
     private EventService eventService;
     @Autowired
     private VendorService vendorService;
+    @Autowired
+    private Event event;
 
     @GetMapping
     public ResponseEntity<List<EventDTO>> getAllEvents() {
@@ -62,9 +68,15 @@ public class EventController {
 
             EventDTO event1 = eventService.getEvenDTOByID(event.getEventID());
 
-            return new ResponseEntity<>(event1, HttpStatus.OK);
+            if (event1 != null) {
+                logger.info("Retrieved event with ID: E{}", event.getEventID());
+                return new ResponseEntity<>(event1, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+            }
+
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            logger.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 

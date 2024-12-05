@@ -23,6 +23,8 @@ public final class ApiUtils {
 
     static String url = "http://localhost:8080/api";
 
+    private ApiUtils() {}
+
     /**
      * this method is to create a ticket pool on the backend
      * There should be an event that holds the ticket pool
@@ -32,7 +34,6 @@ public final class ApiUtils {
      * @throws Exception - There is a  possibility fot IOException or InterruptedException
      */
     public static void createNewTicketPool(Configuration configuration) throws Exception{
-        String jsonRequest = gson.toJson(configuration);
 
         // Hardcoded values for poolName and ticketPrice
         String poolName = "VIP Pool";
@@ -65,9 +66,8 @@ public final class ApiUtils {
         poolID = details.get("poolID");
     }
 
-    private ApiUtils() {}
-
     public static void createNewEvent() throws Exception {
+
         // Manually constructing the JSON payload as a String
         String requestBody = "{"
                 + "\"eventName\":\"A.I. Meetup\","
@@ -308,6 +308,62 @@ public final class ApiUtils {
         System.out.println("Successfully created vendor account");
     }
 
+    public static TicketPool getExistingPool() throws Exception{
+        HttpRequest getRequest = HttpRequest.newBuilder()
+                // Have to update the event ID
+                .uri(new URI( url +"/ticket-pool/" + eventID)) // api endpoint
+                .GET() // Can get rid of this line as well, cause GET by default
+                .build();
+
+        HttpResponse<String> getResponse = HttpClient.newHttpClient().send(getRequest, HttpResponse.BodyHandlers.ofString()); // This is to accept the response as a string
+
+        if (getResponse.statusCode() == 200) {
+            /* This line captures the generic type List<TicketPool> and retrieves it as a Type object,
+           which is passed to Gson to guide the deserialization process.*/
+            Type listType = new TypeToken<List<TicketPool>>() {}.getType();
+            List<TicketPool> pools = gson.fromJson(getResponse.body(), listType);
+
+            if (pools.isEmpty()) {
+                return null;
+            } else {
+                int index = InputValidation.getValidIndex(pools);
+                TicketPool pool = pools.get(index);
+                poolID = pool.getPoolID();
+                return pool;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public static Event getExistingEvents() throws Exception {
+        HttpRequest getRequest = HttpRequest.newBuilder()
+                // Have to update the event ID
+                .uri(new URI( url +"/events")) // api endpoint
+                .GET() // Can get rid of this line as well, cause GET by default
+                .build();
+
+        HttpResponse<String> getResponse = HttpClient.newHttpClient().send(getRequest, HttpResponse.BodyHandlers.ofString()); // This is to accept the response as a string
+
+         if (getResponse.statusCode() == 200) {
+            /* This line captures the generic type List<Event> and retrieves it as a Type object,
+           which is passed to Gson to guide the deserialization process.*/
+             Type listType = new TypeToken<List<Event>>() {}.getType();
+             List<Event> events = gson.fromJson(getResponse.body(), listType);
+
+             if (events.isEmpty()) {
+                 return null;
+             } else {
+                 int index = InputValidation.getValidIndex(events);
+                 Event event = events.get(index);
+                 eventID = event.getEventID();
+                 System.out.println("Targeting even with ID " + eventID);
+                 return event;
+             }
+         } else {
+             return null;
+         }
+    }
 
 
 }

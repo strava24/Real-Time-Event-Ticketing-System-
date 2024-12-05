@@ -29,4 +29,11 @@ public class Ticket {
         return version;
     }
 
+    public int getTicketID() {
+        return ticketID;
+    }
+
+    public TicketPool getTicketPool() {
+        return ticketPool;
+    }
 }
