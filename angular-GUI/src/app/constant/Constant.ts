@@ -11,7 +11,8 @@ export const Constant = {
     TICKETPOOL_METHOD: {
         GET_ALL_TICKETPOOLS: (eventID: number) => `ticket-pool/${eventID}`,
         SELL_TICKET: (poolID: number, vendorID: number) => `ticket-pool/${poolID}/sell-ticket/${vendorID}`,
-        CREATE_POOL: (eventID: number) => `ticket-pool/create/${eventID}`
+        CREATE_POOL: (eventID: number) => `ticket-pool/create/${eventID}`,
+        BUY_TICKET: (poolID: number, customerID: number) => `ticket-pool/${poolID}/buy-ticket/${customerID}`
     },
     VENDOR_METHOD: {
         LOGIN_VENDOR: 'vendors/login',

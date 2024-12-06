@@ -97,7 +97,7 @@ public class TicketPool {
 
                 tickets.add(ticket);
 
-                logger.info("Produced a ticket into : P{} total tickets produced on the pool : {}", this.poolID, this.ticketsSold);
+                logger.info("Produced a ticket into : P{},  Current size of the pool : {}, total tickets produced on the pool : {}", this.poolID, this.tickets.size() , this.ticketsSold);
                 // This wakes up the threads that waits for this condition
                 ticketsSold++;
             } else {
@@ -132,7 +132,7 @@ public class TicketPool {
                 Ticket ticket = tickets.removeFirst();
                 ticketsBought++;
 
-                logger.info("Consumed a ticket from : P{} total tickets consumed are : {}", this.poolID, ticketsBought);
+                logger.info("Consumed a ticket from : P{}, Current size of the pool : {},  total tickets consumed are : {}", this.poolID, this.tickets.size(), ticketsBought);
                 return ticket;
             } else {
                 logger.warn("All the tickets are consumed!");

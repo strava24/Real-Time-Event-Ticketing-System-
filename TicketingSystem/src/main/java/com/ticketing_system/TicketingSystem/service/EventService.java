@@ -124,7 +124,6 @@ public class EventService {
         System.out.println(event);
         logger.info("Created an event with image data");
         return eventRepo.save(event);
-
     }
 
 //    public int getAvailableTicketsByID(int eventID) {

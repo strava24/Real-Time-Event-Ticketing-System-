@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { Constant } from '../../constant/Constant';
@@ -16,8 +16,12 @@ export class TicketPoolService {
     return this.http.get(environment.API_URL + Constant.TICKETPOOL_METHOD.GET_ALL_TICKETPOOLS(id));
   }
 
-  sellTicket(poolID: number, vendorID: number) { // should get the vendorID as parameter as well
-    return this.http.get(environment.API_URL + Constant.TICKETPOOL_METHOD.SELL_TICKET(poolID, vendorID), { responseType: 'text' }); // hadrcoding vendor ID for now
+  sellTicket(poolID: number, vendorID: number) {
+    return this.http.get(environment.API_URL + Constant.TICKETPOOL_METHOD.SELL_TICKET(poolID, vendorID), { responseType: 'text' });
+  }
+
+  buyTicket(poolID: number, customerID: number) {
+    return this.http.get(environment.API_URL + Constant.TICKETPOOL_METHOD.BUY_TICKET(poolID, customerID), { responseType: 'text' })
   }
 
   createTicketPool(
@@ -39,6 +43,5 @@ export class TicketPoolService {
     );
 
   }
-
 
 }

@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Service
 public class VendorService {
 
-    private static final Logger logger = LogManager.getLogger(VendorService.class);;
+    private static final Logger logger = LogManager.getLogger(VendorService.class);
 
     @Autowired
     private VendorRepository vendorRepo;

@@ -75,7 +75,7 @@ public class Main {
         simulationMenu();
     }
 
-    public static void simulationMenu() throws Exception {
+    public static void simulationMenu() {
         Vendor producer = new Vendor();
         Customer consumer = new Customer();
 
