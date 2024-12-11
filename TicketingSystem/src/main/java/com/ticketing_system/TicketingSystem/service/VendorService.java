@@ -25,10 +25,20 @@ public class VendorService {
     @Autowired
     private EventRepository eventRepo;
 
+    /**
+     * Method to get a vendor by ID
+     * @param id - Vendor ID
+     * @return - Vendor object
+     */
     public Vendor getVendorByID(int id) {
         return vendorRepo.findById(id).orElse(null);
     }
 
+    /**
+     * Method to get a vendor data transfer object by ID
+     * @param vendorID - Vendor ID
+     * @return - Vendor data transfer object
+     */
     public VendorDTO getVendorDTOByID(int vendorID) {
         Vendor vendor = vendorRepo.findById(vendorID).orElse(null);
 
@@ -41,6 +51,10 @@ public class VendorService {
 
     }
 
+    /**
+     * Method to get all the vendors in the system
+     * @return list of vendor data transfer object
+     */
     public List<VendorDTO> getAllVendors() {
         logger.info("Retrieving all vendors");
         return vendorRepo.findAll().stream()
@@ -71,15 +85,31 @@ public class VendorService {
         return null;
     }
 
+    /**
+     * Method to sign up a vendor into the system
+     * @param vendor - The vendor object
+     * @return - The registered vendor
+     */
     public Vendor signupVendor(Vendor vendor) {
         return vendorRepo.save(vendor);
     }
 
+    /**
+     * Method to update a vendor
+     * @param id - Vendor ID
+     * @param vendor - Vendor Object
+     * @return - Updated vendor object
+     */
     public Vendor updateVendorByID(int id, Vendor vendor) {
         logger.info("Updating vendor with ID : V{}", vendor.getVendorID());
         return vendorRepo.save(vendor);
     }
 
+    /**
+     * Method to get the no of events hosted by a vendor
+     * @param id - Vendor ID
+     * @return - No of events hosted by the vendor
+     */
     public int getNoOfEventsHostedByVendorID(int id) {
         logger.info("Retrieving no of events hosted by vendor ID : V{}", id);
         return eventRepo.countByVendorId(id);

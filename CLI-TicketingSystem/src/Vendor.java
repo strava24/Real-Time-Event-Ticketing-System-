@@ -1,11 +1,27 @@
+import java.util.logging.Logger;
+
 public class Vendor implements Runnable {
+
+    static Logger logger = Logger.getLogger(Vendor.class.getName());
+
+    private final int vendorId;
+
+    public Vendor(int vendorId) {
+        this.vendorId = vendorId;
+    }
+
+    public int getVendorId() {
+        return vendorId;
+    }
 
     @Override
     public void run() {
 
-        while(true) {
+        for (int i=0; i< Main.totalTickets / Main.numVendors; i++) {
             try {
-                ApiUtils.sellTicket();
+                String message =  ApiUtils.sellTicket();
+
+                logger.info(message + " by V" + this.vendorId  + "\n");
 
                 Thread.sleep(Main.ticketReleaseRate);
             } catch (Exception e) {
@@ -14,6 +30,8 @@ public class Vendor implements Runnable {
                 break;
             }
         }
+
+
 
 
     }

@@ -12,6 +12,9 @@ export class CustomerLayoutComponent {
 
   router = inject(Router);
 
+  /**
+   * Method to log out the customer
+   */
   onLogOff() {
     localStorage.removeItem('customer');
     this.router.navigateByUrl('login');

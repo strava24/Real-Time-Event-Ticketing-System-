@@ -26,32 +26,49 @@
                 <strong>Price</strong>
             </div>
 
+            <div class="col-3 text-center">
+                <strong>Count</strong>
+            </div>
+
         </div>
 
         @for (pool of ticketPoolList; track $index) {
-        <div class="row pt-1" style="align-items: center; ">
-            <div class="col-3 text-center">
-                {{pool.poolName}}
-            </div>
+        <form #form="ngForm">
+            <div class="row pt-2" style="align-items: center;">
+                <div class="col-3 text-center">
+                    {{pool.poolName}}
+                </div>
 
-            <div class="col-3 text-center">
-                {{pool.ticketsSold - pool.ticketsBought}}
-            </div>
+                <div class="col-3 text-center">
+                    {{pool.ticketsSold - pool.ticketsBought}}
+                </div>
 
-            <div class="col-3 text-center">
-                {{pool.ticketPrice}} <i class="bi bi-currency-dollar"></i>
-            </div>
+                <div class="col-3 text-center">
+                    {{pool.ticketPrice}}/=
+                </div>
 
-            <div class="col-3 text-end">
-                @if ((pool.ticketsSold - pool.ticketsBought) > 0) {
-                <button class="btn btn-primary" type="button" (click)="onBuy(pool.poolID)">Buy</button>
-                }
-                @else {
-                <span class="badge bg-danger">Sold Out</span>
-                }
-            </div>
+                <div class="col-3 text-center">
+                    <input type="number" [(ngModel)]="ticketCount" name="ticketCount" class="form-control"
+                        [max]="pool.ticketsSold - pool.ticketsBought" value="1" required>
+                </div>
 
-        </div>
+                <div class="col-12 text-center">
+
+                    @if (pool.ticketsSold - pool.ticketsBought <= 0) { <span class="badge bg-danger">Sold Out</span>
+                        }
+                        @else {
+                        <button class="btn btn-primary" type="button"
+                            [disabled]="!form.valid || ticketCount < 1 || ticketCount > (pool.ticketsSold - pool.ticketsBought)"
+                            (click)="onBuy(pool.poolID)">
+                            Buy
+                        </button>
+                        }
+
+
+                </div>
+            </div>
+        </form>
+
         }
         }
 
@@ -63,6 +80,18 @@
 </div>
 
 <div class="row g-4 ms-5 me-5 pt-3">
+    @if (events.length === 0) {
+    <div class="d-flex justify-content-center align-items-center">
+        <div class="card" style="width: 400px;">
+            <div class="card-body">
+                <p class="text-center"><strong>There are no events yet</strong></p>
+                <img src="images/emptyPool.jpg" alt="EmptyPool" id="empty-pool-image" class="img-fluid">
+            </div>
+        </div>
+    </div>
+
+    }
+    @else {
     @for (event of events; track event.eventID) {
     <div class="col-3 d-flex justify-content-center">
         <div class="card" style="width: 250px; height: 380px;">
@@ -93,5 +122,6 @@
             </div>
         </div>
     </div>
+    }
     }
 </div>

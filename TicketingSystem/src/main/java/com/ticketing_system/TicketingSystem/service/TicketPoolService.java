@@ -92,9 +92,14 @@ public class TicketPoolService {
 
     }
 
-    public synchronized TicketPool getTicketPoolByID(int id) {
-        return ticketPoolRepository.findById(id).orElse(null);
-    }
+//    /**
+//     * Method to get ticket pool by ID
+//     * @param id - Ticket pool ID
+//     * @return - Ticket pool or Null
+//     */
+//    public synchronized TicketPool getTicketPoolByID(int id) {
+//        return ticketPoolRepository.findById(id).orElse(null);
+//    }
 
     /**
      * Method to remove a ticket from a pool
@@ -114,18 +119,29 @@ public class TicketPoolService {
             boolean removed = ticketService.removeTicket(ticket);
 
             if (removed) {
-                logger.info("{} has bought {} tickets", customer.getCustomerName(), customer.incrementBoughtTickets());
+                int count = customer.incrementBoughtTickets();
+                logger.info("{} has bought {} tickets", customer.getCustomerName(), count);
             }
-            return removed;
+            return ticketService.removeTicket(ticket);
 
         } else
             return false;
     }
 
+    /**
+     * Method to get ticket pool by ID
+     * @param id - Ticket pool ID
+     * @return - Ticket pool or Null
+     */
     public TicketPool findTicketPoolByID(int id) {
         return ticketPoolRepository.findById(id).orElse(null);
     }
 
+    /**
+     * Method to get all the ticket pools of an event
+     * @param eventID - Event ID
+     * @return - The list of ticket pools of an event
+     */
     public List<TicketPoolDTO> getAllTicketPools(int eventID) {
 
         List<TicketPool> ticketPools = ticketPoolRepository.findByEventId(eventID);

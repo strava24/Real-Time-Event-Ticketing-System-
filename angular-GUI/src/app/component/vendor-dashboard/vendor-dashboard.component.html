@@ -33,7 +33,7 @@
                                 <button class="btn btn-primary me-2" (click)="accessPool(event.eventID)"
                                     name="pool">Access Pool</button>
                                 <button class="btn btn-info me-2" (click)="onEdit(event)" name="Edit">Edit</button>
-                                <button class="btn btn-danger" (click)="onDelete(event.eventID)"
+                                <button class="btn btn-danger" (click)="onDelete(event.eventID)" name="Save"
                                     name="delete">Delete</button>
                             </td>
                         </tr>
@@ -149,7 +149,7 @@
                         <div class="col-12">
                             <label for="">Ticket Pool Name</label>
                             <input type="text" #personName="ngModel" required class="form-control" name="poolName"
-                                minlength="5" [(ngModel)]="ticketPoolObj.poolName" required>
+                                [(ngModel)]="ticketPoolObj.poolName" required>
                         </div>
 
                         <div class="col-6">
@@ -215,8 +215,8 @@
                             <th>Pool Name</th>
                             <th>Max Ticket Capacity</th>
                             <th>Total Tickets</th>
-                            <th>Tickets Sold</th>
-                            <th>Tickets Bought</th>
+                            <th>Tickets Produced</th> <!--The number of tickets produed to the pool-->
+                            <th>Tickets Sold</th> <!--The number of tickets bought by the customers-->
                             <th>Ticket Production</th>
                         </tr>
                     </thead>
@@ -245,7 +245,7 @@
             }
 
             @else {
-            <div class="card-body">
+            <div class="card-body" style="height: 350px;">
                 <p class="text-center"><strong>There are no pools yet</strong></p>
                 <img src="images/emptyPool.jpg" alt="EmptyPool" id="empty-pool-image">
             </div>
@@ -259,3 +259,33 @@
 
 
 </div>
+
+@if (notificationList.length !== 0) {
+<div class="row ms-5 me-5 pt-3">
+
+    <div class="col-12">
+
+        <div class="card">
+
+            <div class="card-header bg-primary text-white">Notifications Panel</div>
+
+            <div class="card-body">
+
+                <ul>
+
+                    @for (notification of notificationList; track $index) {
+
+                    <li>{{notification}}</li>
+                    }
+
+                </ul>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>
+}

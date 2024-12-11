@@ -39,11 +39,22 @@ public class CustomerService {
         return null;
     }
 
+    /**
+     * Method to register a customer to the system
+     * @param customer - Custoemr object
+     * @return - The registered customer
+     */
     public Customer signupCustomer(Customer customer) {
         logger.info("New customer named {} signed in", customer.getCustomerName());
         return customerRepo.save(customer);
     }
 
+    /**
+     * Method to update customer details
+     * @param id - Customer ID
+     * @param customer - Modified customer Object
+     * @return - Updated customer
+     */
     public Customer updateCustomerByID(int id, Customer customer) {
         return customerRepo.save(customer);
     }

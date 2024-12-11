@@ -46,8 +46,13 @@ export class EventService {
     });
   }
 
+  updateEventWithImage(formData: FormData) {
+    return this.http.put(environment.API_URL + Constant.EVENT_METHOD.UPDATE_EVENT_IMAGE, formData);
+  }
+
   getEventCoustByEvndorID(vendorID: number) {
     return this.http.get<number>(environment.API_URL + Constant.VENDOR_METHOD.GET_EVENT_COUNT(vendorID));
   }
+
 
 }

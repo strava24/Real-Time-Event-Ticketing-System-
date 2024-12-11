@@ -25,6 +25,9 @@ export class CustomerProfileComponent implements OnInit {
     this.loadCustomerDetails();
   }
 
+  /**
+   * Method to load customer details
+   */
   loadCustomerDetails() {
     this.customerID = this.loginService.getCustomerID();
 
@@ -47,6 +50,9 @@ export class CustomerProfileComponent implements OnInit {
     this.inEditMode = true;
   }
 
+  /**
+   * Method to update a customer
+   */
   onUpdate() {
     this.loginService.updateCustomer(this.customerDetails).subscribe((response) => {
       if (response) {

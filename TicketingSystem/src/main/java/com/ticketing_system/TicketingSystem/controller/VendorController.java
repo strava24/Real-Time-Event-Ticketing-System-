@@ -42,6 +42,11 @@ public class VendorController {
 
     }
 
+    /**
+     * End point to get a vendor on the system
+     * @param id - Vendor ID
+     * @return - Vendor Data Transfer Object along with a status code
+     */
     @GetMapping("/{id}")
     public ResponseEntity<VendorDTO> getVendorByID(@PathVariable int id) {
         VendorDTO vendor = vendorService.getVendorDTOByID(id);
@@ -53,6 +58,12 @@ public class VendorController {
 
     }
 
+    /**
+     * End point to login a vendor to the system
+     * @param email - Email of the vendor
+     * @param password - Password of the vendor
+     * @return - The ID of the vendor along with the a status code
+     */
     @PostMapping("/login")
     public ResponseEntity<Integer> loginVendor(@RequestParam String email, @RequestParam String password) {
         Vendor vendor = vendorService.loginVendor(email, password);
@@ -63,6 +74,11 @@ public class VendorController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    /**
+     * End point to register a vendor to the system
+     * @param vendor - The vendor object
+     * @return - The ID of the vendor along with a status code
+     */
     @PostMapping("/signup")
     public ResponseEntity<Integer> signupVendor(@RequestBody Vendor vendor) {
         Vendor newVendor = vendorService.signupVendor(vendor);
@@ -70,7 +86,12 @@ public class VendorController {
         return new ResponseEntity<>(newVendor.getVendorID(), HttpStatus.OK);
     }
 
-
+    /**
+     * End point to update a vendor details
+     * @param id - ID of the vendor
+     * @param vendor - The updated vendor object
+     * @return - A boolean value along with a status code
+     */
     @PutMapping("/{id}")
     public ResponseEntity<Boolean> updateVendorByID(@PathVariable int id, @RequestBody Vendor vendor) {
         Vendor vendor1 =  vendorService.updateVendorByID(id, vendor);
@@ -81,6 +102,11 @@ public class VendorController {
             return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
     }
 
+    /**
+     * End point to get the number of events hosted by a vendor
+     * @param id - Vendor ID
+     * @return - Number of events hosted by a vendor along with a status code
+     */
     @GetMapping("/events/{id}")
     public ResponseEntity<Integer> getNoOfEventsHostedByVendorID(@PathVariable int id) {
         Vendor vendor = vendorService.getVendorByID(id);

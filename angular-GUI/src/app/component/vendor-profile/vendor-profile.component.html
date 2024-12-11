@@ -71,18 +71,18 @@
                 <div class="row">
                     <div class="col-6">
                         <label for="vendorEmail">vendor Email</label>
-                        <input type="text" #vendorEmail="ngModel" required class="form-control" name="vendorEmail"
+                        <input type="email" #vendorEmail="ngModel" required class="form-control" name="vendorEmail"
                             id="vendorEmail" minlength="5" [(ngModel)]="vendorDetails.vendorEmail">
                     </div>
                     <div class="col-6">
                         <label for="vendorPassword">vendor Password</label>
                         <input type="text" #vendorPassword="ngModel" required class="form-control" name="vendorPassword"
-                            id="vendorPassword" minlength="5" [(ngModel)]="vendorDetails.vendorPassword">
+                            id="vendorPassword" [(ngModel)]="vendorDetails.vendorPassword">
                     </div>
                 </div>
 
                 <div class="col-12 pt-3 text-center">
-                    <button class="btn btn-success" (click)="onUpdate()">Update</button>
+                    <button class="btn btn-success" (click)="onUpdate()" [disabled]="!form.valid">Update</button>
                 </div>
 
             </form>

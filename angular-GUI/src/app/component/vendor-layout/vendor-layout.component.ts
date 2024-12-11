@@ -12,6 +12,9 @@ export class VendorLayoutComponent {
 
   router = inject(Router);
 
+  /**
+   * Method to sign out a vendor
+   */
   onLogOff() {
     localStorage.removeItem('vendorID');
     this.router.navigateByUrl('login');

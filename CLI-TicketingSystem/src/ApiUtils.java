@@ -2,6 +2,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -9,12 +12,21 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
+import java.util.logging.Logger;
 
 public final class ApiUtils {
 
+    static Logger logger = Logger.getLogger(ApiUtils.class.getName());
+
     static Gson gson = new Gson();
+    static Scanner input = new Scanner(System.in);
+
+//    private static final Logger logger = LogManager.getLogger(ApiUtils.class);
+
 
     static int poolID;
     static int aiCustomerID;
@@ -35,9 +47,10 @@ public final class ApiUtils {
      */
     public static void createNewTicketPool(Configuration configuration) throws Exception{
 
-        // Hardcoded values for poolName and ticketPrice
-        String poolName = "VIP Pool";
-        int ticketPrice = 100;
+        System.out.println();
+        System.out.print("Enter Ticket pool Name : ");
+        String poolName = input.nextLine();
+        int ticketPrice = InputValidation.getValidTicketPrice();
 
         // Construct the URL with query parameters
         String requestUrl = String.format("%s/ticket-pool/create/%d?poolName=%s&ticketPrice=%d&maxTicketCapacity=%d&totalTickets=%d",
@@ -62,18 +75,30 @@ public final class ApiUtils {
         Map<String, Integer> details = gson.fromJson(postResponse.body(), new TypeToken<Map<String, Integer>>() {}.getType());
 
         System.out.println(postResponse.body());
+        logger.info(details.toString());
+        logger.fine(details.toString());
+        logger.finest(details.toString());
 
         poolID = details.get("poolID");
     }
 
     public static void createNewEvent() throws Exception {
 
+        System.out.println();
+        System.out.print("Enter the event name : ");
+        String eventName = input.nextLine();
+        System.out.print("Enter the event location : ");
+        String eventLocation = input.nextLine();
+
+        String eventDate = InputValidation.getValidEventDate();
+
+
         // Manually constructing the JSON payload as a String
         String requestBody = "{"
-                + "\"eventName\":\"A.I. Meetup\","
+                + "\"eventName\":\"" + eventName + "\","
                 + "\"vendorID\":" + aiVendorID + ","
-                + "\"date\":\"2025-12-15\"" + ","
-                + "\"location\":\"Colombo\""
+                + "\"date\":\"" + eventDate + "\","
+                + "\"location\":\"" + eventLocation + "\""
                 + "}";
 
         // Creating the POST request
@@ -96,70 +121,70 @@ public final class ApiUtils {
 
     }
 
-    /**
-     * Method is used to create a new configuration
-     * @param configuration the configuration object with the user data
-     * @throws Exception There is a  possibility fot IOException or InterruptedException
-     */
-    public static void createNewConfiguration(Configuration configuration) throws Exception {
-        String jsonRequest = gson.toJson(configuration);
-
-        System.out.println(jsonRequest);
-
-        // Saving this configuration in the DB
-        HttpRequest postRequest = HttpRequest.newBuilder()
-                .uri(new URI( url +"/config/configuration"))
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(jsonRequest))
-                .build();
-
-        HttpClient httpClient = HttpClient.newHttpClient();
-        HttpResponse<String> postResponse =  httpClient.send(postRequest, HttpResponse.BodyHandlers.ofString());
-
-        if (postResponse.statusCode() == 200) {
-            System.out.println("Configuration added to the database.");
-        } else if (postResponse.statusCode() == 400) {
-            System.out.println("Configuration could not be added to the database.");
-        } else {
-            System.out.println("Unexpected response code: " + postResponse.statusCode());
-        }
-
-        System.out.println(postResponse.body());
-    }
-
-    /**
-     * Method is used to fetch the existing configurations on the database
-     * After fetching all the configurations on the database the user will be able to choose a configuration
-     * @return the configuration user choose
-     * @throws Exception There is a  possibility fot IOException or InterruptedException
-     */
-    public static Configuration getExistingConfigurations() throws Exception {
-        // Sending a get request
-        HttpRequest getRequest = HttpRequest.newBuilder()
-                .uri(new URI( url +"/config")) // api endpoint
-                .GET() // Can get rid of this line as well, cause GET by default
-                .build();
-
-        HttpResponse<String> getResponse = HttpClient.newHttpClient().send(getRequest, HttpResponse.BodyHandlers.ofString()); // This is to accept the response as a string
-
-        /* This line captures the generic type List<Configuration> and retrieves it as a Type object,
-           which is passed to Gson to guide the deserialization process.*/
-        Type listType = new TypeToken<List<Configuration>>() {}.getType();
-        List<Configuration> configs = gson.fromJson(getResponse.body(), listType);
-
-        if (configs.isEmpty()) {
-            return null;
-        } else {
-            int index = InputValidation.getValidIndex(configs);
-            return configs.get(index);
-        }
-    }
+//    /**
+//     * Method is used to create a new configuration
+//     * @param configuration the configuration object with the user data
+//     * @throws Exception There is a  possibility fot IOException or InterruptedException
+//     */
+//    public static void createNewConfiguration(Configuration configuration) throws Exception {
+//        String jsonRequest = gson.toJson(configuration);
+//
+//        System.out.println(jsonRequest);
+//
+//        // Saving this configuration in the DB
+//        HttpRequest postRequest = HttpRequest.newBuilder()
+//                .uri(new URI( url +"/config/configuration"))
+//                .header("Content-Type", "application/json")
+//                .POST(HttpRequest.BodyPublishers.ofString(jsonRequest))
+//                .build();
+//
+//        HttpClient httpClient = HttpClient.newHttpClient();
+//        HttpResponse<String> postResponse =  httpClient.send(postRequest, HttpResponse.BodyHandlers.ofString());
+//
+//        if (postResponse.statusCode() == 200) {
+//            System.out.println("Configuration added to the database.");
+//        } else if (postResponse.statusCode() == 400) {
+//            System.out.println("Configuration could not be added to the database.");
+//        } else {
+//            System.out.println("Unexpected response code: " + postResponse.statusCode());
+//        }
+//
+//        System.out.println(postResponse.body());
+//    }
+//
+//    /**
+//     * Method is used to fetch the existing configurations on the database
+//     * After fetching all the configurations on the database the user will be able to choose a configuration
+//     * @return the configuration user choose
+//     * @throws Exception There is a  possibility fot IOException or InterruptedException
+//     */
+//    public static Configuration getExistingConfigurations() throws Exception {
+//        // Sending a get request
+//        HttpRequest getRequest = HttpRequest.newBuilder()
+//                .uri(new URI( url +"/config")) // api endpoint
+//                .GET() // Can get rid of this line as well, cause GET by default
+//                .build();
+//
+//        HttpResponse<String> getResponse = HttpClient.newHttpClient().send(getRequest, HttpResponse.BodyHandlers.ofString()); // This is to accept the response as a string
+//
+//        /* This line captures the generic type List<Configuration> and retrieves it as a Type object,
+//           which is passed to Gson to guide the deserialization process.*/
+//        Type listType = new TypeToken<List<Configuration>>() {}.getType();
+//        List<Configuration> configs = gson.fromJson(getResponse.body(), listType);
+//
+//        if (configs.isEmpty()) {
+//            return null;
+//        } else {
+//            int index = InputValidation.getValidIndex(configs);
+//            return configs.get(index);
+//        }
+//    }
 
     /**
      * Method used to send HTTP request to the back end to place an order and book a ticket
      * @throws Exception There is a  possibility fot IOException or InterruptedException
      */
-    public static void sellTicket() throws Exception {
+    public static String sellTicket() throws Exception {
         // Sending a get request
         HttpRequest getRequest = HttpRequest.newBuilder()
                 .uri(new URI( url +"/ticket-pool/" + poolID + "/sell-ticket/" + aiVendorID)) // api endpoint
@@ -168,14 +193,14 @@ public final class ApiUtils {
 
         HttpResponse<String> getResponse = HttpClient.newHttpClient().send(getRequest, HttpResponse.BodyHandlers.ofString()); // This is to accept the response as a string
 
-        System.out.println(getResponse.body());
+        return getResponse.body();
     }
 
     /**
      *  Method used to send HTTP request to buy/remove a ticket from the ticket pool
      * @throws Exception There is a  possibility fot IOException or InterruptedException
      */
-    public static void buyTicket() throws Exception {
+    public static String buyTicket() throws Exception {
 
         HttpRequest getRequest = HttpRequest.newBuilder()
                 .uri(new URI(url + "/ticket-pool/" + poolID + "/buy-ticket/" + aiCustomerID))
@@ -184,7 +209,7 @@ public final class ApiUtils {
 
         HttpResponse<String> getResponse = HttpClient.newHttpClient().send(getRequest, HttpResponse.BodyHandlers.ofString());
 
-        System.out.println(getResponse.body());
+        return (getResponse.body());
 
     }
 
@@ -208,15 +233,15 @@ public final class ApiUtils {
                 .send(postRequest, HttpResponse.BodyHandlers.ofString());
 
         if (postResponse.statusCode() == 200) {
-            System.out.println("Login successful.");
+
             Map<String, String> aiCustomerDetails = gson.fromJson(postResponse.body(), new TypeToken<Map<String, String>>() {}.getType());
 
-            System.out.println(postResponse.body());
+            logger.info("Login successful as a customer : " + postResponse.body() + "\n");
 
             aiCustomerID = Integer.parseInt(aiCustomerDetails.get("customerID"));
 
         } else {
-            System.out.println("Creating a new account");
+            System.out.println("Creating a new account as a customer.");
             signupAICustomer();
         }
 
@@ -249,11 +274,10 @@ public final class ApiUtils {
 
         Map<String, String> aiCustomerDetails = gson.fromJson(postResponse.body(), new TypeToken<Map<String, String>>() {}.getType());
 
-        System.out.println(postResponse.body());
 
         aiCustomerID = Integer.parseInt(aiCustomerDetails.get("customerID"));
 
-        System.out.println("Successfully created customer account");
+        logger.info("Signup successful as a customer : " + postResponse.body() + "\n");
 
     }
 
@@ -272,11 +296,11 @@ public final class ApiUtils {
                 .send(postRequest, HttpResponse.BodyHandlers.ofString());
 
         if (postResponse.statusCode() == 200) {
-            System.out.println("Login successful.");
+            logger.info("Login successful as a vendor with ID: V" + postResponse.body() + "\n");
             aiVendorID = Integer.parseInt(postResponse.body());
 
         } else {
-            System.out.println("Creating a new account");
+            System.out.println("Creating a new account as a vendor");
             signupAIVendor();
         }
     }
@@ -301,11 +325,9 @@ public final class ApiUtils {
         HttpResponse<String> postResponse = HttpClient.newHttpClient()
                 .send(postRequest, HttpResponse.BodyHandlers.ofString());
 
-
-
         aiVendorID = Integer.parseInt(postResponse.body());
 
-        System.out.println("Successfully created vendor account");
+        logger.info("Signup successful as a vendor : " + postResponse.body() + "\n");
     }
 
     public static TicketPool getExistingPool() throws Exception{
@@ -365,5 +387,31 @@ public final class ApiUtils {
          }
     }
 
+    public static List<Configuration> loadConfigurations() {
+        // Read from JSON File
+        try (FileReader reader = new FileReader("configs.json")) {
+            Type listType = new TypeToken<List<Configuration>>() {}.getType();
+            List<Configuration> loadedData = gson.fromJson(reader, listType);
 
+            return loadedData;
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    public static void saveConfigurations(Configuration configuration) {
+
+        List<Configuration> configs = loadConfigurations();
+
+        configs.add(configuration);
+
+        // Write to JSON File
+        try (FileWriter writer = new FileWriter("configs.json")) {
+            gson.toJson(configs, writer);
+            System.out.println("Data saved to configs.json");
+        } catch (IOException e) {
+            System.out.println("There was an issue while saving to the file!");
+        }
+
+    }
 }

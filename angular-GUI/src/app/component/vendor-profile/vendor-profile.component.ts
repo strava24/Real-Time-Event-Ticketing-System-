@@ -32,6 +32,9 @@ export class VendorProfileComponent implements OnInit {
     this.getEventCount();
   }
 
+  /**
+   * Method to load the vendor details
+   */
   loadVendorDetails() {
 
     this.vendorID = this.loginService.getVendorID();
@@ -54,6 +57,9 @@ export class VendorProfileComponent implements OnInit {
     this.inEditMode = true;
   }
 
+  /**
+   * Method to update the vendor details
+   */
   onUpdate() {
     this.loginService.updateVendor(this.vendorDetails).subscribe((response) => {
       if (response) {
@@ -67,6 +73,9 @@ export class VendorProfileComponent implements OnInit {
     })
   }
 
+  /**
+   * Method to get the event count of the vendor
+   */
   getEventCount() {
     this.eventService.getEventCoustByEvndorID(this.vendorID).subscribe((response) => {
       this.eventCountByVendor = response;

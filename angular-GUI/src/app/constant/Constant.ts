@@ -6,7 +6,8 @@ export const Constant = {
         DELETE_EVENT: (eventID: number) => `events/delete/${eventID}`, // Should append the ID to delete
         ADD_EVENT: 'events/create',
         ADD_EVENT_IMAGE: 'events/create/image',
-        GET_EVENT_IMAGE: (eventID: number) => `events/${eventID}/image`
+        GET_EVENT_IMAGE: (eventID: number) => `events/${eventID}/image`,
+        UPDATE_EVENT_IMAGE: 'events/update/image'
     },
     TICKETPOOL_METHOD: {
         GET_ALL_TICKETPOOLS: (eventID: number) => `ticket-pool/${eventID}`,

@@ -7,11 +7,12 @@ import { TicketPoolService } from '../../service/ticketPoolService/ticket-pool.s
 import { TicketPool } from '../../model/class/TicketPool';
 import { LoginService } from '../../service/loginService/login.service';
 import { HttpResponse } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-events-page',
   standalone: true,
-  imports: [DatePipe, CommonModule],
+  imports: [DatePipe, CommonModule, FormsModule],
   templateUrl: './events-page.component.html',
   styleUrl: './events-page.component.css'
 })
@@ -26,7 +27,9 @@ export class EventsPageComponent implements OnInit, AfterViewInit {
   currentEvent: number = 0;
   currentVendorID: number = 0;
   currentVendor: string = '';
-  toastrService = inject(ToastrService)
+  toastrService = inject(ToastrService);
+  ticketCount = 1;
+  intervalId: any;
 
   events: Events[] = [];
   hasPools: boolean = false;
@@ -45,6 +48,9 @@ export class EventsPageComponent implements OnInit, AfterViewInit {
     });
   }
 
+  /**
+   * Method to get all the events on the system
+   */
   getAllEvents() {
     this.eventService.getAllEvents().subscribe(
       (data: Events[]) => {
@@ -55,12 +61,15 @@ export class EventsPageComponent implements OnInit, AfterViewInit {
       },
       (error) => {
         console.error('Error fetching events', error);
-        // Handle error case here if needed
       }
     );
 
   }
 
+  /**
+   * Method to fetch the images of the events in the back end
+   * @param data - event data
+   */
   async fetchImagesAndUpdateProducts(data: any[]) {
     const updatedEvents = await Promise.all(
       data.map(async (event) => {
@@ -85,6 +94,11 @@ export class EventsPageComponent implements OnInit, AfterViewInit {
     this.events = updatedEvents;
   }
 
+  /**
+   * Method to access pools of an event
+   * @param eventID - Event ID of the event required
+   * @param vendorID - vendor ID of the person hosting the event
+   */
   accessPools(eventID: number, vendorID: number) {
 
     this.ticketPoolService.getAllPoolsByEvent(eventID).subscribe(
@@ -124,32 +138,46 @@ export class EventsPageComponent implements OnInit, AfterViewInit {
     this.hasPools = false;
   }
 
+  /**
+   * Method to buy tickets
+   * @param poolID - pool ID from which the customer is trying to buy a ticket
+   */
   onBuy(poolID: number) {
     const customerID: number = this.loginService.getCustomerID();
 
-    if (customerID !== -1) {
+    if (customerID === -1) {
+      this.toastrService.error('Login to the system!');
+      return;
+    }
+
+    let count = 0;
+
+    this.intervalId = setInterval(() => {
+      if (count >= this.ticketCount) {
+        clearInterval(this.intervalId); // Stop after requested tickets
+        return;
+      }
+
       this.ticketPoolService.buyTicket(poolID, customerID).subscribe({
         next: (response) => {
           this.toastrService.info('Ticket Bought!');
           console.log('Ticket bought:', response);
-          this.accessPools(this.currentEvent, this.currentVendorID)
+          this.accessPools(this.currentEvent, this.currentVendorID);
         },
         error: (error) => {
           if (error.status === 400) {
-            this.toastrService.error('Tickets are sold out due to hign demand');
-            console.warn('Failed to buy ticket:', error.error); // Log the message without crashing
+            this.toastrService.error('Tickets are sold out due to high demand');
+            console.warn('Failed to buy ticket:', error.error);
+            clearInterval(this.intervalId); // Stop on failure
           } else {
             console.error('Unexpected error:', error);
           }
         }
-      })
-    } else {
-      this.toastrService.error('Login to the system!');
-    }
+      });
 
+      count++; // Increment after every successful interval
+    }, 1000);
   }
 
+
 }
-
-
-

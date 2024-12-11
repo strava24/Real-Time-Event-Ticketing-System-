@@ -25,10 +25,16 @@ export class SignupComponent {
   loginService = inject(LoginService);
   toastrService = inject(ToastrService);
 
+  /**
+   * Method to redirect to the login page
+   */
   onLogin() {
     this.router.navigateByUrl('/login')
   }
 
+  /**
+   * Method to register as a vendor
+   */
   onVendorSignup() {
 
     const vendorCredentialsObj: VendorCredentials = {
@@ -51,6 +57,9 @@ export class SignupComponent {
 
   }
 
+  /**
+   * Method to register as a customer
+   */
   onCustomerSignup() {
     const customerCredentialsObj: CustomerCredentials = {
       customerName: this.signupObj.name,

@@ -32,6 +32,8 @@ export class VendorDashboardComponent implements OnInit {
 
   ticketRetrievalRate: number = 0;
 
+  notificationList: String[] = [];
+
   minimumDate: string; // Format: YYYY-MM-DD
   // vendorID: number = 1; // For now hard coded value
 
@@ -85,42 +87,59 @@ export class VendorDashboardComponent implements OnInit {
   /**
    * Method to update an event on the system
    */
+  // onUpdate() {
+  //   this.eventService.updateEvent(this.eventObj).subscribe({
+  //     next: (response) => {
+  //       console.log('Update Success:', response);
+  //       this.toastrService.success('Updated Successfully!')
+  //       this.eventObj = new Events();
+  //       this.getAllEvents();
+  //     },
+  //     error: (error) => {
+  //       this.toastrService.error('There was an issue on the process!');
+  //       if (error.status === 404) {
+  //         console.error('Event not found');
+  //         this.toastrService.info('Event not found');
+  //       } else {
+  //         console.error('Update failed:', error);
+  //       }
+  //     },
+  //   });
+  // }
+
+  /**
+   * Method to update event details
+   */
   onUpdate() {
-    this.eventService.updateEvent(this.eventObj).subscribe({
-      next: (response) => {
-        console.log('Update Success:', response);
-        this.toastrService.success('Updated Successfully!')
-        this.eventObj = new Events();
-        this.getAllEvents();
-      },
-      error: (error) => {
-        this.toastrService.error('There was an issue on the process!');
-        if (error.status === 404) {
-          console.error('Event not found');
-          this.toastrService.info('Event not found');
-        } else {
-          console.error('Update failed:', error);
-        }
-      },
-    });
+    this.eventObj.vendorID = this.loginService.getVendorID();
+
+    console.log('eventID : ' + this.eventObj.eventID);
+
+    if (this.selectedFile) {
+      const formData = new FormData();
+      formData.append('eventDTO', new Blob([JSON.stringify(this.eventObj)], { type: 'application/json' }));
+      formData.append('imageFile', this.selectedFile);
+
+      this.eventService.updateEventWithImage(formData)
+        .subscribe(
+          response => {
+            console.log('Event created successfully:', response);
+            this.toastrService.success('Created event successfully!');
+            this.getAllEvents();
+            this.eventObj = new Events();
+          },
+          error => {
+            console.error('Error creating event:', error);
+          }
+        );
+    }
+
+
   }
 
   /**
-   * Method to create a new event on the system
+   * Method to save event details
    */
-  // onSave() {
-
-  //   this.eventObj.vendorID = this.loginService.getVendorID();
-
-  //   this.eventService.saveEvent(this.eventObj).subscribe((response: any) => {
-  //     this.toastrService.success('Event saved successfully!', 'Success!');
-  //     this.eventObj = new Events();
-  //     this.getAllEvents();
-  //   }, error => {
-  //     this.toastrService.error('There was an issue');
-  //   })
-  // }
-
   onSave() {
 
     this.eventObj.vendorID = this.loginService.getVendorID();
@@ -136,14 +155,20 @@ export class VendorDashboardComponent implements OnInit {
             console.log('Event created successfully:', response);
             this.toastrService.success('Created event successfully!');
             this.getAllEvents();
+            this.eventObj = new Events();
           },
           error => {
             console.error('Error creating event:', error);
           }
         );
     }
+
   }
 
+  /**
+   * Method to delete event details
+   * @param id - Event ID
+   */
   onDelete(id: number) {
 
     const confirmation = confirm('Would you like to permenantly delete this event?');
@@ -172,7 +197,16 @@ export class VendorDashboardComponent implements OnInit {
     this.eventObj = obj;
   }
 
+  /**
+   * Method to access pools of an event
+   * @param eventID - Event ID
+   */
   accessPool(eventID: number) {
+
+    this.stopPolling(); // Stopping the on goin polling if is it happening
+    this.startPolling(eventID); // start polling for current event
+    // this.getRealTimePoolUpdates(eventID); // Starting the short polling process
+
     this.ticketPoolService.getAllPoolsByEvent(eventID).subscribe(
       (getResponse: any) => {
         if (getResponse.length === 0) {
@@ -200,6 +234,9 @@ export class VendorDashboardComponent implements OnInit {
     );
   }
 
+  /**
+   * Method to stop ticket selling
+   */
   stopTicketSelling(): void {
     if (this.isSelling) {
       this.toastrService.info('Stopping Ticket Production!')
@@ -208,6 +245,10 @@ export class VendorDashboardComponent implements OnInit {
     }
   }
 
+  /**
+   * Method to start ticket selling
+   * @param poolIDd + pool ID
+   */
   startTicketSelling(poolIDd: number): void {
 
     const vendorID: number = this.loginService.getVendorID();
@@ -238,11 +279,15 @@ export class VendorDashboardComponent implements OnInit {
     }
   }
 
+
   ngOnDestroy(): void {
     this.stopTicketSelling(); // Cleanup logic
     console.log('VendorComponent destroyed');
   }
 
+  /**
+   * Method to save a ticket pool
+   */
   savePool() {
 
     console.log('Hello')
@@ -259,11 +304,60 @@ export class VendorDashboardComponent implements OnInit {
 
   }
 
+  /**
+   * Method to be called when the user uploads an image
+   * @param event - event of uploading a file
+   */
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.selectedFile = input.files[0];
     }
+  }
+
+  // getRealTimePoolUpdates(eventID: number) {
+
+  //   this.notificationList = [];
+
+  //   this.ticketPoolService.getTicketPoolDetails(eventID).subscribe(response => {
+  //     const poolList: TicketPool[] = response;
+
+  //     for (let i = 0; i < poolList.length; i++) {
+  //       const ticketsBought = poolList[i].ticketsBought;
+  //       const ticketsSold = poolList[i].ticketsSold;
+  //       const name = poolList[i].poolName;
+  //       const id = poolList[i].poolID;
+
+  //       this.notificationList.push(ticketsBought + " tickets bought out of " + ticketsSold + " produced tickets on " + name + " : P" + id);
+  //     }
+
+  //     this.toastrService.info('New Notification!');
+
+  //   }, error => {
+  //     this.toastrService.error('There was an error while fetching the updates');
+  //   });
+  // }
+
+  startPolling(eventID: number): void {
+
+    this.ticketPoolService.startPolling(eventID, (response) => {
+      const poolList: TicketPool[] = response;
+
+      for (let i = 0; i < poolList.length; i++) {
+        const ticketsBought = poolList[i].ticketsBought;
+        const ticketsSold = poolList[i].ticketsSold;
+        const name = poolList[i].poolName;
+        const id = poolList[i].poolID;
+
+        this.notificationList.push(ticketsBought + " tickets bought out of " + ticketsSold + " produced tickets on " + name + " : P" + id + " on event E" + this.currentEvent);
+      }
+
+      this.toastrService.info('New Notification!');
+    });
+  }
+
+  stopPolling(): void {
+    this.ticketPoolService.stopPolling();
   }
 
 }
