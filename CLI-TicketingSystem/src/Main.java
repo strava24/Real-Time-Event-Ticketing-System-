@@ -1,7 +1,5 @@
-// This class is responsible for the automation, which would simulate the real world scenario where multiple people are trying to book a ticket
-
-import com.google.gson.Gson;
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -12,58 +10,108 @@ public class Main {
     static long customerRetrievalRate;
     static int maxTicketCapacity;
 
-    static Gson gson = new Gson(); // Gson to easily serialize and deserialize JSON objects
+    static int numVendors = 1;
+    static int numCustomers = 1;
 
     private static boolean isRunning = false;
     static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) throws Exception {
 
-        System.out.println("How would you like to start the application?");
-        System.out.println("1. Use the existing Configurations. ");
-        System.out.println("2. Create a new configuration. ");
-        System.out.print("Enter your choice: ");
-        String choice = scanner.next();
-        scanner.nextLine(); // To clean the buffer
-
-        boolean isValid = false;
-
-        while (!isValid) {
-            switch (choice) {
-                case "1":
-                    getExistingConfigurations();
-                    isValid = true;
-                    break;
-                case "2":
-                    createNewConfiguration();
-                    isValid = true;
-                    break;
-                default:
-                    System.out.println("Invalid choice. Try again.");
-                    System.out.print("Enter your choice: ");
-                    choice = scanner.next();
-            }
-        }
-
+        // Getting the bot into the system
         ApiUtils.loginAICustomer();
         ApiUtils.loginAIVendor();
-        ApiUtils.createNewEvent();
-        ApiUtils.createNewTicketPool(new Configuration(totalTickets, ticketReleaseRate, customerRetrievalRate, maxTicketCapacity));
 
+        starter();
+        targetEvent();
         simulationMenu();
-
     }
 
-    /**
-     * Method to display the main menu
-     * @throws Exception There is a  possibility fot IOException or InterruptedException
-     */
-    public static void simulationMenu() throws Exception {
-        Vendor producer = new Vendor();
-        Customer consumer = new Customer();
+    private static void starter() throws Exception {
+        List<Configuration> configs =  ApiUtils.loadConfigurations();
+
+        if (configs.isEmpty()) {
+            createNewConfiguration(); // Automatically redirecting to create an event
+        } else {
+            System.out.println();
+            System.out.println("How would you like to start the application?");
+            System.out.println("1. Use the existing Configurations. ");
+            System.out.println("2. Create a new configuration. ");
+            System.out.print("Enter your choice: ");
+            String choice = scanner.next();
+            scanner.nextLine(); // To clean the buffer
+
+            boolean isValid = false;
+
+            while (!isValid) {
+                switch (choice) {
+                    case "1":
+                        getExistingConfigurations(configs);
+                        isValid = true;
+                        break;
+                    case "2":
+                        createNewConfiguration();
+                        isValid = true;
+                        break;
+                    default:
+                        System.out.println("Invalid choice. Try again.");
+                        System.out.print("Enter your choice: ");
+                        choice = scanner.next();
+                }
+            }
+        }
+    }
+
+    private static void targetEvent() throws Exception {
+        String choice;
+        System.out.println(); // To maintain order
+        System.out.println("How would you like to target an event?");
+        System.out.println("1. Create an event and do the simulation.");
+        System.out.println("2. Use an existing event for the simulation.");
+        System.out.print("Enter your choice: ");
+        choice = scanner.next();
+        scanner.nextLine();
+
+        switch (choice) {
+            case "1":
+                System.out.println("Creating an event");
+                ApiUtils.createNewEvent();
+                ApiUtils.createNewTicketPool(new Configuration(totalTickets, ticketReleaseRate, customerRetrievalRate, maxTicketCapacity));
+                break;
+            case "2":
+                Event event = ApiUtils.getExistingEvents();
+                if (event == null) {
+                    System.out.println();
+                    System.out.println("There are no existing events.");
+                    ApiUtils.createNewEvent();
+                    ApiUtils.createNewTicketPool(new Configuration(totalTickets, ticketReleaseRate, customerRetrievalRate, maxTicketCapacity));
+                } else {
+                    TicketPool pool = ApiUtils.getExistingPool();
+                    if (pool == null) {
+                        System.out.println("There are no existing pools for this event.");
+                        ApiUtils.createNewTicketPool(new Configuration(totalTickets, ticketReleaseRate, customerRetrievalRate, maxTicketCapacity));
+                    } else {
+                        break;
+                    }
+                }
+        }
+    }
+
+    public static void simulationMenu() {
+
+        System.out.println();
+        System.out.print("Enter the number of Vendor threads: ");
+        numVendors = Integer.parseInt(scanner.nextLine());
+
+        System.out.print("Enter the number of Customer threads: ");
+        numCustomers = Integer.parseInt(scanner.nextLine());
 
         System.out.println(); // new line character to maintain order
-        System.out.println("Type 'start' to begin the simulation, and 'stop' to end it.");
+        System.out.println("Starting simulation with " + numVendors + " vendors and " + numCustomers + " customers.");
+        System.out.println("Type 'start' to begin the simulation, 'stop' to end it, or 'exit' to exit.");
+
+        List<Thread> producerThreads = new ArrayList<>();
+        List<Thread> consumerThreads = new ArrayList<>();
 
         while (true) {
             String command = scanner.nextLine().trim().toLowerCase();
@@ -72,38 +120,27 @@ public class Main {
                 case "start":
                     if (!isRunning) {
                         isRunning = true;
-                        // Create new threads for each run
-                        Thread producerThread1 = new Thread(producer);
-                        Thread consumerThread1 = new Thread(consumer);
 
-                        Thread producerThread2 = new Thread(producer);
-                        Thread consumerThread2 = new Thread(consumer);
+                        producerThreads = new ArrayList<>();
+                        consumerThreads = new ArrayList<>();
 
-                        Thread producerThread3 = new Thread(producer);
-                        Thread consumerThread3 = new Thread(consumer);
+                        // Create and start the specified number of Vendor threads
+                        for (int i = 0; i < numVendors; i++) {
+                            Vendor producer = new Vendor(i);
+                            Thread producerThread = new Thread(producer);
+                            producerThreads.add(producerThread);
+                            producerThread.start();
+                        }
 
-                        Thread producerThread4 = new Thread(producer);
-                        Thread consumerThread4 = new Thread(consumer);
+                        // Create and start the specified number of Customer threads
+                        for (int i = 0; i < numCustomers; i++) {
+                            Customer consumer = new Customer(i);
+                            Thread consumerThread = new Thread(consumer);
+                            consumerThreads.add(consumerThread);
+                            consumerThread.start();
+                        }
 
-                        Thread producerThread5 = new Thread(producer);
-                        Thread consumerThread5 = new Thread(consumer);
-
-                        producerThread1.start();
-                        consumerThread1.start();
-
-                        producerThread2.start();
-                        consumerThread2.start();
-
-                        producerThread3.start();
-                        consumerThread3.start();
-
-                        producerThread4.start();
-                        consumerThread4.start();
-
-                        producerThread5.start();
-                        consumerThread5.start();
-
-                        System.out.println("Simulation started.");
+                        System.out.println("Simulation started with " + numVendors + " vendors and " + numCustomers + " customers.");
                     } else {
                         System.out.println("Simulation is already running.");
                     }
@@ -112,8 +149,17 @@ public class Main {
                 case "stop":
                     if (isRunning) {
                         isRunning = false;
-
                         System.out.println("Stopping simulation...");
+
+                        // Interrupt all producer and consumer threads
+                        for (Thread producerThread : producerThreads) {
+                            producerThread.interrupt();
+                        }
+                        for (Thread consumerThread : consumerThreads) {
+                            consumerThread.interrupt();
+                        }
+
+                        System.out.println("Simulation stopped.");
                     } else {
                         System.out.println("Simulation is not running.");
                     }
@@ -130,32 +176,20 @@ public class Main {
         }
     }
 
-    /**
-     * Method to get the existing configurations os the database
-     * @throws Exception There is a  possibility fot IOException or InterruptedException
-     */
-    public static void getExistingConfigurations() throws Exception {
+    public static void getExistingConfigurations(List<Configuration> configs) {
+        int index = InputValidation.getValidIndex(configs);
 
-        Configuration configuration = ApiUtils.getExistingConfigurations();
+        totalTickets = configs.get(index).getTotalTickets();
+        ticketReleaseRate = configs.get(index).getTicketReleaseRate();
+        customerRetrievalRate = configs.get(index).getCustomerRetrievalRate();
+        maxTicketCapacity = configs.get(index).getMaxTicketCapacity();
 
-        if (configuration != null) {
-            totalTickets = configuration.getTotalTickets();
-            ticketReleaseRate = configuration.getTicketReleaseRate();
-            customerRetrievalRate = configuration.getCustomerRetrievalRate();
-            maxTicketCapacity = configuration.getMaxTicketCapacity();
-        } else {
-            System.out.println("No existing configurations found.");
-            System.out.println("Redirecting to create new configuration.");
-            createNewConfiguration(); // Redirecting to create new configuration
-        }
+        System.out.println(configs.get(index));
 
     }
 
-    /**
-     * Method to create new configuration
-     * @throws Exception There is a  possibility fot IOException or InterruptedException
-     */
     public static void createNewConfiguration() throws Exception {
+        System.out.println();
         totalTickets = InputValidation.getValidTotalTickets();
         ticketReleaseRate = InputValidation.getValidRate("release rate");
         customerRetrievalRate = InputValidation.getValidRate("retrieval rate");
@@ -163,8 +197,7 @@ public class Main {
 
         Configuration configuration =  new Configuration(totalTickets, ticketReleaseRate, customerRetrievalRate, maxTicketCapacity);
 
-        ApiUtils.createNewConfiguration(configuration);
-
+        ApiUtils.saveConfigurations(configuration);
     }
 
 }

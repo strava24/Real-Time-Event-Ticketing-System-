@@ -1,5 +1,7 @@
 // This will be a utility class used just to get valid inputs from the user
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
@@ -47,9 +49,9 @@ public final class InputValidation {
         long rate = 0;
 
         while (rate <= 0) {
-            System.out.print("Enter the ticket " + rateType + " for the event (in milli seconds): ");
+            System.out.print("Enter the ticket " + rateType + " for the event (in seconds): ");
             try {
-                rate = input.nextLong();
+                rate = input.nextInt();
             } catch (InputMismatchException e) {
                 System.out.println("Ticket " + rateType + " should be an integer.");
                 input.nextLine(); // To clear the buffer
@@ -65,7 +67,7 @@ public final class InputValidation {
 
         }
 
-        return rate;
+        return rate * 1000;
     }
 
 
@@ -102,12 +104,12 @@ public final class InputValidation {
 
     /**
      * This method is to get a valid index among to choose a valid index among the configurations
-     * @param configs - list of Configurations
+     * @param list - list of Configurations
      * @return - returns a valid configuration if there is no configurations saved on the DB returns null
      */
-    public static int getValidIndex(List<Configuration> configs) {
-        for (int i = 0; i < configs.size(); i++) {
-            System.out.println(i + " - " + configs.get(i).toString() + "\n"); // Printing all the configurations on the backend along with the index
+    public static int getValidIndex(List<?> list) {
+        for (int i = 0; i < list.size(); i++) {
+            System.out.println(i + " - " + list.get(i).toString() + "\n"); // Printing all the configurations on the backend along with the index
         }
 
         int index = 0;
@@ -115,11 +117,11 @@ public final class InputValidation {
 
         do {
             notValid = true;
-            System.out.print("Enter the index of your chosen configuration: ");
+            System.out.print("Enter the index of your choice: ");
             try {
                 index = input.nextInt();
 
-                if (index < 0 || index > configs.size() - 1) {
+                if (index < 0 || index > list.size() - 1) {
                     notValid = false;
                     System.out.println("There is no such index!");
                 }
@@ -133,6 +135,59 @@ public final class InputValidation {
 
         return index;
 
+    }
+
+
+
+    public static String getValidEventDate() {
+        while (true) {
+            try {
+                System.out.print("\nEnter the year of the event  : ");
+                String year = String.format("%04d", input.nextInt());
+                input.nextLine(); // Clearing the scanner object if the user enters multiple lines
+
+                System.out.print("Enter the month of the event : ");
+                String month = String.format("%02d", input.nextInt());
+                input.nextLine(); // Clearing the scanner object if the user enters multiple lines
+
+                System.out.print("Enter the day of the event   : ");
+                String day = String.format("%02d", input.nextInt());
+                input.nextLine(); // Clearing the scanner object if the user enters multiple lines
+
+                LocalDate date = LocalDate.parse(year + "-" + month + "-" + day);
+
+                if (date.isBefore(LocalDate.now())) { // The user cannot enter a date of birth earlier than 1950 january 1st
+                    System.out.println("Event date cannot be in the past!");
+                    continue;
+                }
+                return date.toString();
+
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid number!");
+                input.nextLine();
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid date!"); // Scanner will have been cleaned before getting to this point if this exception raises
+            }
+        }
+    }
+
+    public static int getValidTicketPrice() {
+        while (true) {
+            try {
+                System.out.print("Enter Ticket Price : ");
+                int ticketPrice = input.nextInt();
+
+                if (ticketPrice < 0) {
+                    System.out.println("Ticket price cannot be less than 0.");
+                } else {
+                    return ticketPrice;
+                }
+
+            } catch (InputMismatchException e) {
+                System.out.println("Ticket Price should be an integer!");
+                input.nextLine();
+            }
+        }
     }
 
 }

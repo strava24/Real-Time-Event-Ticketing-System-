@@ -3,7 +3,7 @@
         <div class="row justify-content-center">
             <div class="col-12 col-md-9 col-lg-7 col-xl-6 col-xxl-5">
                 <div class="card border border-light-subtle rounded-4">
-                    <div class="card-body p-3 p-md-4 p-xl-5">
+                    <div class="card-body p-3 p-md-4 p-xl-5 shadow">
                         <div class="row">
                             <div class="col-12">
                                 <div class="mb-5">
@@ -47,10 +47,10 @@
 
                                     <div class="d-flex justify-content-center">
                                         <div class="btn-group">
-                                            <button type="button" class="btn btn-primary"
+                                            <button type="button" class="btn btn-primary" [disabled]="!form.valid"
                                                 (click)="onLoginVendor()">Login as
                                                 Vendor</button>
-                                            <button type="button" class="btn btn-primary"
+                                            <button type="button" class="btn btn-primary" [disabled]="!form.valid"
                                                 (click)="onLoginCustomer()">Login as Customer</button>
                                         </div>
                                     </div>

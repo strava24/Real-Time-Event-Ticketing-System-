@@ -1,7 +1,6 @@
 package com.ticketing_system.TicketingSystem.DTO;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 
 // Data Transfer Object to prevent infinite recursion on the response
 public class EventDTO {

@@ -28,6 +28,9 @@ export class LoginComponent {
   vendorID: number = 0;
   customer: Customer = new Customer();
 
+  /**
+   * Method to login the vendor
+   */
   onLoginVendor() {
     this.loginService.loginVendor(this.loginObj).subscribe(
       (response) => {
@@ -44,6 +47,9 @@ export class LoginComponent {
     )
   }
 
+  /**
+   * Method to login the customer
+   */
   onLoginCustomer() {
     this.loginService.loginCustomer(this.loginObj).subscribe(
       (response) => {
@@ -60,6 +66,9 @@ export class LoginComponent {
     )
   }
 
+  /**
+   * Method to redirect to the signup page
+   */
   onSingup() {
     this.router.navigateByUrl('signup');
   }

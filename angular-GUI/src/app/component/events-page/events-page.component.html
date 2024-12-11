@@ -1,32 +1,119 @@
 <!-- Offcanvas Sidebar -->
-<div class="offcanvas offcanvas-end" id="demo">
+<div class="offcanvas offcanvas-end" id="demo" #offcanvasElement>
     <div class="offcanvas-header">
-        <h1 class="offcanvas-title">Heading</h1>
-        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+        <h3 class="offcanvas-title">Tickets</h3>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" (click)="onExit()"></button>
     </div>
+
     <div class="offcanvas-body">
-        <p>Some text lorem ipsum.</p>
-        <p>Some text lorem ipsum.</p>
-        <button class="btn btn-secondary" type="button">A Button</button>
+
+        <div class="container pb-2">
+            Hosted by : {{currentVendor}}
+        </div>
+
+        @if (hasPools) {
+
+        <div class="row pt-1" style="align-items: center; margin-left: auto; margin-right: auto;">
+            <div class="col-3">
+                <strong>Type</strong>
+            </div>
+
+            <div class="col-3">
+                <strong>Availability</strong>
+            </div>
+
+            <div class="col-3 text-center">
+                <strong>Price</strong>
+            </div>
+
+            <div class="col-3 text-center">
+                <strong>Count</strong>
+            </div>
+
+        </div>
+
+        @for (pool of ticketPoolList; track $index) {
+        <form #form="ngForm">
+            <div class="row pt-2" style="align-items: center;">
+                <div class="col-3 text-center">
+                    {{pool.poolName}}
+                </div>
+
+                <div class="col-3 text-center">
+                    {{pool.ticketsSold - pool.ticketsBought}}
+                </div>
+
+                <div class="col-3 text-center">
+                    {{pool.ticketPrice}}/=
+                </div>
+
+                <div class="col-3 text-center">
+                    <input type="number" [(ngModel)]="ticketCount" name="ticketCount" class="form-control"
+                        [max]="pool.ticketsSold - pool.ticketsBought" value="1" required>
+                </div>
+
+                <div class="col-12 text-center">
+
+                    @if (pool.ticketsSold - pool.ticketsBought <= 0) { <span class="badge bg-danger">Sold Out</span>
+                        }
+                        @else {
+                        <button class="btn btn-primary" type="button"
+                            [disabled]="!form.valid || ticketCount < 1 || ticketCount > (pool.ticketsSold - pool.ticketsBought)"
+                            (click)="onBuy(pool.poolID)">
+                            Buy
+                        </button>
+                        }
+
+
+                </div>
+            </div>
+        </form>
+
+        }
+        }
+
+        @else {
+        <img src="images/ticket.jpg" alt="tickets" class="img-fluid">
+        }
+
     </div>
 </div>
 
 <div class="row g-4 ms-5 me-5 pt-3">
+    @if (events.length === 0) {
+    <div class="d-flex justify-content-center align-items-center">
+        <div class="card" style="width: 400px;">
+            <div class="card-body">
+                <p class="text-center"><strong>There are no events yet</strong></p>
+                <img src="images/emptyPool.jpg" alt="EmptyPool" id="empty-pool-image" class="img-fluid">
+            </div>
+        </div>
+    </div>
+
+    }
+    @else {
     @for (event of events; track event.eventID) {
     <div class="col-3 d-flex justify-content-center">
-        <div class="card" style="width: 250px; height: 400px;">
+        <div class="card" style="width: 250px; height: 380px;">
             <div class="card-body d-flex flex-column">
                 <img [src]="event.imageUrl" class="card-img-top" alt="{{ event.imageName }}"
                     style="height: 200px; width: 100%; object-fit: contain;">
                 <h5 class="card-title mt-3">{{ event.eventName }}</h5>
                 <div class="container-fluid">
-                    <p class="card-text"><i class="bi bi-calendar"></i> {{ event.date | date }}</p>
-                    <p class="card-text"><i class="bi bi-geo-alt-fill"></i> {{ event.location }}</p>
+                    <div class="row">
+                        <div class="col-12">
+                            <p class="card-text"><i class="bi bi-calendar"></i> {{ event.date | date }}</p>
+                        </div>
+                        <div class="col-12">
+                            <p class="card-text"><i class="bi bi-geo-alt-fill"></i> {{ event.location }}</p>
+                        </div>
+                    </div>
+                </div>
 
-                    <!-- Button to open the offcanvas sidebar -->
+                <div class="container-fluid pt-2">
                     <div class="text-center">
                         <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#demo"
-                            (click)="onClick()">
+                            (click)="accessPools(event.eventID, event.vendorID)">
                             Buy Ticket
                         </button>
                     </div>
@@ -35,5 +122,6 @@
             </div>
         </div>
     </div>
+    }
     }
 </div>

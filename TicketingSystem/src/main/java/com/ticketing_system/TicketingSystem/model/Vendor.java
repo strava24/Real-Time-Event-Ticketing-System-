@@ -83,7 +83,7 @@ public class Vendor{
     }
 
     public int incrementTicketsSold() {
-        this.ticketsSold++;
+        this.ticketsSold = this.ticketsSold + 1;
         return this.ticketsSold;
     }
 

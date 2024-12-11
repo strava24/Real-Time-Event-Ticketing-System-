@@ -1,4 +1,92 @@
 <div class="row ms-5 me-5 pt-3">
-    <p>vendor-profile works!</p>
+    <div class="col-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                Vendor Profile
+                <button class="btn custom-btn" (click)="onEdit()">
+                    <i class="bi bi-pencil-square"></i>
+                </button>
+            </div>
+            <div class="card-body text-center" style="height: 250px;">
+                <div>
+                    <img src="images/profile.jpg" alt="EmptyPool" id="empty-pool-image" style="height: 180px;">
+                </div>
+                <strong>{{vendorDetails.vendorName}}</strong>
+                <div>
+                    <span class="badge bg-success">{{vendorDetails.ticketsSold}} Tickets Sold</span>
+                    <span class="badge bg-info">{{eventCountByVendor}} Events Hosted</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                Vendor Details
+            </div>
+
+            <div class="card-body" style="height: 250px;">
+                <table class=" table table-bordered">
+                    <tbody>
+                        <tr>
+                            <th>Vendor ID</th>
+                            <td>V{{vendorDetails.vendorID}}</td>
+                        </tr>
+                        <tr>
+                            <th>Vendor Name</th>
+                            <td>{{vendorDetails.vendorName}}</td>
+                        </tr>
+                        <tr>
+                            <th>Vendor Email</th>
+                            <td>{{vendorDetails.vendorEmail}}</td>
+                        </tr>
+                        <tr>
+                            <th>Password</th>
+                            <td>{{vendorDetails.vendorPassword}}</td>
+                        </tr>
+                        <tr>
+                            <th>Tickets Produced</th>
+                            <td>{{vendorDetails.ticketsSold}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
 
 </div>
+
+@if (inEditMode) {
+<div class="row ms-5 me-5 pt-3">
+    <div class="card">
+        <div class="card-body">
+            <form #form="ngForm">
+                <div class="col-12">
+                    <label for="vendorName">vendor Name</label>
+                    <input type="text" #vendorName="ngModel" required class="form-control" name="vendorName"
+                        id="vendorName" minlength="5" [(ngModel)]="vendorDetails.vendorName">
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <label for="vendorEmail">vendor Email</label>
+                        <input type="email" #vendorEmail="ngModel" required class="form-control" name="vendorEmail"
+                            id="vendorEmail" minlength="5" [(ngModel)]="vendorDetails.vendorEmail">
+                    </div>
+                    <div class="col-6">
+                        <label for="vendorPassword">vendor Password</label>
+                        <input type="text" #vendorPassword="ngModel" required class="form-control" name="vendorPassword"
+                            id="vendorPassword" [(ngModel)]="vendorDetails.vendorPassword">
+                    </div>
+                </div>
+
+                <div class="col-12 pt-3 text-center">
+                    <button class="btn btn-success" (click)="onUpdate()" [disabled]="!form.valid">Update</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+}

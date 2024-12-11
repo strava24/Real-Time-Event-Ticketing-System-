@@ -1,6 +1,8 @@
 package com.ticketing_system.TicketingSystem.model;
 
 import jakarta.persistence.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -11,6 +13,8 @@ import java.util.concurrent.locks.ReentrantLock;
 @Entity
 @Component
 public class TicketPool {
+
+    private static final Logger logger = LogManager.getLogger(TicketPool.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -93,17 +97,17 @@ public class TicketPool {
 
                 tickets.add(ticket);
 
-                System.out.println("Produced a ticket." + ticketsSold);
+                logger.info("Produced a ticket into : P{},  Current size of the pool : {}, total tickets produced on the pool : {}", this.poolID, this.tickets.size() , this.ticketsSold);
                 // This wakes up the threads that waits for this condition
                 ticketsSold++;
             } else {
-                System.out.println("Ticket already sold.");
+                logger.warn("Ticket already sold.");
                 throw new InterruptedException("Ticket already sold.");
             }
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // Restore interrupted status
-            System.err.println("Producer thread interrupted");
+            logger.error("Vendor thread interrupted : {}", String.valueOf(e));
             return null;
         } finally {
             lock.unlock(); // releasing the lock
@@ -117,7 +121,7 @@ public class TicketPool {
         try {
             if (tickets.isEmpty()) {
                 if (ticketsSold == totalTickets) {
-                    System.out.println("Consumed all the tickets!");
+                    logger.warn("All the tickets are consumed!");
                     throw new InterruptedException("Consumed all the tickets!");
                 }
                 return null;
@@ -128,16 +132,16 @@ public class TicketPool {
                 Ticket ticket = tickets.removeFirst();
                 ticketsBought++;
 
-                System.out.println("Consumed a ticket." + ticket);
+                logger.info("Consumed a ticket from : P{}, Current size of the pool : {},  total tickets consumed are : {}", this.poolID, this.tickets.size(), ticketsBought);
                 return ticket;
             } else {
-                System.out.println("Consumed all the tickets!");
+                logger.warn("All the tickets are consumed!");
                 throw new InterruptedException();
             }
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // Restore interrupted status
-            System.err.println("Consumer thread interrupted");
+            logger.error("Customer thread interrupted : {}", String.valueOf(e));
 
         } finally {
             lock.unlock();
