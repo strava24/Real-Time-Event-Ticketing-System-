@@ -31,6 +31,8 @@ public class Main {
         List<Configuration> configs =  ApiUtils.loadConfigurations();
 
         if (configs.isEmpty()) {
+            System.out.println("No configurations found.");
+            System.out.println("Redirecting to create a new configuration.");
             createNewConfiguration(); // Automatically redirecting to create an event
         } else {
             System.out.println();
@@ -68,43 +70,55 @@ public class Main {
         System.out.println("How would you like to target an event?");
         System.out.println("1. Create an event and do the simulation.");
         System.out.println("2. Use an existing event for the simulation.");
-        System.out.print("Enter your choice: ");
-        choice = scanner.next();
-        scanner.nextLine();
 
-        switch (choice) {
-            case "1":
-                System.out.println("Creating an event");
-                ApiUtils.createNewEvent();
-                ApiUtils.createNewTicketPool(new Configuration(totalTickets, ticketReleaseRate, customerRetrievalRate, maxTicketCapacity));
-                break;
-            case "2":
-                Event event = ApiUtils.getExistingEvents();
-                if (event == null) {
-                    System.out.println();
-                    System.out.println("There are no existing events.");
+        boolean isValid = false;
+
+        while (!isValid) {
+
+            System.out.print("Enter your choice: ");
+            choice = scanner.next();
+            scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    System.out.println("Creating an event");
                     ApiUtils.createNewEvent();
                     ApiUtils.createNewTicketPool(new Configuration(totalTickets, ticketReleaseRate, customerRetrievalRate, maxTicketCapacity));
-                } else {
-                    TicketPool pool = ApiUtils.getExistingPool();
-                    if (pool == null) {
-                        System.out.println("There are no existing pools for this event.");
+                    isValid = true;
+                    break;
+                case "2":
+                    Event event = ApiUtils.getExistingEvents();
+                    if (event == null) {
+                        System.out.println("\nThere are no existing events.");
+                        ApiUtils.createNewEvent();
                         ApiUtils.createNewTicketPool(new Configuration(totalTickets, ticketReleaseRate, customerRetrievalRate, maxTicketCapacity));
-                    } else {
+                        isValid = true;
                         break;
+                    } else {
+                        TicketPool pool = ApiUtils.getExistingPool();
+                        if (pool == null) {
+                            System.out.println("There are no existing pools for this event.");
+                            ApiUtils.createNewTicketPool(new Configuration(totalTickets, ticketReleaseRate, customerRetrievalRate, maxTicketCapacity));
+                        } else {
+                            isValid = true;
+                            break;
+                        }
                     }
-                }
+                default:
+                    System.out.println("Invalid choice. Try again.");
+                    scanner.nextLine(); // Cleaning the buffer
+            }
+
         }
+
+
     }
 
     public static void simulationMenu() {
 
         System.out.println();
-        System.out.print("Enter the number of Vendor threads: ");
-        numVendors = Integer.parseInt(scanner.nextLine());
-
-        System.out.print("Enter the number of Customer threads: ");
-        numCustomers = Integer.parseInt(scanner.nextLine());
+        numVendors = InputValidation.getValidInteger("vendor");
+        numCustomers = InputValidation.getValidInteger("customer");
 
         System.out.println(); // new line character to maintain order
         System.out.println("Starting simulation with " + numVendors + " vendors and " + numCustomers + " customers.");

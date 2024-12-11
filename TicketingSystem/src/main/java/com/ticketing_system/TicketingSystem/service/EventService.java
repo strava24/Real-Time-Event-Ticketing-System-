@@ -53,15 +53,6 @@ public class EventService {
         return event.getEventID();
     }
 
-
-//    public int createEvent(String eventName, Vendor vendor, String date, String location) {
-//        Event event = new Event(eventName, date, vendor, location);
-//        eventRepo.save(event);
-//        vendor.addNewEvent(event);
-//
-//        return event.getEventID();
-//    }
-
     /**
      * Method to get an event by ID
      * @param eventID - Event ID
@@ -95,10 +86,6 @@ public class EventService {
         }
 
     }
-
-//    public int getEventIDByName(String eventName) {
-//        return eventRepo.findEventIDByEventName(eventName);
-//    }
 
     /**
      * Method get an event object from an Event DTO
@@ -166,8 +153,7 @@ public class EventService {
         eventDTO.setImageData(imageFile.getBytes());
 
         Event event = convertToEventFromDTO(eventDTO);
-        System.out.println(event);
-        logger.info("Created an event with image data");
+        logger.info("Created an event with image data{}", event);
         return eventRepo.save(event);
     }
 

@@ -190,4 +190,22 @@ public final class InputValidation {
         }
     }
 
+    public static int getValidInteger(String role) {
+
+        int count;
+
+        while (true) {
+            System.out.print("Enter the number of " + role + " threads : ");
+            try {
+                count = input.nextInt();
+                return count;
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid number!");
+                input.nextLine();
+
+            }
+        }
+
+    }
+
 }

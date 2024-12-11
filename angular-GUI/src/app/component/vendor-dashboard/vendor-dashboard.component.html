@@ -30,8 +30,9 @@
                             <td>{{event.location}}</td>
                             <td>{{ event.date | date: 'longDate' }}</td>
                             <td class="text-center">
-                                <button class="btn btn-primary me-2" (click)="accessPool(event.eventID)"
-                                    name="pool">Access Pool</button>
+                                <button class="btn btn-primary me-2"
+                                    (click)="accessPool(event.eventID, event.eventName)" name="pool">Access
+                                    Pool</button>
                                 <button class="btn btn-info me-2" (click)="onEdit(event)" name="Edit">Edit</button>
                                 <button class="btn btn-danger" (click)="onDelete(event.eventID)" name="Save"
                                     name="delete">Delete</button>
@@ -131,10 +132,11 @@
 <div class="row ms-5 me-5  pt-3">
 
 
-    @if (this.currentEvent!= 0) {
+    @if (this.currentEventID!= 0) {
     <div class="col-4">
         <div class="card">
-            <div class="card-header bg-primary text-white">Create New Ticket Pool - E{{currentEvent}}</div>
+            <div class="card-header bg-primary text-white">Create New Ticket Pool - {{currentEventName}}
+                (E{{currentEventID}})</div>
 
             <div class="card-body">
                 <form #form="ngForm">
@@ -204,7 +206,8 @@
     <div class="col-8">
         <div class="card">
 
-            <div class="card-header bg-primary text-white"> TicketPool List - E{{ currentEvent}}</div>
+            <div class="card-header bg-primary text-white"> TicketPool List - {{currentEventName}}
+                (E{{currentEventID}})</div>
 
             @if (hasPools) {
             <div class="card-body">
@@ -271,14 +274,19 @@
 
             <div class="card-body">
 
-                <ul>
+                <table class="table table-bordered">
 
-                    @for (notification of notificationList; track $index) {
+                    <tbody>
+                        @for (notification of notificationList; track $index) {
+                        <tr>
+                            <td class="text-center">
+                                {{notification}}
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
 
-                    <li>{{notification}}</li>
-                    }
-
-                </ul>
+                </table>
 
             </div>
 
