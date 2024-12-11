@@ -70,14 +70,9 @@ public final class ApiUtils {
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpResponse<String> postResponse = httpClient.send(postRequest, HttpResponse.BodyHandlers.ofString());
 
-        // Parse the response body
-        System.out.println(postResponse.body());
         Map<String, Integer> details = gson.fromJson(postResponse.body(), new TypeToken<Map<String, Integer>>() {}.getType());
 
-        System.out.println(postResponse.body());
         logger.info(details.toString());
-        logger.fine(details.toString());
-        logger.finest(details.toString());
 
         poolID = details.get("poolID");
     }
@@ -120,65 +115,6 @@ public final class ApiUtils {
         }
 
     }
-
-//    /**
-//     * Method is used to create a new configuration
-//     * @param configuration the configuration object with the user data
-//     * @throws Exception There is a  possibility fot IOException or InterruptedException
-//     */
-//    public static void createNewConfiguration(Configuration configuration) throws Exception {
-//        String jsonRequest = gson.toJson(configuration);
-//
-//        System.out.println(jsonRequest);
-//
-//        // Saving this configuration in the DB
-//        HttpRequest postRequest = HttpRequest.newBuilder()
-//                .uri(new URI( url +"/config/configuration"))
-//                .header("Content-Type", "application/json")
-//                .POST(HttpRequest.BodyPublishers.ofString(jsonRequest))
-//                .build();
-//
-//        HttpClient httpClient = HttpClient.newHttpClient();
-//        HttpResponse<String> postResponse =  httpClient.send(postRequest, HttpResponse.BodyHandlers.ofString());
-//
-//        if (postResponse.statusCode() == 200) {
-//            System.out.println("Configuration added to the database.");
-//        } else if (postResponse.statusCode() == 400) {
-//            System.out.println("Configuration could not be added to the database.");
-//        } else {
-//            System.out.println("Unexpected response code: " + postResponse.statusCode());
-//        }
-//
-//        System.out.println(postResponse.body());
-//    }
-//
-//    /**
-//     * Method is used to fetch the existing configurations on the database
-//     * After fetching all the configurations on the database the user will be able to choose a configuration
-//     * @return the configuration user choose
-//     * @throws Exception There is a  possibility fot IOException or InterruptedException
-//     */
-//    public static Configuration getExistingConfigurations() throws Exception {
-//        // Sending a get request
-//        HttpRequest getRequest = HttpRequest.newBuilder()
-//                .uri(new URI( url +"/config")) // api endpoint
-//                .GET() // Can get rid of this line as well, cause GET by default
-//                .build();
-//
-//        HttpResponse<String> getResponse = HttpClient.newHttpClient().send(getRequest, HttpResponse.BodyHandlers.ofString()); // This is to accept the response as a string
-//
-//        /* This line captures the generic type List<Configuration> and retrieves it as a Type object,
-//           which is passed to Gson to guide the deserialization process.*/
-//        Type listType = new TypeToken<List<Configuration>>() {}.getType();
-//        List<Configuration> configs = gson.fromJson(getResponse.body(), listType);
-//
-//        if (configs.isEmpty()) {
-//            return null;
-//        } else {
-//            int index = InputValidation.getValidIndex(configs);
-//            return configs.get(index);
-//        }
-//    }
 
     /**
      * Method used to send HTTP request to the back end to place an order and book a ticket
@@ -273,7 +209,6 @@ public final class ApiUtils {
                 .send(postRequest, HttpResponse.BodyHandlers.ofString());
 
         Map<String, String> aiCustomerDetails = gson.fromJson(postResponse.body(), new TypeToken<Map<String, String>>() {}.getType());
-
 
         aiCustomerID = Integer.parseInt(aiCustomerDetails.get("customerID"));
 
@@ -379,7 +314,7 @@ public final class ApiUtils {
                  int index = InputValidation.getValidIndex(events);
                  Event event = events.get(index);
                  eventID = event.getEventID();
-                 System.out.println("Targeting even with ID " + eventID);
+                 System.out.println("Targeting event with ID: E" + eventID);
                  return event;
              }
          } else {
@@ -392,6 +327,10 @@ public final class ApiUtils {
         try (FileReader reader = new FileReader("configs.json")) {
             Type listType = new TypeToken<List<Configuration>>() {}.getType();
             List<Configuration> loadedData = gson.fromJson(reader, listType);
+
+            if (loadedData == null) {
+                return new ArrayList<>();
+            }
 
             return loadedData;
         } catch (Exception e) {

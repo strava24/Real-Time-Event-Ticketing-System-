@@ -41,7 +41,7 @@ Dependencies (from pom.xml):
 - Spring Boot Starter Test (for testing)
 - H2 Database (for embedded database)
 - Gson 2.10.1 (for JSON processing)
-- Spring Boot Starter WebSocket (for real-time communication)
+- Springdoc OpenAPI Starter WebMVC UI (for API documentation)
 
 Database Configuration (from application.properties):
 - Database: H2 File-based Database (./data/mydb)

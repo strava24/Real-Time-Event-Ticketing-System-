@@ -30,6 +30,7 @@ export class EventsPageComponent implements OnInit, AfterViewInit {
   toastrService = inject(ToastrService);
   ticketCount = 1;
   intervalId: any;
+  ticketRetrievalRate = 1000; // Set to 1 second by default
 
   events: Events[] = [];
   hasPools: boolean = false;
@@ -143,6 +144,11 @@ export class EventsPageComponent implements OnInit, AfterViewInit {
    * @param poolID - pool ID from which the customer is trying to buy a ticket
    */
   onBuy(poolID: number) {
+
+    if (this.ticketCount > 1) {
+      this.openInput(); // Asking for retriival rate if count is grater than 0
+    }
+
     const customerID: number = this.loginService.getCustomerID();
 
     if (customerID === -1) {
@@ -176,7 +182,35 @@ export class EventsPageComponent implements OnInit, AfterViewInit {
       });
 
       count++; // Increment after every successful interval
-    }, 1000);
+    }, this.ticketRetrievalRate);
+  }
+
+  /**
+   * Method to get valid ticketRetrievalRate from the user
+   */
+  openInput() {
+    // Keep prompting until the input is valid
+    while (true) {
+      const input = prompt("Enter ticket retrieval rate (in seconds) : ");
+
+      // If user cancels (input is null), exit the loop
+      if (input === null) {
+        this.toastrService.info('Retrieval rate is set to 1 second!')
+        break;
+      }
+
+      // Convert input to a number
+      this.ticketRetrievalRate = parseFloat(input);
+
+      // Check if the input is a valid number and greater than 0
+      if (!isNaN(this.ticketRetrievalRate) && this.ticketRetrievalRate > 0) {
+        this.toastrService.info(`Release rate is set to: ${this.ticketRetrievalRate} seconds`);
+        this.ticketRetrievalRate = this.ticketRetrievalRate * 1000;
+        break; // Exit the loop if input is valid
+      } else {
+        this.toastrService.error("Please enter a valid number greater than 0.");
+      }
+    }
   }
 
 

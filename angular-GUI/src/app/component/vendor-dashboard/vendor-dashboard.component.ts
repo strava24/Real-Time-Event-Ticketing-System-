@@ -19,23 +19,24 @@ import { Router } from '@angular/router';
 
 export class VendorDashboardComponent implements OnInit {
 
-  eventList: Events[] = [];
-  eventObj: Events = new Events();
+  eventList: Events[] = []; // List to hold the events on the database
+  eventObj: Events = new Events(); // Events object to hold the event details on the form
 
-  ticketPoolList: TicketPool[] = [];
+  ticketPoolList: TicketPool[] = []; // List to hold the ticket pools of an event
   hasPools: boolean = false;
-  currentEvent: number = 0;
-  ticketPoolObj: TicketPool = new TicketPool();
+  currentEventID: number = 0; // ID of the currently selected event
+  currentEventName: string = '';
+  ticketPoolObj: TicketPool = new TicketPool(); // TicketPool obj to hold the Ticket pool details on thr form
 
   private intervalId: any;
   isSelling: boolean = false;
 
   ticketRetrievalRate: number = 0;
+  ticketReleaseRate: number = 1000; // ticketReleaseRate set to 1 second by default
 
   notificationList: String[] = [];
 
   minimumDate: string; // Format: YYYY-MM-DD
-  // vendorID: number = 1; // For now hard coded value
 
   selectedFile: File | null = null;
 
@@ -50,7 +51,7 @@ export class VendorDashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getAllEvents();
+    this.getAllEvents(); // Loading all the events at the start of the program
 
   }
 
@@ -85,29 +86,6 @@ export class VendorDashboardComponent implements OnInit {
   }
 
   /**
-   * Method to update an event on the system
-   */
-  // onUpdate() {
-  //   this.eventService.updateEvent(this.eventObj).subscribe({
-  //     next: (response) => {
-  //       console.log('Update Success:', response);
-  //       this.toastrService.success('Updated Successfully!')
-  //       this.eventObj = new Events();
-  //       this.getAllEvents();
-  //     },
-  //     error: (error) => {
-  //       this.toastrService.error('There was an issue on the process!');
-  //       if (error.status === 404) {
-  //         console.error('Event not found');
-  //         this.toastrService.info('Event not found');
-  //       } else {
-  //         console.error('Update failed:', error);
-  //       }
-  //     },
-  //   });
-  // }
-
-  /**
    * Method to update event details
    */
   onUpdate() {
@@ -132,6 +110,8 @@ export class VendorDashboardComponent implements OnInit {
             console.error('Error creating event:', error);
           }
         );
+    } else {
+      this.toastrService.info("You have to upload the image!")
     }
 
 
@@ -201,7 +181,7 @@ export class VendorDashboardComponent implements OnInit {
    * Method to access pools of an event
    * @param eventID - Event ID
    */
-  accessPool(eventID: number) {
+  accessPool(eventID: number, eventName: string) {
 
     this.stopPolling(); // Stopping the on goin polling if is it happening
     this.startPolling(eventID); // start polling for current event
@@ -216,7 +196,8 @@ export class VendorDashboardComponent implements OnInit {
         } else {
           this.ticketPoolList = getResponse;
           this.hasPools = true;
-          this.currentEvent = eventID;
+          this.currentEventID = eventID;
+          this.currentEventName = eventName;
           console.log(this.ticketPoolList);
           this.toastrService.success('Loaded Ticket Pools!', 'Success!!');
         }
@@ -226,12 +207,26 @@ export class VendorDashboardComponent implements OnInit {
           console.log('There are no pools for this event yet!');
           this.toastrService.error('There are no pools for this event yet!');
           this.hasPools = false;
-          this.currentEvent = eventID;
+          this.currentEventID = eventID;
+          this.currentEventName = eventName;
         } else {
           this.toastrService.error('Network Down!');
         }
       }
     );
+  }
+
+  /**
+   * Tis method is to make sure that only 20 notifications are listed at a time to maintain a good UI
+   * @param newNotifications 
+   */
+  addNotifications(newNotifications: string[]) {
+    this.notificationList.push(...newNotifications);
+
+    // To nsure the array size doesn't exceed 20
+    if (this.notificationList.length > 20) {
+      this.notificationList.splice(0, this.notificationList.length - 20); // Removing excess notifications
+    }
   }
 
   /**
@@ -251,6 +246,8 @@ export class VendorDashboardComponent implements OnInit {
    */
   startTicketSelling(poolIDd: number): void {
 
+    this.openInput();
+
     const vendorID: number = this.loginService.getVendorID();
 
     if (!this.isSelling && vendorID !== -1) {
@@ -261,7 +258,7 @@ export class VendorDashboardComponent implements OnInit {
           next: (response) => {
             this.toastrService.info('Ticket Sold!');
             console.log('Ticket sold:', response);
-            this.accessPool(this.currentEvent);
+            this.accessPool(this.currentEventID, this.currentEventName);
           },
           error: (error) => {
             if (error.status === 400) {
@@ -273,7 +270,7 @@ export class VendorDashboardComponent implements OnInit {
             }
           }
         });
-      }, 1000);
+      }, this.ticketReleaseRate);
     } else {
       this.toastrService.error('Login to the system!')
     }
@@ -290,12 +287,11 @@ export class VendorDashboardComponent implements OnInit {
    */
   savePool() {
 
-    console.log('Hello')
-    this.ticketPoolService.createTicketPool(this.currentEvent, this.ticketPoolObj).subscribe(
+    this.ticketPoolService.createTicketPool(this.currentEventID, this.ticketPoolObj).subscribe(
       (response) => {
         this.toastrService.success('Created Ticket Pool!');
         this.ticketPoolObj = new TicketPool();
-        this.accessPool(this.currentEvent);
+        this.accessPool(this.currentEventID, this.currentEventName);
       },
       error => {
         console.log('There was an issue')
@@ -315,33 +311,14 @@ export class VendorDashboardComponent implements OnInit {
     }
   }
 
-  // getRealTimePoolUpdates(eventID: number) {
-
-  //   this.notificationList = [];
-
-  //   this.ticketPoolService.getTicketPoolDetails(eventID).subscribe(response => {
-  //     const poolList: TicketPool[] = response;
-
-  //     for (let i = 0; i < poolList.length; i++) {
-  //       const ticketsBought = poolList[i].ticketsBought;
-  //       const ticketsSold = poolList[i].ticketsSold;
-  //       const name = poolList[i].poolName;
-  //       const id = poolList[i].poolID;
-
-  //       this.notificationList.push(ticketsBought + " tickets bought out of " + ticketsSold + " produced tickets on " + name + " : P" + id);
-  //     }
-
-  //     this.toastrService.info('New Notification!');
-
-  //   }, error => {
-  //     this.toastrService.error('There was an error while fetching the updates');
-  //   });
-  // }
-
+  /**
+   * Method to start polling to fetch for latest ticket details
+   */
   startPolling(eventID: number): void {
 
     this.ticketPoolService.startPolling(eventID, (response) => {
       const poolList: TicketPool[] = response;
+      const formatedPoolList: string[] = [];
 
       for (let i = 0; i < poolList.length; i++) {
         const ticketsBought = poolList[i].ticketsBought;
@@ -349,15 +326,44 @@ export class VendorDashboardComponent implements OnInit {
         const name = poolList[i].poolName;
         const id = poolList[i].poolID;
 
-        this.notificationList.push(ticketsBought + " tickets bought out of " + ticketsSold + " produced tickets on " + name + " : P" + id + " on event E" + this.currentEvent);
+        // Converting the infprmation into a notification and pushing to the notification list
+        formatedPoolList.push(ticketsBought + " tickets bought out of " + ticketsSold + " produced tickets : " + name + " tickets (P" + id + ") for event " + this.currentEventName + " (E" + this.currentEventID + ")");
       }
 
-      this.toastrService.info('New Notification!');
+      this.addNotifications(formatedPoolList);
     });
   }
 
   stopPolling(): void {
     this.ticketPoolService.stopPolling();
+  }
+
+  /**
+   * Method to get valid ticketReleaseRate from the user
+   */
+  openInput() {
+    // Keep prompting until the input is valid
+    while (true) {
+      const input = prompt("Enter ticket realease rate (in seconds) : ");
+
+      // If user cancels (input is null), exit the loop
+      if (input === null) {
+        this.toastrService.info('Release rate is set to 1 second!')
+        break;
+      }
+
+      // Convert input to a number
+      this.ticketReleaseRate = parseFloat(input);
+
+      // Check if the input is a valid number and greater than 0
+      if (!isNaN(this.ticketReleaseRate) && this.ticketReleaseRate > 0) {
+        this.toastrService.info(`Release rate is set to: ${this.ticketReleaseRate} seconds`);
+        this.ticketReleaseRate = this.ticketReleaseRate * 1000;
+        break; // Exit the loop if input is valid
+      } else {
+        this.toastrService.error("Please enter a valid number greater than 0.");
+      }
+    }
   }
 
 }
